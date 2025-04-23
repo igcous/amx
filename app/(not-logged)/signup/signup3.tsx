@@ -7,7 +7,7 @@ import {
 	StyleSheet,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { useState } from "react";
 
 export default function Page() {
@@ -92,8 +92,8 @@ export default function Page() {
 							onPress={() => {
 								console.log("old", params);
 								console.log("new", skillSelection);
-								router.navigate({
-									pathname: "/signup4",
+								router.push({
+									pathname: "/signup/signup4",
 									params: { ...params, skills: skillSelection.join(",") },
 								});
 							}}></Button>

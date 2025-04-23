@@ -1,6 +1,6 @@
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { useState } from "react";
 
 export default function Page() {
@@ -82,7 +82,10 @@ export default function Page() {
 							);
 
 							router.navigate({
-								pathname: params.role === "searcher" ? "/signup3" : "/signup4",
+								pathname:
+									params.role === "searcher"
+										? "/signup/signup3" // no skills choice
+										: "/signup/signup4",
 								params: {
 									...params,
 									firstname: form.firstname,

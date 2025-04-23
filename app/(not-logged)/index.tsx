@@ -30,7 +30,7 @@ export default function Index() {
 					<Button
 						color={Colors.secondary}
 						title="SIGNUP WITH EMAIL"
-						onPress={() => router.push("/signup0")}
+						onPress={() => router.push({ pathname: "/signup/signup0" })}
 					/>
 				</View>
 			</View>

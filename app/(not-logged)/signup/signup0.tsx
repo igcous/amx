@@ -1,8 +1,8 @@
-import { auth } from "../../config/firebaseConfig";
+import { auth } from "../../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { View, Text, TextInput, StyleSheet, Button } from "react-native";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { useLocalSearchParams, useRouter } from "expo-router";
 
 export default function Page() {
@@ -85,8 +85,8 @@ export default function Page() {
 						color={Colors.secondary}
 						onPress={() => {
 							console.log("new", form.email, form.password);
-							router.navigate({
-								pathname: "/signup1",
+							router.push({
+								pathname: "/signup/signup1",
 								params: {
 									...params,
 									email: form.email,

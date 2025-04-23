@@ -1,8 +1,8 @@
 import { View, Text, Button, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { useState } from "react";
-import { auth, db } from "../../config/firebaseConfig";
+import { auth, db } from "../../../config/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
