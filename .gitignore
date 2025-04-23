@@ -34,3 +34,9 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# added
+android/
+ios/
+*.old
+*./config

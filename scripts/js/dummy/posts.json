@@ -1,0 +1,34 @@
+[
+    {
+        "title": "Backend Developer",
+        "text": "A very good job",
+        "employer": "Company A",
+        "jobSkills": [
+            "Java",
+            "Python"
+        ],
+        "postedBy": "placeholder-id",
+        "postedAt": "placeholder-date"
+    },
+    {
+        "title": "Frontend Developer",
+        "text": "An excellent job",
+        "employer": "Company B",
+        "jobSkills": [
+            "C++",
+            "React"
+        ],
+        "postedBy": "placeholder-id",
+        "postedAt": "placeholder-date"
+    },
+    {
+        "title": "Fullstack Developer",
+        "text": "A great job",
+        "employer": "Company C",
+        "jobSkills": [
+            "Java"
+        ],
+        "postedBy": "placeholder-id",
+        "postedAt": "placeholder-date"
+    }
+]

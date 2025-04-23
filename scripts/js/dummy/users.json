@@ -1,0 +1,29 @@
+[
+    {
+        "email": "test@mail.com",
+        "firstname": "John",
+        "lastname": "Doe",
+        "role": "searcher",
+        "skills": [
+            "Java",
+            "Python"
+        ]
+    },
+    {
+        "email": "test2@mail.com",
+        "firstname": "Jane",
+        "lastname": "Doe",
+        "role": "searcher",
+        "skills": [
+            "C++",
+            "React",
+            "Back-end"
+        ]
+    },
+    {
+        "email": "test3@mail.com",
+        "firstname": "Jack",
+        "lastname": "Smith",
+        "role": "recruiter"
+    }
+]
