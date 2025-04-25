@@ -5,12 +5,22 @@ Description:
 	User inputs some basic information
 */
 
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import {
+	View,
+	Text,
+	TextInput,
+	Button,
+	StyleSheet,
+	ViewStyle,
+	TextStyle,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
 
 export default function Page() {
+	const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
+	const params = useLocalSearchParams();
 	const router = useRouter();
 	const [form, setForm] = useState({
 		firstname: "",
@@ -23,13 +33,11 @@ export default function Page() {
 		console.log("Current params", params);
 	}, []);
 
-	const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
-	const params = useLocalSearchParams();
-
 	const validateForm = (updatedForm: typeof form) => {
 		const { firstname, lastname, companyname } = updatedForm;
 		if (params.role === "searcher") {
 			return firstname === "" || lastname === "";
+			// Company name is optional for recruiters
 		} else {
 			return firstname === "" || lastname === "" || companyname === "";
 		}
@@ -65,7 +73,11 @@ export default function Page() {
 						autoCapitalize="none"></TextInput>
 				</View>
 				<View style={styles.input}>
-					<Text style={styles.inputLabel}>Company name (optional)</Text>
+					{params.role === "searcher" ? (
+						<Text style={styles.inputLabel}>Company name (optional)</Text>
+					) : (
+						<Text style={styles.inputLabel}>Company name</Text>
+					)}
 					<TextInput
 						style={styles.inputBox}
 						placeholder="Where do you work?"

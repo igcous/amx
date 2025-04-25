@@ -1,6 +1,6 @@
 /*
 Description:
-Basic layout file
+	Basic layout file
 */
 
 import { Stack } from "expo-router";

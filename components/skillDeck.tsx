@@ -2,42 +2,44 @@
 Title: Skill Deck
 
 Description:
-
+	Component that display a list of selectable cards (buttons/pressables)
+	Must be provided the useState skillSelection and setSkillSelection from the parent to take them outside of the component
+	There is also a default styling that can be overridden
+	Recommended use inside a View component
 */
 
-import {
-	View,
-	ScrollView,
-	Text,
-	Button,
-	Pressable,
-	StyleSheet,
-} from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { Text, Pressable, ViewStyle, TextStyle } from "react-native";
 import { Colors } from "../constants/colorPalette";
-import { useState } from "react";
+import { useEffect } from "react";
 
-export const useSkillDeck = (max: number = 5) => {
-	const [skillSelection, setSkillSelection] = useState<string[]>([]);
+export const SkillDeck = ({
+	skillSelection = [],
+	setSkillSelection = () => {},
+	max = 5,
+	cardStyle = {
+		alignSelf: "center",
+		marginBottom: 10,
+		backgroundColor: Colors.tertiary,
+		paddingHorizontal: 10,
+		marginHorizontal: 5,
+		paddingVertical: 5,
+		borderRadius: 30,
+		borderWidth: 3,
+	},
+	cardTextStyle = { fontSize: 20 },
+}: {
+	skillSelection: string[];
+	setSkillSelection: React.Dispatch<React.SetStateAction<string[]>>;
+	max?: number;
+	cardStyle?: ViewStyle;
+	cardTextStyle?: TextStyle;
+}) => {
+	useEffect(() => {
+		console.log("Selection length: ", skillSelection.length);
+	});
 
-	const handleSelection = (value: string) => {
-		const updated = skillSelection.includes(value)
-			? // already selected, de-select
-			  skillSelection.filter((item) => item !== value)
-			: skillSelection.length < max
-			? // not selected, add
-			  [value, ...skillSelection]
-			: skillSelection;
-		setSkillSelection(updated);
-	};
-
-	return { skillSelection, handleSelection };
-};
-
-export const SkillDeck = () => {
-	const { skillSelection, handleSelection } = useSkillDeck(5);
-
-	const skills: string[] = [
+	//TODO Store this skills somewhere persistent (DB or localfile)
+	const skillList: string[] = [
 		"Frontend",
 		"Backend",
 		"Mobile",
@@ -70,36 +72,31 @@ export const SkillDeck = () => {
 		"Scrum",
 	];
 
+	const handleSelection = (value: string) => {
+		const updated = skillSelection.includes(value)
+			? // already selected, de-select
+			  skillSelection.filter((item) => item !== value)
+			: skillSelection.length < max
+			? // not selected, add
+			  [value, ...skillSelection]
+			: skillSelection;
+		setSkillSelection(updated);
+	};
+
 	const Card = ({ title }: { title: string }) => {
 		return (
 			<Pressable
 				onPress={() => handleSelection(title)}
 				style={{
-					...styles.card,
+					...cardStyle,
 					borderColor: skillSelection.includes(title)
 						? Colors.primary
 						: Colors.background,
 				}}>
-				<Text style={styles.cardText}>{title}</Text>
+				<Text style={cardTextStyle}>{title}</Text>
 			</Pressable>
 		);
 	};
 
-	return skills.map((item: string) => <Card key={item} title={item} />);
+	return skillList.map((item: string) => <Card key={item} title={item} />);
 };
-
-const styles = StyleSheet.create({
-	card: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.tertiary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-	},
-});

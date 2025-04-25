@@ -18,10 +18,10 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
+import { SkillDeck } from "../../../components/skillDeck";
 
 export default function Page() {
 	const router = useRouter();
-	const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 	const [skillSelection, setSkillSelection] = useState<string[]>([]);
 	const params = useLocalSearchParams();
 	const n = 5;
@@ -30,33 +30,6 @@ export default function Page() {
 		// Only for debug
 		console.log("Current params", params);
 	}, []);
-
-	const handleSelection = (value: string) => {
-		const updated = skillSelection.includes(value)
-			? // already selected, de-select
-			  skillSelection.filter((item) => item !== value)
-			: skillSelection.length < n
-			? // not selected, add
-			  [value, ...skillSelection]
-			: skillSelection;
-		setSkillSelection(updated);
-		setButtonDisabled(updated.length === 0);
-	};
-
-	const Card = ({ title }: { title: string }) => {
-		return (
-			<Pressable
-				onPress={() => handleSelection(title)}
-				style={{
-					...styles.card,
-					borderColor: skillSelection.includes(title)
-						? Colors.primary
-						: Colors.background,
-				}}>
-				<Text style={styles.cardText}>{title}</Text>
-			</Pressable>
-		);
-	};
 
 	return (
 		<View style={styles.container}>
@@ -67,37 +40,11 @@ export default function Page() {
 						Choose your skill of expertise (max {n})
 					</Text>
 					<View style={styles.deck}>
-						{/* TODO Store this skills somewhere persistent (DB or localfile)*/}
-						<Card title="Front-End" />
-						<Card title="Back-End" />
-						<Card title="Databases" />
-						<Card title="Mobile" />
-						<Card title="Full-Stack" />
-						<Card title="JavaScript" />
-						<Card title="TypeScript" />
-						<Card title="HTML" />
-						<Card title="Security" />
-						<Card title="Java" />
-						<Card title="C#" />
-						<Card title="MySQL" />
-						<Card title="AWS" />
-						<Card title="Agile" />
-						<Card title="SAP" />
-						<Card title="React" />
-						<Card title="React Native" />
-						<Card title="Kotlin" />
-						<Card title="Spring Boot" />
-						<Card title="Python" />
-						<Card title="Machine Learning" />
-						<Card title="Lua" />
-						<Card title="Rust" />
-						<Card title="C++" />
-						<Card title="PHP" />
-						<Card title="Go" />
-						<Card title="Ruby" />
-						<Card title="Pascal" />
-						<Card title="Bash" />
-						<Card title="C" />
+						<SkillDeck
+							skillSelection={skillSelection}
+							setSkillSelection={setSkillSelection}
+							max={n}
+						/>
 					</View>
 				</View>
 				<View style={styles.bottom}>
@@ -105,7 +52,7 @@ export default function Page() {
 						<Button
 							title="CONTINUE"
 							color={Colors.secondary}
-							disabled={buttonDisabled}
+							disabled={skillSelection.length === 0}
 							onPress={() => {
 								console.log("Old params", params);
 								console.log("New params", skillSelection);
@@ -176,6 +123,7 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		marginBottom: 10,
 	},
+	/* unused
 	card: {
 		alignSelf: "center",
 		marginBottom: 10,
@@ -189,6 +137,7 @@ const styles = StyleSheet.create({
 	cardText: {
 		fontSize: 20,
 	},
+	*/
 	deck: {
 		flexGrow: 1,
 		justifyContent: "center",

@@ -99,7 +99,7 @@ export default function Page() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>SIGNUP PAGE</Text>
+				<Text style={styles.titleText}>Account credentials</Text>
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>E-mail</Text>
 					<TextInput
@@ -197,11 +197,10 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 	},
 	titleText: {
+		width: "90%",
 		fontSize: 30,
-		fontWeight: "bold",
-		textAlign: "center",
-		color: Colors.secondary,
-		marginBottom: 40,
+		alignSelf: "center",
+		marginBottom: 10,
 	},
 	terms: {
 		fontSize: 20,

@@ -33,7 +33,7 @@ export default function Page() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>LOGIN PAGE</Text>
+				<Text style={styles.titleText}>WELCOME</Text>
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>E-mail</Text>
 					<TextInput

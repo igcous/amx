@@ -1,32 +1,44 @@
 /*
-Title: Skill Deck
+Title: First landing page of the App
 
 Description:
-
+	Contains company name, logo, login and sign up buttons
 */
 
-import {
-	View,
-	ScrollView,
-	Text,
-	Button,
-	Pressable,
-	StyleSheet,
-} from "react-native";
-import { useSkillDeck, SkillDeck } from "../../components/skillDeck";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { View, Text, StyleSheet, Button } from "react-native";
 import { Colors } from "../../constants/colorPalette";
-import { useState, useEffect } from "react";
+import { useRouter } from "expo-router";
+import { Image } from "expo-image";
 
-export default function Page() {
+export default function Index() {
 	const router = useRouter();
-	const [skillSelection, setSkillSelection] = useState<string[]>([]);
-	const params = useLocalSearchParams();
-	const n = 5;
 
 	return (
-		<View style={styles.deck}>
-			<SkillDeck />
+		<View style={styles.container}>
+			<View style={styles.top}>
+				<Text style={styles.titleText}>APP NAME</Text>
+				<Image
+					source={require("../../assets/app_logo.svg")}
+					style={styles.logo}
+				/>
+			</View>
+			<View style={styles.middle}>
+				<Text style={styles.descriptionText}>The best app in the world</Text>
+			</View>
+			<View style={styles.bottom}>
+				<View style={styles.bottomButton}>
+					<Button
+						color={Colors.primary}
+						title="LOGIN"
+						onPress={() => router.push("/login")}
+					/>
+					<Button
+						color={Colors.secondary}
+						title="SIGNUP WITH EMAIL"
+						onPress={() => router.push({ pathname: "/signup/signup1" })}
+					/>
+				</View>
+			</View>
 		</View>
 	);
 }
@@ -36,10 +48,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
-	},
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
@@ -59,53 +67,21 @@ const styles = StyleSheet.create({
 	},
 
 	// This part of the styleSheet is specific to this page
-	input: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 40,
-	},
-	inputLabel: {
-		fontSize: 20,
-	},
-	inputBox: {
-		width: "100%",
-		textAlign: "center",
-		borderBottomWidth: 4,
-		borderBottomColor: Colors.secondary,
-		alignSelf: "center",
-	},
 	titleText: {
-		width: "90%",
 		fontSize: 30,
+		fontWeight: "bold",
+		textAlign: "center",
+	},
+	logo: {
 		alignSelf: "center",
-		marginBottom: 10,
+		height: 100,
+		width: 100,
 	},
 	descriptionText: {
-		width: "90%",
-		fontSize: 20,
+		fontSize: 30,
 		alignSelf: "center",
-		marginBottom: 10,
 	},
-	card: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.tertiary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-	},
-	deck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 20,
+	middle: {
+		width: "100%",
 	},
 });

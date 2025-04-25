@@ -1,58 +1,30 @@
-import {
-	StyleSheet,
-	Text,
-	View,
-	Pressable,
-	ScrollView,
-	Button,
-} from "react-native";
+/*
+Title: Edit Skills Page
+
+Description:
+	Based on the Skill Deck component, similar to what is done on Signup (signup3.tsx)
+*/
+
+import { StyleSheet, Text, View, ScrollView, Button } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 import { useAuth } from "../../../context/AuthContext";
+import { SkillDeck } from "../../../components/skillDeck";
 
 export default function Page() {
 	const router = useRouter();
-	const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 	const [skillSelection, setSkillSelection] = useState<string[]>([]);
 	const n = 5;
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const handleSelection = (value: string) => {
-		setButtonDisabled(false);
-		if (skillSelection.includes(value)) {
-			const updated = skillSelection.filter((item) => item !== value);
-			setSkillSelection(updated);
-		} else {
-			if (skillSelection.length < n) {
-				setSkillSelection([value, ...skillSelection]);
-			}
-		}
-	};
-
-	const Card = ({ title }: { title: string }) => {
-		return (
-			<Pressable
-				onPress={() => handleSelection(title)}
-				style={{
-					...styles.card,
-					borderColor: skillSelection.includes(title)
-						? Colors.primary
-						: Colors.background,
-				}}>
-				<Text style={styles.cardText}>{title}</Text>
-			</Pressable>
-		);
-	};
 
 	const updateUserDoc = async () => {
 		setLoading(true);
 
-		// update user doc in the database
-		console.log("Data to store:", skillSelection);
-		console.log("Type: ", typeof skillSelection);
+		// Update user doc in the database
 		try {
 			if (userAuth?.uid) {
 				// the fact that users can be null gives all these extra checks
@@ -82,34 +54,11 @@ export default function Page() {
 						Choose your skill of expertise (max {n})
 					</Text>
 					<View style={styles.deck}>
-						{/* TODO Store this skills in DB*/}
-						<Card title="Front-End" />
-						<Card title="Back-End" />
-						<Card title="Databases" />
-						<Card title="Mobile" />
-						<Card title="Full-Stack" />
-						<Card title="Security" />
-						<Card title="Java" />
-						<Card title="C#" />
-						<Card title="MySQL" />
-						<Card title="AWS" />
-						<Card title="Agile" />
-						<Card title="SAP" />
-						<Card title="React" />
-						<Card title="React Native" />
-						<Card title="Kotlin" />
-						<Card title="Spring Boot" />
-						<Card title="Python" />
-						<Card title="Machine Learning" />
-						<Card title="Lua" />
-						<Card title="Rust" />
-						<Card title="C++" />
-						<Card title="PHP" />
-						<Card title="Go" />
-						<Card title="Ruby" />
-						<Card title="Pascal" />
-						<Card title="Bash" />
-						<Card title="C" />
+						<SkillDeck
+							skillSelection={skillSelection}
+							setSkillSelection={setSkillSelection}
+							max={n}
+						/>
 					</View>
 				</View>
 				<View style={styles.bottom}>
@@ -117,10 +66,10 @@ export default function Page() {
 						<Button
 							title="SAVE CHANGES"
 							color={Colors.secondary}
-							disabled={buttonDisabled}
+							disabled={skillSelection.length === 0}
 							onPress={() => {
 								updateUserDoc();
-								router.navigate("/profile");
+								router.replace("/profile"); // destroy
 							}}></Button>
 					</View>
 				</View>
@@ -184,6 +133,7 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		marginBottom: 10,
 	},
+	/* unused
 	card: {
 		alignSelf: "center",
 		marginBottom: 10,
@@ -197,6 +147,7 @@ const styles = StyleSheet.create({
 	cardText: {
 		fontSize: 20,
 	},
+	*/
 	deck: {
 		flexGrow: 1,
 		justifyContent: "center",
@@ -204,5 +155,6 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		width: "90%",
 		alignSelf: "center",
+		marginBottom: 20,
 	},
 });
