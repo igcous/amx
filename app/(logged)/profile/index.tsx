@@ -22,7 +22,7 @@ Description:
 	
 		*/
 
-// React / React Native
+// React - React Native
 import { useState } from "react";
 import {
 	StyleSheet,
@@ -177,8 +177,8 @@ export default function Page() {
 						{userDoc?.firstname + " " + userDoc?.lastname}
 					</Text>
 
-					{/* Add/change user profile picture */}
-					<Pressable onLongPress={pickImageFile}>
+					{/* Add/Change user profile picture */}
+					<Pressable onPress={pickImageFile}>
 						{userDoc?.profilePicURL ? (
 							<Image
 								contentFit="cover"
@@ -196,19 +196,21 @@ export default function Page() {
 						)}
 					</Pressable>
 
-					{/* Show user info*/}
-
 					{/* Only for searcher*/}
 					{/* Note: keep separated for easier formatting */}
 					{/* Show user current skills */}
 
-					<View style={styles.titleText}>
-						<Text>Skills</Text>
-					</View>
+					<Text style={styles.descriptionText}>Your skills</Text>
+
 					<View style={styles.deck}>
 						{userDoc?.role === "searcher" && userDoc?.skills ? (
 							userDoc?.skills.map((skill: string, index: number) => (
-								<Pressable key={index} style={styles.card}>
+								<Pressable
+									onPress={() => {
+										router.push("/profile/editskills");
+									}}
+									key={index}
+									style={styles.card}>
 									<Text style={styles.cardText}>{skill}</Text>
 								</Pressable>
 							))
@@ -217,45 +219,28 @@ export default function Page() {
 						)}
 					</View>
 
-					{/* Edit skills */}
+					{/* Add CV */}
 					{userDoc?.role === "searcher" ? (
-						<Pressable
-							style={styles.editButton}
-							onPress={() => {
-								router.push("/profile/editskills");
-							}}>
-							<Text>Edit</Text>
-						</Pressable>
+						<View style={styles.cv}>
+							<Button
+								title="Add CV"
+								color={Colors.primary}
+								onPress={pickDocumentFile}></Button>
+							<Button
+								title="Download CV"
+								color={Colors.primary}
+								onPress={downloadDocumentFile}></Button>
+						</View>
 					) : (
 						<></>
 					)}
-
-					{/* Add CV */}
-
-					<View style={styles.cv}>
-						{userDoc?.role === "searcher" ? (
-							<Pressable style={styles.addCv} onPress={pickDocumentFile}>
-								<Text>Add CV</Text>
-							</Pressable>
-						) : (
-							<></>
-						)}
-
-						{/* Download CV */}
-						{userDoc?.role === "searcher" ? (
-							<Pressable
-								style={styles.downloadCv}
-								onPress={downloadDocumentFile}>
-								<Text>Download current CV</Text>
-							</Pressable>
-						) : (
-							<></>
-						)}
-					</View>
 				</View>
 				<View style={styles.bottom}>
 					<View style={styles.bottomButton}>
-						<Button title="Logout" onPress={logout}></Button>
+						<Button
+							title="Logout"
+							color={Colors.primary}
+							onPress={logout}></Button>
 					</View>
 				</View>
 			</ScrollView>
@@ -293,16 +278,18 @@ const styles = StyleSheet.create({
 	},
 
 	// This is the styleSheet that is specific to this page
-	input: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 40,
-	},
 	titleText: {
 		width: "90%",
 		fontSize: 30,
 		alignSelf: "center",
-		marginBottom: 20,
+		textAlign: "center",
+		marginBottom: 10,
+	},
+	descriptionText: {
+		width: "90%",
+		fontSize: 20,
+		alignSelf: "center",
+		textAlign: "center",
 	},
 	card: {
 		alignSelf: "center",
@@ -312,6 +299,7 @@ const styles = StyleSheet.create({
 		marginHorizontal: 5,
 		paddingVertical: 5,
 		borderRadius: 30,
+		borderWidth: 3,
 	},
 	cardText: {
 		fontSize: 20,
@@ -323,11 +311,13 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		width: "90%",
 		alignSelf: "center",
+		marginBottom: 20,
 	},
 	image: {
 		width: width * 0.8, // 4:3 aspect ratio
 		height: width * 0.6,
-		borderWidth: 5, // remove this later
+		//borderWidth: 5, // remove this
+		alignSelf: "center",
 	},
 	activityIndicator: {
 		flex: 1,
@@ -336,8 +326,26 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		transform: [{ scale: 2 }],
 	},
-	cv: {},
-	addCv: {},
-	downloadCv: {},
-	editButton: {},
+	cv: {
+		flex: 1,
+		width: "90%",
+		alignSelf: "center",
+		flexDirection: "row",
+		justifyContent: "space-between",
+		marginBottom: 20,
+	},
+	cvButton: {
+		backgroundColor: Colors.primary,
+	},
+	cvButtonText: {
+		fontSize: 20,
+	},
+	editButton: {
+		alignSelf: "center",
+		width: "90%",
+		gap: 20,
+	},
+	editButtonText: {
+		fontSize: 20,
+	},
 });

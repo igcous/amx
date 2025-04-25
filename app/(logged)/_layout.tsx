@@ -9,11 +9,31 @@ Description:
 		If Recruiter, tabs are Post, Profile, Chats
 */
 
-import { Stack, Redirect, Tabs } from "expo-router";
+import { Stack, Redirect, Tabs, useFocusEffect } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
+import { BackHandler } from "react-native";
 
 export default function LoggedLayout() {
 	const { userAuth, userDoc, loading } = useAuth();
+
+	/* keep this just in case, works
+	// Custom back button behavior
+	useFocusEffect(() => {
+		const onBackPress = () => {
+			// Customize behavior here
+			if (userDoc?.role === "searcher") {
+				// Example: Prevent going back to "apply" tab
+				return true; // Returning true disables the back button
+			}
+			return false; // Default behavior
+		};
+
+		BackHandler.addEventListener("hardwareBackPress", onBackPress);
+
+		return () =>
+			BackHandler.removeEventListener("hardwareBackPress", onBackPress);
+	});
+	*/
 
 	return userAuth === null ? (
 		<Redirect href="/(not-logged)"></Redirect>

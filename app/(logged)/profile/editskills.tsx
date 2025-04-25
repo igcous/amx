@@ -79,7 +79,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -105,22 +105,7 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
-	input: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 40,
-	},
-	inputLabel: {
-		fontSize: 20,
-	},
-	inputBox: {
-		width: "100%",
-		textAlign: "center",
-		borderBottomWidth: 4,
-		borderBottomColor: Colors.secondary,
-		alignSelf: "center",
-	},
+	// This part of the styleSheet is specific to this page
 	titleText: {
 		width: "90%",
 		fontSize: 30,
