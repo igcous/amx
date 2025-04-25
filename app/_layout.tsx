@@ -1,11 +1,21 @@
+/*
+Title: Root app layout
+
+Description:
+	This layout file is used to expose the AuthProvider (defined in /context/AuthContext.tsx to all)
+	Following the structure in https://docs.expo.dev/router/advanced/authentication/
+	Its also a mix between that and the React Docs on how to use Context
+
+TODO:
+	Define Colors in a Context instead of /constants
+	Use this context for light and dark color themes
+*/
+
 import { Stack } from "expo-router";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthProvider } from "../context/AuthContext";
 
 export default function RootLayout() {
-	// this layout exposes the AuthProvider to all, following the structure in
-	// https://docs.expo.dev/router/advanced/authentication/
-	// its a mix between that and also the React docs on how to use Context
 	return (
 		<AuthProvider>
 			<SafeAreaProvider>

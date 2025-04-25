@@ -1,3 +1,11 @@
+/*
+Title: Color palette
+
+Description:
+	All the colors used in the app
+
+*/
+
 export const Colors = {
 	primary: "#2D57AB",
 	secondary: "#DE1C37",

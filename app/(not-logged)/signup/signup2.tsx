@@ -1,15 +1,27 @@
+/*
+Title: Second page of the Signup flow
+
+Description:
+	User inputs some basic information
+*/
+
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Page() {
 	const router = useRouter();
 	const [form, setForm] = useState({
-		firstname: "John",
-		lastname: "Doe",
+		firstname: "",
+		lastname: "",
 		companyname: "",
 	});
+
+	useEffect(() => {
+		// Only for debug
+		console.log("Current params", params);
+	}, []);
 
 	const [buttonDisabled, setButtonDisabled] = useState<boolean>(false);
 	const params = useLocalSearchParams();
@@ -38,7 +50,7 @@ export default function Page() {
 					<Text style={styles.inputLabel}>First Name</Text>
 					<TextInput
 						style={styles.inputBox}
-						placeholder="Firstname"
+						placeholder="What is your name?"
 						value={form.firstname}
 						onChangeText={(text) => handleChange("firstname", text)}
 						autoCapitalize="none"></TextInput>
@@ -47,20 +59,16 @@ export default function Page() {
 					<Text style={styles.inputLabel}>Last name</Text>
 					<TextInput
 						style={styles.inputBox}
-						placeholder="Lastname"
+						placeholder="What is your last name?"
 						value={form.lastname}
 						onChangeText={(text) => handleChange("lastname", text)}
 						autoCapitalize="none"></TextInput>
 				</View>
 				<View style={styles.input}>
-					{params.role === "searcher" ? (
-						<Text style={styles.inputLabel}>Company name (optional)</Text>
-					) : (
-						<Text style={styles.inputLabel}>Company name</Text>
-					)}
+					<Text style={styles.inputLabel}>Company name (optional)</Text>
 					<TextInput
 						style={styles.inputBox}
-						placeholder="Company name"
+						placeholder="Where do you work?"
 						value={form.companyname}
 						onChangeText={(text) => handleChange("companyname", text)}
 						autoCapitalize="none"></TextInput>
@@ -73,9 +81,9 @@ export default function Page() {
 						color={Colors.secondary}
 						disabled={buttonDisabled}
 						onPress={() => {
-							console.log("old", params);
+							console.log("Old params", params);
 							console.log(
-								"new",
+								"New params",
 								form.firstname,
 								form.lastname,
 								form.companyname
@@ -103,7 +111,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -125,7 +133,7 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
+	// This part of the styleSheet is specific to this page
 	input: {
 		width: "90%",
 		alignSelf: "center",

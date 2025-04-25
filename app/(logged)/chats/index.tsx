@@ -8,11 +8,11 @@ import {
 	Pressable,
 } from "react-native";
 import { useState, useEffect } from "react";
-import { db } from "../../config/firebaseConfig";
+import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { doc, getDoc } from "firebase/firestore";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 
 type ChatUser = {
 	id: string;

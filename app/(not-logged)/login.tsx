@@ -1,3 +1,10 @@
+/*
+Title: Login page
+
+Description:
+	Email and password input
+*/
+
 import { auth } from "../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";

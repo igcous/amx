@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Button } from "react-native";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import {
 	doc,
 	addDoc,
@@ -15,8 +15,8 @@ import {
 	Timestamp,
 	arrayUnion,
 } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
-import { Colors } from "../../constants/colorPalette";
+import { db } from "../../../config/firebaseConfig";
+import { Colors } from "../../../constants/colorPalette";
 
 type Post = {
 	id: string;

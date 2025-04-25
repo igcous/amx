@@ -1,3 +1,12 @@
+/*
+Title: Third page of the Signup flow
+
+Description:
+	Skill selection page
+	Only shown to users that chose the Searcher role.
+
+*/
+
 import {
 	View,
 	ScrollView,
@@ -8,7 +17,7 @@ import {
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Page() {
 	const router = useRouter();
@@ -17,16 +26,21 @@ export default function Page() {
 	const params = useLocalSearchParams();
 	const n = 5;
 
+	useEffect(() => {
+		// Only for debug
+		console.log("Current params", params);
+	}, []);
+
 	const handleSelection = (value: string) => {
-		setButtonDisabled(false);
-		if (skillSelection.includes(value)) {
-			const updated = skillSelection.filter((item) => item !== value);
-			setSkillSelection(updated);
-		} else {
-			if (skillSelection.length < n) {
-				setSkillSelection([value, ...skillSelection]);
-			}
-		}
+		const updated = skillSelection.includes(value)
+			? // already selected, de-select
+			  skillSelection.filter((item) => item !== value)
+			: skillSelection.length < n
+			? // not selected, add
+			  [value, ...skillSelection]
+			: skillSelection;
+		setSkillSelection(updated);
+		setButtonDisabled(updated.length === 0);
 	};
 
 	const Card = ({ title }: { title: string }) => {
@@ -53,12 +67,15 @@ export default function Page() {
 						Choose your skill of expertise (max {n})
 					</Text>
 					<View style={styles.deck}>
-						{/* TODO Store this skills in DB*/}
+						{/* TODO Store this skills somewhere persistent (DB or localfile)*/}
 						<Card title="Front-End" />
 						<Card title="Back-End" />
 						<Card title="Databases" />
 						<Card title="Mobile" />
 						<Card title="Full-Stack" />
+						<Card title="JavaScript" />
+						<Card title="TypeScript" />
+						<Card title="HTML" />
 						<Card title="Security" />
 						<Card title="Java" />
 						<Card title="C#" />
@@ -90,8 +107,8 @@ export default function Page() {
 							color={Colors.secondary}
 							disabled={buttonDisabled}
 							onPress={() => {
-								console.log("old", params);
-								console.log("new", skillSelection);
+								console.log("Old params", params);
+								console.log("New params", skillSelection);
 								router.push({
 									pathname: "/signup/signup4",
 									params: { ...params, skills: skillSelection.join(",") },
@@ -105,7 +122,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -131,7 +148,7 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
+	// This part of the styleSheet is specific to this page
 	input: {
 		width: "90%",
 		alignSelf: "center",
@@ -151,7 +168,7 @@ const styles = StyleSheet.create({
 		width: "90%",
 		fontSize: 30,
 		alignSelf: "center",
-		marginBottom: 20,
+		marginBottom: 10,
 	},
 	descriptionText: {
 		width: "90%",
@@ -179,5 +196,6 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		width: "90%",
 		alignSelf: "center",
+		marginBottom: 20,
 	},
 });

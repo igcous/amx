@@ -1,3 +1,12 @@
+/*
+Title: Auth context Provider
+
+Description:
+This context handles the user Authenthication
+It subscribes to the auth state changes and fetches the corresponding user document from Firestore
+
+*/
+
 import React, {
 	createContext,
 	useContext,
@@ -5,10 +14,9 @@ import React, {
 	useState,
 	PropsWithChildren,
 } from "react";
-import { auth, db, storage } from "../config/firebaseConfig";
+import { auth, db } from "../config/firebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { getDoc, doc, DocumentData } from "firebase/firestore";
-import { ref, getDownloadURL } from "firebase/storage";
 
 type AuthContextType = {
 	userAuth: User | null;
@@ -34,11 +42,13 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			if (currentUser !== null) {
 				const fetchUserData = async () => {
 					try {
-						const docRef = doc(db, "users", currentUser!.uid);
-						const docSnap = await getDoc(docRef);
+						const docSnap = await getDoc(doc(db, "users", currentUser!.uid));
 						if (docSnap.exists()) {
-							const data = docSnap.data();
-							setUserDoc(data);
+							setUserDoc(docSnap.data());
+							console.log("User data doc:", docSnap.data());
+						} else {
+							// Should never get here, there is always a doc for every user
+							throw new Error("User document does not exist");
 						}
 					} catch (e) {
 						console.log(e);
@@ -65,53 +75,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 	);
 };
 
-/*
-export const AuthProvider = ({ children }: PropsWithChildren) => {
-	const [userAuth, setUserAuth] = useState<User | null>(null);
-	const [userDoc, setUserDoc] = useState<DocumentData | null>(null);
-	const [loading, setLoading] = useState<boolean>(true);
-
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-			setLoading(true);
-			if (currentUser) {
-				console.log("User state changed:", currentUser);
-				const fetchUserData = async () => {
-					try {
-						// Fetch user data from Firestore
-						const docRef = doc(db, "users", currentUser.uid);
-						const docSnap = await getDoc(docRef);
-
-						if (docSnap.exists()) {
-							const data = docSnap.data();
-							setUserDoc(data);
-						} else {
-							console.warn("No such document in Firestore!");
-						}
-					} catch (e) {
-						console.error("Error fetching user data:", e);
-						alert(e);
-					}
-				};
-				fetchUserData();
-				setUserAuth(currentUser);
-			} else {
-				setUserDoc(null);
-				setUserAuth(null);
-			}
-			setLoading(false);
-		});
-		return () => unsubscribe();
-	}, []);
-
-	return (
-		<AuthContext.Provider value={{ userAuth, userDoc, loading }}>
-			{children}
-		</AuthContext.Provider>
-	);
-};
-*/
-
 export const useAuth = (): AuthContextType => {
 	const context = useContext(AuthContext);
 	if (!context) {
@@ -119,40 +82,3 @@ export const useAuth = (): AuthContextType => {
 	}
 	return context;
 };
-
-/*
-interface AuthContextType {
-	user: User | null;
-	loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
-
-export const AuthProvider = ({ children }: PropsWithChildren) => {
-	const [user, setUser] = useState<User | null>(null);
-	const [loading, setLoading] = useState<boolean>(true);
-
-	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-			setUser(currentUser);
-			//console.log("User state changed:", currentUser);
-			setLoading(false);
-		});
-		return () => unsubscribe();
-	}, []);
-
-	return (
-		<AuthContext.Provider value={{ user, loading }}>
-			{children}
-		</AuthContext.Provider>
-	);
-};
-
-export const useAuth = (): AuthContextType => {
-	const context = useContext(AuthContext);
-	if (!context) {
-		throw new Error("useAuth must be used within an AuthProvider");
-	}
-	return context;
-};
-*/

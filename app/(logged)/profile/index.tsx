@@ -7,10 +7,10 @@ import {
 	Pressable,
 } from "react-native";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Colors } from "../../constants/colorPalette";
+import { useAuth } from "../../../context/AuthContext";
+import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
-import { auth, db, storage } from "../../config/firebaseConfig";
+import { auth, db, storage } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
@@ -173,7 +173,7 @@ export default function Page() {
 						/>
 					) : (
 						<Image
-							source={require("../../assets/profile_icon.svg")}
+							source={require("../../../assets/profile_icon.svg")}
 							style={styles.image}
 						/>
 					)}

@@ -1,48 +1,45 @@
-import { View, Text, StyleSheet, Button } from "react-native";
+/*
+Title: Skill Deck
+
+Description:
+
+*/
+
+import {
+	View,
+	ScrollView,
+	Text,
+	Button,
+	Pressable,
+	StyleSheet,
+} from "react-native";
+import { useSkillDeck, SkillDeck } from "../../components/skillDeck";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../constants/colorPalette";
-import { useRouter } from "expo-router";
-import { Image } from "expo-image";
+import { useState, useEffect } from "react";
 
-export default function Index() {
-	// https://github.com/software-mansion/react-native-svg/blob/main/USAGE.md
-	// check 'Use with xml strings'
-
+export default function Page() {
 	const router = useRouter();
+	const [skillSelection, setSkillSelection] = useState<string[]>([]);
+	const params = useLocalSearchParams();
+	const n = 5;
+
 	return (
-		<View style={styles.container}>
-			<View style={styles.top}>
-				<Text style={styles.titleText}>APP NAME</Text>
-				<Image
-					source={require("../../assets/app_logo.svg")}
-					style={styles.logo}
-				/>
-			</View>
-			<View style={styles.middle}>
-				<Text style={styles.descriptionText}>The best app in the world</Text>
-			</View>
-			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						color={Colors.primary}
-						title="LOGIN"
-						onPress={() => router.push("/login")}
-					/>
-					<Button
-						color={Colors.secondary}
-						title="SIGNUP WITH EMAIL"
-						onPress={() => router.push({ pathname: "/signup/signup0" })}
-					/>
-				</View>
-			</View>
+		<View style={styles.deck}>
+			<SkillDeck />
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
+	},
+	scrollContent: {
+		width: "100%",
+		flexGrow: 1,
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
@@ -61,22 +58,54 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
-	titleText: {
-		fontSize: 30,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-	logo: {
+	// This part of the styleSheet is specific to this page
+	input: {
+		width: "90%",
 		alignSelf: "center",
-		height: 100,
-		width: 100,
+		marginBottom: 40,
+	},
+	inputLabel: {
+		fontSize: 20,
+	},
+	inputBox: {
+		width: "100%",
+		textAlign: "center",
+		borderBottomWidth: 4,
+		borderBottomColor: Colors.secondary,
+		alignSelf: "center",
+	},
+	titleText: {
+		width: "90%",
+		fontSize: 30,
+		alignSelf: "center",
+		marginBottom: 10,
 	},
 	descriptionText: {
-		fontSize: 30,
+		width: "90%",
+		fontSize: 20,
 		alignSelf: "center",
+		marginBottom: 10,
 	},
-	middle: {
-		width: "100%",
+	card: {
+		alignSelf: "center",
+		marginBottom: 10,
+		backgroundColor: Colors.tertiary,
+		paddingHorizontal: 10,
+		marginHorizontal: 5,
+		paddingVertical: 5,
+		borderRadius: 30,
+		borderWidth: 3,
+	},
+	cardText: {
+		fontSize: 20,
+	},
+	deck: {
+		flexGrow: 1,
+		justifyContent: "center",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		width: "90%",
+		alignSelf: "center",
+		marginBottom: 20,
 	},
 });

@@ -8,10 +8,10 @@ import {
 } from "react-native";
 import { useState } from "react";
 import { useRouter } from "expo-router";
-import { Colors } from "../../constants/colorPalette";
+import { Colors } from "../../../constants/colorPalette";
 import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
-import { useAuth } from "../../context/AuthContext";
+import { db } from "../../../config/firebaseConfig";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function Page() {
 	const router = useRouter();

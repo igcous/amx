@@ -9,11 +9,11 @@ import {
 	Button,
 } from "react-native";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { Colors } from "../../constants/colorPalette";
+import { useAuth } from "../../../context/AuthContext";
+import { Colors } from "../../../constants/colorPalette";
 import { useRouter } from "expo-router";
 import { doc, getDoc, updateDoc, setDoc, Timestamp } from "firebase/firestore";
-import { db } from "../../config/firebaseConfig";
+import { db } from "../../../config/firebaseConfig";
 
 type PostSummary = {
 	postId: string;

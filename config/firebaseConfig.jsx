@@ -1,3 +1,10 @@
+/*
+Title: Firebase Config file
+
+Description:
+	All credentials are here, do not commit
+*/
+
 import { initializeApp } from "firebase/app";
 import { getAuth, initializeAuth, getReactNativePersistence } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
@@ -18,7 +25,7 @@ export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
 
-// this works too, without the asyncStorage warning
+// Replace auth with this to avoid the asyncStorage warning
 /*export const auth = initializeAuth(firebaseApp, {
 	persistence: getReactNativePersistence(AsyncStorage),
 })*/

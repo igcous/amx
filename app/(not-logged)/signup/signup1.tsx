@@ -1,13 +1,26 @@
+/*
+Title: First page of the Signup flow
+
+Description:
+	User chooses a role, Searcher or Recruiter
+
+*/
+
 import { View, Text, Button, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Page() {
 	const router = useRouter();
 	const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 	const [roleSelection, setRoleSelection] = useState<string | null>(null);
 	const params = useLocalSearchParams();
+
+	useEffect(() => {
+		// Only for debug
+		console.log("Current params", params);
+	}, []);
 
 	const handleSelection = (value: string) => {
 		setButtonDisabled(false);
@@ -47,8 +60,8 @@ export default function Page() {
 						color={Colors.secondary}
 						disabled={buttonDisabled}
 						onPress={() => {
-							console.log("old", params);
-							console.log("new", roleSelection);
+							console.log("Old params", params);
+							console.log("New params", roleSelection);
 							router.push({
 								pathname: "/signup/signup2",
 								params: { ...params, role: roleSelection },
@@ -61,7 +74,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -83,7 +96,7 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
+	// This part of the styleSheet is specific to this page
 	card: {
 		width: "90%",
 		alignSelf: "center",
