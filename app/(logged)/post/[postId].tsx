@@ -148,6 +148,7 @@ export default function Page() {
 		// create chat room
 		const docRef = await addDoc(collection(db, "chats"), {
 			users: userIds.sort(),
+			postId: currentPost.id,
 		});
 		const newChatId = docRef.id;
 

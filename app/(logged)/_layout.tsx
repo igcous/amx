@@ -11,7 +11,8 @@ Description:
 
 import { Stack, Redirect, Tabs, useFocusEffect } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
-import { BackHandler } from "react-native";
+import { ActivityIndicator, BackHandler } from "react-native";
+import { Colors } from "../../constants/colorPalette";
 
 export default function LoggedLayout() {
 	const { userAuth, userDoc, loading } = useAuth();
@@ -38,7 +39,17 @@ export default function LoggedLayout() {
 	return userAuth === null ? (
 		<Redirect href="/(not-logged)"></Redirect>
 	) : loading ? (
-		<></>
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
 	) : userDoc?.role === "searcher" ? (
 		<Tabs>
 			<Tabs.Screen name="apply" options={{ title: "Apply" }}></Tabs.Screen>

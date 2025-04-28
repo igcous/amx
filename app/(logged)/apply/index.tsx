@@ -105,7 +105,7 @@ export default function Page() {
 				seenPosts: newSeenPosts,
 			});
 		}
-		// note: avoid using two continuos setters (weird behaviour), better to keep all in one
+		// note: avoid using two sequential setters (weird behaviour), better to keep all in one
 	};
 
 	return loading ? (
@@ -128,6 +128,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -152,4 +153,6 @@ const styles = StyleSheet.create({
 		width: "90%",
 		gap: 20,
 	},
+
+	// This part of the styleSheet is specific to this page
 });

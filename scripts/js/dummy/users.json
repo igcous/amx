@@ -24,6 +24,7 @@
         "email": "test3@mail.com",
         "firstname": "Jack",
         "lastname": "Smith",
-        "role": "recruiter"
+        "role": "recruiter",
+        "companyname": "Company X"
     }
 ]

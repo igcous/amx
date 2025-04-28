@@ -34,37 +34,33 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			setLoading(true);
 			setUserAuth(currentUser);
 			console.log("User state changed:", currentUser);
 
 			if (currentUser !== null) {
-				const fetchUserData = async () => {
-					try {
-						const docSnap = await getDoc(doc(db, "users", currentUser!.uid));
-						if (docSnap.exists()) {
-							setUserDoc(docSnap.data());
-							console.log("User data doc:", docSnap.data());
-						} else {
-							// Should never get here, there is always a doc for every user
-							throw new Error("User document does not exist");
-						}
-					} catch (e) {
-						console.log(e);
-						alert(e);
+				try {
+					const docSnap = await getDoc(doc(db, "users", currentUser!.uid));
+					if (docSnap.exists()) {
+						setUserDoc(docSnap.data());
+						console.log("User data doc:", docSnap.data());
+					} else {
+						// Should never get here, there is always a doc for every user
+						throw new Error("User document does not exist");
 					}
-				};
-
-				fetchUserData();
+				} catch (e) {
+					console.log(e);
+					alert(e);
+				}
 			} else {
 				setUserDoc(null);
 			}
-
 			setLoading(false);
 		});
-
-		return () => unsubscribe();
+		return () => {
+			unsubscribe();
+		};
 	}, []);
 
 	return (

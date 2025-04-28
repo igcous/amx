@@ -23,7 +23,7 @@ Description:
 		*/
 
 // React - React Native
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
 	StyleSheet,
 	ScrollView,
@@ -36,7 +36,7 @@ import {
 } from "react-native";
 // Expo utilities
 import { useRouter } from "expo-router";
-import { Image } from "expo-image";
+import { useImage, Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as WebBrowser from "expo-web-browser";
@@ -50,9 +50,13 @@ import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
 
 export default function Page() {
-	const [loading, setLoading] = useState<boolean>(false);
+	const [loadingImage, setLoading] = useState<boolean>(true);
 	const { userAuth, userDoc, setUserDoc, loading: loadingData } = useAuth();
 	const router = useRouter();
+
+	const profilePic = userDoc?.profilePicURL
+		? useImage(userDoc?.profilePicURL)
+		: require("../../../assets/profile_icon.svg");
 
 	const pickImageFile = async () => {
 		try {
@@ -163,13 +167,7 @@ export default function Page() {
 		}
 	};
 
-	return loadingData || loading ? (
-		<ActivityIndicator
-			size="large"
-			color={Colors.primary}
-			style={styles.activityIndicator}
-		/>
-	) : (
+	return (
 		<View style={styles.container}>
 			<ScrollView contentContainerStyle={styles.scrollContent}>
 				<View style={styles.top}>
@@ -179,32 +177,21 @@ export default function Page() {
 
 					{/* Add/Change user profile picture */}
 					<Pressable onPress={pickImageFile}>
-						{userDoc?.profilePicURL ? (
-							<Image
-								contentFit="cover"
-								cachePolicy="none"
-								source={{ uri: userDoc.profilePicURL }}
-								style={styles.image}
-							/>
-						) : (
-							// No image fallback
-							<Image
-								contentFit="contain"
-								source={require("../../../assets/profile_icon.svg")}
-								style={styles.image}
-							/>
-						)}
+						<Image
+							contentFit="cover"
+							source={profilePic}
+							style={styles.image}
+						/>
 					</Pressable>
 
 					{/* Only for searcher*/}
 					{/* Note: keep separated for easier formatting */}
 					{/* Show user current skills */}
 
-					<Text style={styles.descriptionText}>Your skills</Text>
-
-					<View style={styles.deck}>
-						{userDoc?.role === "searcher" && userDoc?.skills ? (
-							userDoc?.skills.map((skill: string, index: number) => (
+					{userDoc?.role === "searcher" && userDoc?.skills ? (
+						<View style={styles.deck}>
+							<Text style={styles.descriptionText}>Your skills</Text>
+							{userDoc?.skills.map((skill: string, index: number) => (
 								<Pressable
 									onPress={() => {
 										router.push("/profile/editskills");
@@ -213,11 +200,11 @@ export default function Page() {
 									style={styles.card}>
 									<Text style={styles.cardText}>{skill}</Text>
 								</Pressable>
-							))
-						) : (
-							<></>
-						)}
-					</View>
+							))}
+						</View>
+					) : (
+						<></>
+					)}
 
 					{/* Add CV */}
 					{userDoc?.role === "searcher" ? (
@@ -231,6 +218,12 @@ export default function Page() {
 								color={Colors.primary}
 								onPress={downloadDocumentFile}></Button>
 						</View>
+					) : (
+						<></>
+					)}
+
+					{userDoc?.role === "recruiter" ? (
+						<Text style={styles.titleText}>{userDoc.companyname}</Text>
 					) : (
 						<></>
 					)}
@@ -251,7 +244,7 @@ export default function Page() {
 const { width } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -277,7 +270,7 @@ const styles = StyleSheet.create({
 		gap: 20,
 	},
 
-	// This is the styleSheet that is specific to this page
+	// This part of the styleSheet is specific to this page
 	titleText: {
 		width: "90%",
 		fontSize: 30,
@@ -319,13 +312,7 @@ const styles = StyleSheet.create({
 		//borderWidth: 5, // remove this
 		alignSelf: "center",
 	},
-	activityIndicator: {
-		flex: 1,
-		backgroundColor: Colors.background,
-		justifyContent: "center",
-		alignItems: "center",
-		transform: [{ scale: 2 }],
-	},
+	activityIndicator: {},
 	cv: {
 		flex: 1,
 		width: "90%",

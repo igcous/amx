@@ -9,12 +9,10 @@ import {
 	concatToUserField,
 } from "./create_posts.js";
 
-/*
 await deleteUsers();
 await signUsers();
 //await addAllChats();
 await addPostsAs("test3@mail.com", "123456");
-*/
 const posts = await getAllPosts();
 /*
 await addSeenPostToUser("test@mail.com", "123456", posts[0].id);

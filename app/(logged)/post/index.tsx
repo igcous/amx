@@ -119,6 +119,7 @@ export default function Page() {
 }
 
 const styles = StyleSheet.create({
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -143,4 +144,6 @@ const styles = StyleSheet.create({
 		width: "90%",
 		gap: 20,
 	},
+
+	// This part of the styleSheet is specific to this page
 });
