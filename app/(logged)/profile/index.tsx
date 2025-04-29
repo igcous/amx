@@ -31,7 +31,6 @@ import {
 	View,
 	Button,
 	Pressable,
-	ActivityIndicator,
 	Dimensions,
 } from "react-native";
 // Expo utilities
@@ -194,7 +193,9 @@ export default function Page() {
 							{userDoc?.skills.map((skill: string, index: number) => (
 								<Pressable
 									onPress={() => {
-										router.push("/profile/editskills");
+										router.push({
+											pathname: "/profile/editskills",
+										});
 									}}
 									key={index}
 									style={styles.card}>

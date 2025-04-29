@@ -1,0 +1,1 @@
+Open this folder as root (project folder) to run

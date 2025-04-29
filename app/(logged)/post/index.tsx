@@ -71,18 +71,22 @@ export default function Page() {
 	const renderItem: ListRenderItem<PostSummary> = ({ item }) => {
 		return (
 			<Pressable
+				style={styles.item}
 				onPress={() => {
 					goToApplications(item.postId);
 				}}>
-				<Text>{item.postId}</Text>
-				<Text>{item.title}</Text>
-				<Text>{item.postedAt.toDate().toLocaleString()}</Text>
+				<View style={styles.itemHeader}>
+					<Text style={styles.itemText}>{item.title}</Text>
+					<Text style={styles.itemText}>
+						{item.postedAt.toDate().toLocaleString()}
+					</Text>
+				</View>
+				<Text style={styles.card}>{item.postSkills}</Text>
 			</Pressable>
 		);
 	};
 
 	const goToApplications = (postId: string) => {
-		//console.log(postList);
 		setCurrentPost(postId);
 		router.navigate({
 			pathname: `/post/${postId}`,
@@ -99,21 +103,23 @@ export default function Page() {
 	const newPost = () => {
 		console.log("New Post");
 
-		// TODO
-		// router.navigate("/newpost0");
-		// go to new screen and create
-		// similar flow to signup
+		router.push({
+			pathname: "/post/newpost",
+			params: {},
+		});
 	};
 
 	return (
 		<View style={styles.container}>
-			<Pressable onPress={newPost}>
-				<Text>New Post (+)</Text>
-			</Pressable>
-			<FlatList
-				data={postList}
-				renderItem={renderItem}
-				contentContainerStyle={{ flexGrow: 1 }}></FlatList>
+			<View style={styles.top}>
+				<Pressable style={styles.topBar} onPress={newPost}>
+					<Text style={styles.topBarText}>New Post (+)</Text>
+				</Pressable>
+				<FlatList
+					data={postList}
+					renderItem={renderItem}
+					contentContainerStyle={styles.list}></FlatList>
+			</View>
 		</View>
 	);
 }
@@ -132,7 +138,7 @@ const styles = StyleSheet.create({
 	},
 	top: {
 		width: "100%",
-		marginTop: 40,
+		marginTop: 0,
 		gap: 20,
 	},
 	bottom: {
@@ -146,4 +152,41 @@ const styles = StyleSheet.create({
 	},
 
 	// This part of the styleSheet is specific to this page
+	list: {
+		flexGrow: 1,
+		width: "90%",
+		alignSelf: "center",
+		justifyContent: "flex-start",
+	},
+	item: {
+		backgroundColor: Colors.tertiary,
+		padding: 16,
+		borderWidth: 1,
+		borderRadius: 20,
+		marginBottom: 10,
+	},
+	itemHeader: {
+		marginBottom: 10,
+	},
+	itemText: {
+		fontSize: 18,
+	},
+	card: {
+		alignSelf: "center",
+		backgroundColor: Colors.secondary,
+		paddingHorizontal: 15,
+		paddingVertical: 5,
+		borderRadius: 20,
+		fontSize: 18,
+		color: Colors.tertiary,
+	},
+	topBar: {
+		backgroundColor: Colors.secondary,
+		width: "100%",
+		padding: 16,
+	},
+	topBarText: {
+		fontSize: 24,
+		textAlign: "center",
+	},
 });

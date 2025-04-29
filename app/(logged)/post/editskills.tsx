@@ -10,9 +10,9 @@ import { SelectSkillsPage } from "../../../components/selectSkillsPage";
 export default function Page() {
 	return (
 		<SelectSkillsPage
-			goBackTo="/profile"
+			goBackTo="/post/newpost"
 			textHeader="Field of Work"
-			textDescription="Choose your skills"
-			saveToUserDoc={true}></SelectSkillsPage>
+			textDescription="Choose the required job skills"
+			saveToUserDoc={false}></SelectSkillsPage>
 	);
 }

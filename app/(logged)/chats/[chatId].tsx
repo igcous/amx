@@ -145,8 +145,15 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		justifyContent: "flex-start",
 	},
-	header: { flexDirection: "row", gap: 10, marginBottom: 5 },
-	headerText: { fontSize: 18, verticalAlign: "middle" },
+	header: {
+		flexDirection: "row",
+		gap: 10,
+		marginBottom: 5,
+	},
+	headerText: {
+		fontSize: 18,
+		verticalAlign: "middle",
+	},
 	profilePic: {
 		width: width * 0.1,
 		height: width * 0.1,
