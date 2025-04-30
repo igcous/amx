@@ -100,6 +100,9 @@ export default function Page() {
 							jobtitle: item.jobtitle,
 						},
 					});
+				}}
+				onLongPress={() => {
+					// see post page
 				}}>
 				<View style={styles.itemHeader}>
 					{item.picURL ? (

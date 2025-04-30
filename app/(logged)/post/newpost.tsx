@@ -17,16 +17,27 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
+import {
+	addDoc,
+	arrayUnion,
+	collection,
+	doc,
+	Timestamp,
+	updateDoc,
+} from "firebase/firestore";
+import { auth, db } from "../../../config/firebaseConfig";
+import { useAuth } from "../../../context/AuthContext";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
+	const { userDoc, setUserDoc, userAuth } = useAuth();
 	const router = useRouter();
+
 	const { title, description, skillSelection } = useLocalSearchParams<{
 		title: string;
 		description: string;
 		skillSelection: string;
 	}>();
-
 	const [form, setForm] = useState<{
 		title: string;
 		description: string;
@@ -60,12 +71,44 @@ export default function Page() {
 		setButtonDisabled(validateForm(updatedForm));
 	};
 
-	const createPost = () => {
+	const createPost = async () => {
 		try {
 			setLoading(true);
 
-			// Create Post document and add it to user publishedPosts
-		} catch {
+			if (!userAuth) {
+				console.log("Error");
+				throw new Error();
+			}
+
+			const post = {
+				title: form.title,
+				text: form.description,
+				jobSkills: form.skillSelection.split(","),
+				employer: userDoc?.companyname,
+				postedBy: userAuth?.uid,
+				postedAt: Timestamp.now(),
+			};
+			console.log("New post", post);
+
+			const docRef = await addDoc(collection(db, "posts"), post);
+			const postId = docRef.id;
+			await updateDoc(doc(db, "users", userAuth.uid), {
+				publishedPosts: arrayUnion(postId), // Add the document ID to the user's publishedPosts array
+			});
+
+			// Update the local userDoc context
+			const updatedPublishedPosts = userDoc?.publishedPosts
+				? [...userDoc.publishedPosts, docRef.id]
+				: [docRef.id];
+
+			setUserDoc({
+				...userDoc,
+				publishedPosts: updatedPublishedPosts, // Update the local context
+			});
+
+			console.log(docRef);
+		} catch (e) {
+			console.log(e);
 		} finally {
 			setLoading(false);
 		}
@@ -101,45 +144,42 @@ export default function Page() {
 					<View style={styles.inputSmall}>
 						<Text style={styles.inputLabel}>Required skills</Text>
 
-						<Pressable
-							onPress={() => {
-								router.push({
-									pathname: "/post/editskills",
-									params: {
-										title: form.title,
-										description: form.description,
-									},
-								});
-							}}>
-							{skillSelection ? (
-								<View style={styles.deck}>
-									{skillSelection
-										.split(",")
-										.map((skill: string, index: number) => (
-											<Pressable
-												onPress={() => {
-													router.push({
-														pathname: "/post/editskills",
-													});
-												}}
-												key={index}
-												style={styles.card}>
-												<Text style={styles.cardText}>{skill}</Text>
-											</Pressable>
-										))}
-								</View>
-							) : (
-								<Pressable
-									style={styles.choose}
-									onPress={() => {
-										router.push({
-											pathname: "/post/editskills",
-										});
-									}}>
-									<Text style={styles.chooseText}>Choose</Text>
-								</Pressable>
-							)}
-						</Pressable>
+						{skillSelection ? (
+							<View style={styles.deck}>
+								{skillSelection
+									.split(",")
+									.map((skill: string, index: number) => (
+										<Pressable
+											onPress={() => {
+												router.push({
+													pathname: "/post/editskills",
+													params: {
+														title: form.title,
+														description: form.description,
+													},
+												});
+											}}
+											key={index}
+											style={styles.card}>
+											<Text style={styles.cardText}>{skill}</Text>
+										</Pressable>
+									))}
+							</View>
+						) : (
+							<Pressable
+								style={styles.choose}
+								onPress={() => {
+									router.push({
+										pathname: "/post/editskills",
+										params: {
+											title: form.title,
+											description: form.description,
+										},
+									});
+								}}>
+								<Text style={styles.chooseText}>Choose</Text>
+							</Pressable>
+						)}
 					</View>
 				</View>
 				<View style={styles.bottom}>
@@ -149,6 +189,7 @@ export default function Page() {
 							color={Colors.primary}
 							disabled={buttonDisabled}
 							onPress={() => {
+								createPost();
 								router.replace({
 									pathname: "/post",
 								});

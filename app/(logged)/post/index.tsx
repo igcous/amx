@@ -12,28 +12,38 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { Colors } from "../../../constants/colorPalette";
 import { useRouter } from "expo-router";
-import { doc, getDoc, updateDoc, setDoc, Timestamp } from "firebase/firestore";
+import {
+	doc,
+	getDoc,
+	updateDoc,
+	setDoc,
+	Timestamp,
+	deleteDoc,
+	arrayRemove,
+} from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 
 type PostSummary = {
 	postId: string;
 	title: string;
-	postSkills: string;
+	postSkills: string[];
 	applicants: string;
 	seen: string;
 	postedAt: Timestamp;
 };
 
 export default function Page() {
-	const { userAuth, userDoc } = useAuth();
+	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
 	const [postList, setPostList] = useState<PostSummary[] | null>([]);
 	const [currentPost, setCurrentPost] = useState<string | null>(null);
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
+		setLoading(true);
 		const fetchPostList = async () => {
-			if (!userDoc) {
-				console.error("userDoc is undefined");
+			if (!userDoc || !userAuth?.uid) {
+				console.error("user error");
 				return;
 			}
 
@@ -66,23 +76,74 @@ export default function Page() {
 		};
 
 		fetchPostList();
-	}, []);
+		setLoading(false);
+	}, [userDoc]);
+
+	const deletePost = async (postId: string) => {
+		try {
+			setLoading(true);
+			if (!userDoc || !userAuth?.uid) {
+				console.error("user error is undefined");
+				return;
+			}
+
+			// Delete Post
+			await deleteDoc(doc(db, "posts", postId));
+
+			// Delete reference in Published Posts
+			await updateDoc(doc(db, "users", userAuth.uid), {
+				publishedPosts: arrayRemove(postId),
+			});
+
+			console.log("Deleted post", postId);
+
+			// Update the local userDoc context
+			const updatedPublishedPosts = userDoc.publishedPosts.filter(
+				(id: string) => id !== postId
+			);
+
+			setUserDoc({
+				...userDoc,
+				publishedPosts: updatedPublishedPosts,
+			});
+		} catch (e) {
+			console.log(e);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const renderItem: ListRenderItem<PostSummary> = ({ item }) => {
 		return (
-			<Pressable
-				style={styles.item}
-				onPress={() => {
-					goToApplications(item.postId);
-				}}>
-				<View style={styles.itemHeader}>
-					<Text style={styles.itemText}>{item.title}</Text>
-					<Text style={styles.itemText}>
-						{item.postedAt.toDate().toLocaleString()}
-					</Text>
-				</View>
-				<Text style={styles.card}>{item.postSkills}</Text>
-			</Pressable>
+			<View style={styles.item}>
+				<Pressable
+					style={styles.itemBody}
+					onPress={() => {
+						goToApplications(item.postId);
+					}}>
+					<View style={styles.itemHeader}>
+						<Text style={styles.itemText}>{item.title}</Text>
+						<Text style={styles.itemText}>
+							{item.postedAt.toDate().toLocaleString()}
+						</Text>
+					</View>
+
+					<View style={styles.deck}>
+						{item.postSkills.map((skill: string, index: number) => (
+							<Text key={index} style={styles.card}>
+								{skill.trim()}
+							</Text>
+						))}
+					</View>
+				</Pressable>
+				<Pressable
+					style={styles.itemSide}
+					onPress={() => {
+						deletePost(item.postId);
+					}}>
+					<Text>X</Text>
+				</Pressable>
+			</View>
 		);
 	};
 
@@ -158,13 +219,7 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		justifyContent: "flex-start",
 	},
-	item: {
-		backgroundColor: Colors.tertiary,
-		padding: 16,
-		borderWidth: 1,
-		borderRadius: 20,
-		marginBottom: 10,
-	},
+	itemBody: { flex: 1 },
 	itemHeader: {
 		marginBottom: 10,
 	},
@@ -188,5 +243,27 @@ const styles = StyleSheet.create({
 	topBarText: {
 		fontSize: 24,
 		textAlign: "center",
+	},
+	deck: {
+		flexGrow: 1,
+		justifyContent: "center",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		width: "90%",
+		alignSelf: "center",
+		marginTop: 10,
+		gap: 10,
+		marginBottom: 10,
+	},
+	itemSide: {},
+	item: {
+		flex: 1,
+		flexDirection: "row",
+		flexWrap: "nowrap",
+		backgroundColor: Colors.tertiary,
+		padding: 16,
+		borderWidth: 1,
+		borderRadius: 20,
+		marginBottom: 10,
 	},
 });

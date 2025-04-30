@@ -36,6 +36,7 @@ export default function Page() {
 		getPost();
 	}, [userDoc]);
 
+	// get many instead of 1, card deck?
 	const getPost = async () => {
 		setLoading(true);
 		try {

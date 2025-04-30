@@ -6,7 +6,7 @@ Description:
 */
 
 import { StyleSheet, Text, View, ScrollView, Button } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../constants/colorPalette";
 import { doc, updateDoc } from "firebase/firestore";
@@ -31,6 +31,12 @@ export const SelectSkillsPage = ({
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
 	const params = useLocalSearchParams();
+
+	useEffect(() => {
+		console.log("Current params", params);
+		console.log("Skill selection", skillSelection);
+		console.log(typeof skillSelection);
+	}, []);
 
 	const updateUserDoc = async () => {
 		setLoading(true);
