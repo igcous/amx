@@ -161,39 +161,6 @@ export default function Page() {
 
 		// update context
 		setUserDoc({ ...userDoc, chatIds: [...userDoc?.chatIds, newChatId] });
-
-		/*
-		
-			
-			// TO TEST THIS
-			// chat Id resolution
-			// create chat Id an add to both users (searcher and recruiter)
-			const docRef = await addDoc(collection(db, "chats"), {
-				users: [userAuth.uid, currentApplication?.applicantId].sort(),
-			});
-
-			const newChatId = docRef.id;
-
-			// update recruiter, add chatId
-			const docSnapRecruiter = await getDoc(doc(db, "users", userAuth.uid));
-			const rData = docSnapRecruiter.data()!;
-			await updateDoc(doc(db, "users", userAuth.uid), {
-				chatIds:
-					"chatIds" in rData ? [newChatId, ...rData.chatIds] : [newChatId],
-			});
-
-			// update searcher, add chatId
-			const docSnapSearcher = await getDoc(
-				doc(db, "users", currentApplication!.applicantId)
-			);
-			const sData = docSnapSearcher.data()!;
-			await updateDoc(doc(db, "users", userAuth.uid), {
-				chatIds:
-					"chatIds" in sData ? [newChatId, ...sData.chatIds] : [newChatId],
-			});
-			
-		
-			*/
 	};
 
 	return loading ? (

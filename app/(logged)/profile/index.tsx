@@ -18,8 +18,6 @@ Description:
 
 		For Recruiter:
 			Add socials link (TODO)
-
-	
 		*/
 
 // React - React Native
