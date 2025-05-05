@@ -19,6 +19,7 @@ import {
 } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
+import TinderCard from "react-tinder-card";
 
 type Application = {
 	applicantId: string;

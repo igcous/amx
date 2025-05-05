@@ -5,6 +5,7 @@ import {
 	Button,
 	ImageBackground,
 	Dimensions,
+	Pressable,
 } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../../context/AuthContext";
@@ -26,6 +27,7 @@ import { db } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
 import TinderCard from "react-tinder-card";
 import React from "react";
+import { useRouter } from "expo-router";
 
 type Post = {
 	id: string;
@@ -40,6 +42,7 @@ export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Post[] | null>(null);
+	const router = useRouter();
 
 	useEffect(() => {
 		// Get batches of n posts
@@ -191,11 +194,20 @@ export default function Page() {
 								//console.log("onCardLeftScreen:", dir);
 							}}
 							preventSwipe={["up", "down"]}>
-							<View style={styles.card}>
+							<Pressable
+								style={styles.card}
+								onPress={() => {
+									router.navigate({
+										pathname: `/apply/${post.id}`,
+										params: {
+											post: JSON.stringify(post),
+										},
+									});
+								}}>
 								<Text style={styles.cardTitle}>{post.id}</Text>
 								<Text style={styles.cardTitle}>{post.title}</Text>
 								<Text style={styles.cardTitle}>{post.employer}</Text>
-							</View>
+							</Pressable>
 						</TinderCard>
 					))}
 				</View>
