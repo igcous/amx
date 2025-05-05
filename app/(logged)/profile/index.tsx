@@ -21,19 +21,18 @@ Description:
 		*/
 
 // React - React Native
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
 	StyleSheet,
 	ScrollView,
 	Text,
 	View,
-	Button,
 	Pressable,
 	Dimensions,
 } from "react-native";
 // Expo utilities
 import { useRouter } from "expo-router";
-import { useImage, Image } from "expo-image";
+import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as WebBrowser from "expo-web-browser";
@@ -47,22 +46,31 @@ import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
 
 export default function Page() {
-	const [loadingImage, setLoading] = useState<boolean>(true);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [displayPick, setDisplayPick] = useState<boolean>(false);
 	const { userAuth, userDoc, setUserDoc, loading: loadingData } = useAuth();
 	const router = useRouter();
 
-	const profilePic = userDoc?.profilePicURL
-		? useImage(userDoc?.profilePicURL)
-		: require("../../../assets/profile_icon.svg");
+	// useImage Hook does not work for fallback, use this instead
+	const [imageSource, setImageSource] = useState(
+		userDoc?.profilePicURL
+			? { uri: userDoc.profilePicURL }
+			: require("../../../assets/profile_icon.svg")
+	);
 
-	const pickImageFile = async () => {
+	const pickImage = async (useCamera: boolean) => {
 		try {
-			const result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: "images",
-				allowsEditing: false,
-				aspect: [4, 3],
-				quality: 1,
-			});
+			const result = useCamera
+				? await ImagePicker.launchCameraAsync({
+						mediaTypes: "images",
+						allowsEditing: true,
+				  })
+				: await ImagePicker.launchImageLibraryAsync({
+						mediaTypes: "images",
+						allowsEditing: true,
+						aspect: [4, 3],
+						quality: 1,
+				  });
 
 			// Check if the user canceled the picker
 			if (!result.canceled) {
@@ -78,7 +86,7 @@ export default function Page() {
 				});
 				console.log("Image uploaded successfully:", snapshot.metadata);
 
-				// Add the image donwload URL to the user document and context
+				// Add the image download URL to the user document and context
 				const downloadURL = await getDownloadURL(imageRef);
 				if (userAuth?.uid) {
 					await updateDoc(doc(db, "users", userAuth.uid), {
@@ -87,7 +95,13 @@ export default function Page() {
 				} else {
 					console.error("User ID is undefined");
 				}
+
+				// Update context too
 				setUserDoc({ ...userDoc, profilePicURL: downloadURL });
+
+				// Update image source
+				setDisplayPick(false);
+				setImageSource({ uri: downloadURL });
 			} else {
 				console.log("Image picker canceled");
 			}
@@ -141,7 +155,7 @@ export default function Page() {
 	const downloadDocumentFile = async () => {
 		try {
 			if (!userDoc?.resumeURL) {
-				alert("No resume URL found.");
+				alert("No uploaded CV found.");
 				return;
 			}
 			const result = await WebBrowser.openBrowserAsync(userDoc.resumeURL);
@@ -173,12 +187,33 @@ export default function Page() {
 					</Text>
 
 					{/* Add/Change user profile picture */}
-					<Pressable onPress={pickImageFile}>
+					<Pressable
+						style={styles.image}
+						onPress={() => setDisplayPick(!displayPick)}>
 						<Image
 							contentFit="cover"
-							source={profilePic}
-							style={styles.image}
+							source={imageSource}
+							style={{ flex: 1 }}
+							onError={() =>
+								setImageSource(require("../../../assets/profile_icon.svg"))
+							}
 						/>
+						{displayPick ? (
+							<View style={styles.pickImage}>
+								<Pressable
+									onPress={() => {
+										pickImage(false);
+									}}
+									style={[styles.pickImageOptions]}>
+									<Text style={styles.pickImageText}>Pick from device</Text>
+								</Pressable>
+								<Pressable
+									onPress={() => pickImage(true)}
+									style={styles.pickImageOptions}>
+									<Text style={styles.pickImageText}>Use camera</Text>
+								</Pressable>
+							</View>
+						) : null}
 					</Pressable>
 
 					{/* Only for searcher*/}
@@ -208,14 +243,12 @@ export default function Page() {
 					{/* Add CV */}
 					{userDoc?.role === "searcher" ? (
 						<View style={styles.cv}>
-							<Button
-								title="Add CV"
-								color={Colors.primary}
-								onPress={pickDocumentFile}></Button>
-							<Button
-								title="Download CV"
-								color={Colors.primary}
-								onPress={downloadDocumentFile}></Button>
+							<Pressable style={styles.cvButton} onPress={pickDocumentFile}>
+								<Text style={styles.cvButtonText}>ADD CV</Text>
+							</Pressable>
+							<Pressable style={styles.cvButton} onPress={downloadDocumentFile}>
+								<Text style={styles.cvButtonText}>DOWNLOAD CV</Text>
+							</Pressable>
 						</View>
 					) : (
 						<></>
@@ -228,12 +261,19 @@ export default function Page() {
 					)}
 				</View>
 				<View style={styles.bottom}>
-					<View style={styles.bottomButton}>
-						<Button
-							title="Logout"
-							color={Colors.primary}
-							onPress={logout}></Button>
-					</View>
+					<Pressable
+						style={[
+							styles.bottomButton,
+							{
+								backgroundColor:
+									userDoc?.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
+						onPress={logout}>
+						<Text style={styles.buttonText}>LOGOUT</Text>
+					</Pressable>
 				</View>
 			</ScrollView>
 		</View>
@@ -256,17 +296,25 @@ const styles = StyleSheet.create({
 	},
 	top: {
 		width: "100%",
-		marginTop: 40,
+		marginTop: 20,
 		gap: 20,
 	},
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page
@@ -310,7 +358,9 @@ const styles = StyleSheet.create({
 		height: width * 0.6,
 		//borderWidth: 5, // remove this
 		alignSelf: "center",
+		zIndex: 0,
 	},
+
 	activityIndicator: {},
 	cv: {
 		flex: 1,
@@ -322,9 +372,14 @@ const styles = StyleSheet.create({
 	},
 	cvButton: {
 		backgroundColor: Colors.primary,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
 	},
 	cvButtonText: {
-		fontSize: 20,
+		fontSize: 16,
+		color: "white",
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 	editButton: {
 		alignSelf: "center",
@@ -333,5 +388,23 @@ const styles = StyleSheet.create({
 	},
 	editButtonText: {
 		fontSize: 20,
+	},
+	pickImage: {
+		position: "absolute", // Ensure it overlays the Image
+		zIndex: 1, // Higher zIndex to appear on top of the Image
+		gap: 20,
+		flexDirection: "row",
+		alignSelf: "center",
+	},
+	pickImageOptions: {
+		padding: 10,
+		borderRadius: 10,
+		backgroundColor: Colors.primary,
+	},
+	pickImageText: {
+		color: "white", // Text color for visibility
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 });

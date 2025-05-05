@@ -103,7 +103,15 @@ export default function Page() {
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>E-mail</Text>
 					<TextInput
-						style={styles.inputBox}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="Email"
 						value={form.email}
 						onChangeText={(text) => handleChange("email", text)}
@@ -112,7 +120,15 @@ export default function Page() {
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>Password</Text>
 					<TextInput
-						style={styles.inputBox}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="Password"
 						value={form.password}
 						onChangeText={(text) => handleChange("password", text)}
@@ -122,13 +138,15 @@ export default function Page() {
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>Repeat password</Text>
 					<TextInput
-						style={{
-							...styles.inputBox,
-							color:
-								form.password !== form.repeatPassword
-									? Colors.secondary
-									: Colors.textPrimary,
-						}}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="Repeat password"
 						value={form.repeatPassword}
 						onChangeText={(text) => handleChange("repeatPassword", text)}
@@ -145,13 +163,21 @@ export default function Page() {
 				</View>
 			</View>
 			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						title="CREATE ACCOUNT"
-						disabled={buttonDisabled}
-						color={Colors.secondary}
-						onPress={signup}></Button>
-				</View>
+				<Pressable
+					style={[
+						styles.bottomButton,
+						{
+							backgroundColor: buttonDisabled
+								? "gray"
+								: params.role === "recruiter"
+								? Colors.secondary
+								: Colors.primary,
+						},
+					]}
+					disabled={buttonDisabled}
+					onPress={signup}>
+					<Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
@@ -173,13 +199,20 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
 	},
-
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
+	},
 	// This part of the styleSheet is specific to this page
 	input: {
 		width: "90%",

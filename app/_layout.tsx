@@ -7,8 +7,7 @@ Description:
 	Its also a mix between that and the React Docs on how to use Context
 
 TODO:
-	Define Colors in a Context instead of /constants
-	Use this context for light and dark color themes
+	Define Colors in a Context instead of /constants and then use this context for light and dark color themes
 */
 
 import { Stack } from "expo-router";

@@ -8,15 +8,13 @@ Description:
 import { auth } from "../../config/firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, TextInput, StyleSheet, Button } from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { Colors } from "../../constants/colorPalette";
-import { useRouter } from "expo-router";
 
 export default function Page() {
 	const [email, setEmail] = useState<string>("test@mail.com");
 	const [password, setPassword] = useState<string>("123456");
 	const [loading, setLoading] = useState<boolean>(true);
-	const router = useRouter();
 
 	const login = async () => {
 		try {
@@ -55,20 +53,19 @@ export default function Page() {
 				</View>
 			</View>
 			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						title="CONTINUE"
-						color={Colors.primary}
-						disabled={false}
-						onPress={() => login()}></Button>
-				</View>
+				<Pressable
+					style={[styles.bottomButton, { backgroundColor: Colors.primary }]}
+					disabled={false}
+					onPress={() => login()}>
+					<Text style={styles.buttonText}>CONTINUE</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
 }
 
 const styles = StyleSheet.create({
-	// I will try to keep at least a part of the styleSheet that is repeatable
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
@@ -83,14 +80,22 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
-	// This is the styleSheet that is specific to this page
+	// This part of the styleSheet is specific to this page
 	input: {
 		width: "90%",
 		alignSelf: "center",
@@ -105,6 +110,7 @@ const styles = StyleSheet.create({
 		borderBottomWidth: 4,
 		borderBottomColor: Colors.primary,
 		alignSelf: "center",
+		fontSize: 20,
 	},
 	titleText: {
 		fontSize: 30,

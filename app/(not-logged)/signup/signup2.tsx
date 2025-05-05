@@ -5,15 +5,7 @@ Description:
 	User inputs some basic information
 */
 
-import {
-	View,
-	Text,
-	TextInput,
-	Button,
-	StyleSheet,
-	ViewStyle,
-	TextStyle,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
@@ -57,7 +49,15 @@ export default function Page() {
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>First Name</Text>
 					<TextInput
-						style={styles.inputBox}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="What is your name?"
 						value={form.firstname}
 						onChangeText={(text) => handleChange("firstname", text)}
@@ -66,7 +66,15 @@ export default function Page() {
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>Last name</Text>
 					<TextInput
-						style={styles.inputBox}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="What is your last name?"
 						value={form.lastname}
 						onChangeText={(text) => handleChange("lastname", text)}
@@ -79,7 +87,15 @@ export default function Page() {
 						<Text style={styles.inputLabel}>Company name</Text>
 					)}
 					<TextInput
-						style={styles.inputBox}
+						style={[
+							styles.inputBox,
+							{
+								borderBottomColor:
+									params.role === "recruiter"
+										? Colors.secondary
+										: Colors.primary,
+							},
+						]}
 						placeholder="Where do you work?"
 						value={form.companyname}
 						onChangeText={(text) => handleChange("companyname", text)}
@@ -87,36 +103,45 @@ export default function Page() {
 				</View>
 			</View>
 			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						title="CONTINUE"
-						color={Colors.secondary}
-						disabled={buttonDisabled}
-						onPress={() => {
-							console.log("Old params", params);
-							console.log(
-								"New params",
-								form.firstname,
-								form.lastname,
-								form.companyname
-							);
+				<Pressable
+					style={[
+						styles.bottomButton,
+						{
+							backgroundColor: buttonDisabled
+								? "gray"
+								: params.role === "recruiter"
+								? Colors.secondary
+								: Colors.primary,
+						},
+					]}
+					disabled={buttonDisabled}
+					onPress={() => {
+						console.log("Old params", params);
+						console.log(
+							"New params",
+							form.firstname,
+							form.lastname,
+							form.companyname
+						);
 
-							router.navigate({
-								pathname:
-									params.role === "searcher"
-										? "/signup/signup3" // no skills choice
-										: "/signup/signup4",
-								params: {
-									...params,
-									firstname: form.firstname,
-									lastname: form.lastname,
-									...(form.companyname.trim() !== "" && {
-										companyname: form.companyname,
-									}),
-								},
-							});
-						}}></Button>
-				</View>
+						router.navigate({
+							pathname:
+								params.role === "searcher"
+									? "/signup/signup3" // no skills choice
+									: "/signup/signup4",
+							params: {
+								...params,
+								firstname: form.firstname,
+								lastname: form.lastname,
+								// companyname may be optional
+								...(form.companyname.trim() !== "" && {
+									companyname: form.companyname,
+								}),
+							},
+						});
+					}}>
+					<Text style={styles.buttonText}>CONTINUE</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
@@ -138,11 +163,19 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page
@@ -158,8 +191,8 @@ const styles = StyleSheet.create({
 		width: "100%",
 		textAlign: "center",
 		borderBottomWidth: 4,
-		borderBottomColor: Colors.secondary,
 		alignSelf: "center",
+		fontSize: 20,
 	},
 	titleText: {
 		width: "90%",

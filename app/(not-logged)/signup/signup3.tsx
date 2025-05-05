@@ -48,20 +48,25 @@ export default function Page() {
 					</View>
 				</View>
 				<View style={styles.bottom}>
-					<View style={styles.bottomButton}>
-						<Button
-							title="CONTINUE"
-							color={Colors.secondary}
-							disabled={skillSelection.length === 0}
-							onPress={() => {
-								console.log("Old params", params);
-								console.log("New params", skillSelection);
-								router.push({
-									pathname: "/signup/signup4",
-									params: { ...params, skills: skillSelection.join(",") },
-								});
-							}}></Button>
-					</View>
+					<Pressable
+						style={[
+							styles.bottomButton,
+							{
+								backgroundColor:
+									skillSelection.length === 0 ? "gray" : Colors.primary,
+							},
+						]}
+						disabled={skillSelection.length === 0}
+						onPress={() => {
+							console.log("Old params", params);
+							console.log("New params", skillSelection);
+							router.push({
+								pathname: "/signup/signup4",
+								params: { ...params, skills: skillSelection.join(",") },
+							});
+						}}>
+						<Text style={styles.buttonText}>CONTINUE</Text>
+					</Pressable>
 				</View>
 			</ScrollView>
 		</View>
@@ -88,11 +93,19 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page
@@ -123,21 +136,6 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		marginBottom: 10,
 	},
-	/* unused
-	card: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.tertiary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-	},
-	*/
 	deck: {
 		flexGrow: 1,
 		justifyContent: "center",

@@ -6,7 +6,7 @@ Description:
 
 */
 
-import { View, Text, Button, Pressable, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
@@ -46,7 +46,7 @@ export default function Page() {
 						...styles.card,
 						borderColor:
 							roleSelection === "recruiter"
-								? Colors.primary
+								? Colors.secondary
 								: Colors.background,
 					}}>
 					<Text style={styles.cardText}>Looking to hire</Text>
@@ -54,20 +54,28 @@ export default function Page() {
 			</View>
 
 			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						title="CONTINUE"
-						color={Colors.secondary}
-						disabled={buttonDisabled}
-						onPress={() => {
-							console.log("Old params", params);
-							console.log("New params", roleSelection);
-							router.push({
-								pathname: "/signup/signup2",
-								params: { ...params, role: roleSelection },
-							});
-						}}></Button>
-				</View>
+				<Pressable
+					disabled={buttonDisabled}
+					style={[
+						styles.bottomButton,
+						{
+							backgroundColor: !roleSelection
+								? "gray"
+								: roleSelection === "recruiter"
+								? Colors.secondary
+								: Colors.primary,
+						},
+					]}
+					onPress={() => {
+						console.log("Old params", params);
+						console.log("New params", roleSelection);
+						router.push({
+							pathname: "/signup/signup2",
+							params: { ...params, role: roleSelection },
+						});
+					}}>
+					<Text style={styles.buttonText}>CONTINUE</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
@@ -89,11 +97,19 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page

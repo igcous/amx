@@ -37,14 +37,14 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			setLoading(true);
 			setUserAuth(currentUser);
-			console.log("User state changed:", currentUser);
+			console.log("User state changed:", currentUser?.uid);
 
 			if (currentUser !== null) {
 				try {
-					const docSnap = await getDoc(doc(db, "users", currentUser!.uid));
+					const docSnap = await getDoc(doc(db, "users", currentUser.uid));
 					if (docSnap.exists()) {
 						setUserDoc(docSnap.data());
-						console.log("User data doc:", docSnap.data());
+						console.log("User doc:", docSnap.data());
 					} else {
 						// Should never get here, there is always a doc for every user
 						throw new Error("User document does not exist");

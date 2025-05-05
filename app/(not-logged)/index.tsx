@@ -5,7 +5,7 @@ Description:
 	Contains company name, logo, login and sign up buttons
 */
 
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import { Colors } from "../../constants/colorPalette";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -16,32 +16,28 @@ export default function Index() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>APP NAME</Text>
-				<Image
-					source={require("../../assets/app_logo.svg")}
-					style={styles.logo}
-				/>
+				<Image source={require("../../assets/logo.png")} style={styles.logo} />
 			</View>
 			<View style={styles.middle}>
-				<Text style={styles.descriptionText}>The best app in the world</Text>
+				<Text style={styles.descriptionText}>Swipe. Apply. Hired.</Text>
 			</View>
 			<View style={styles.bottom}>
-				<View style={styles.bottomButton}>
-					<Button
-						color={Colors.primary}
-						title="LOGIN"
-						onPress={() => router.push("/login")}
-					/>
-					<Button
-						color={Colors.secondary}
-						title="SIGNUP WITH EMAIL"
-						onPress={() => router.push({ pathname: "/signup/signup1" })}
-					/>
-				</View>
+				<Pressable
+					style={[styles.bottomButton, { backgroundColor: Colors.primary }]}
+					onPress={() => router.push("/login")}>
+					<Text style={styles.buttonText}>LOGIN</Text>
+				</Pressable>
+				<Pressable
+					style={[styles.bottomButton, { backgroundColor: Colors.secondary }]}
+					onPress={() => router.push({ pathname: "/signup/signup1" })}>
+					<Text style={styles.buttonText}>SIGNUP WITH EMAIL</Text>
+				</Pressable>
 			</View>
 		</View>
 	);
 }
+
+const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
 	// This part of the styleSheet is repeatable, do not change
@@ -53,17 +49,25 @@ const styles = StyleSheet.create({
 	},
 	top: {
 		width: "100%",
-		marginTop: 40,
+		marginTop: 60,
 		gap: 20,
 	},
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page
@@ -73,15 +77,18 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 	logo: {
-		alignSelf: "center",
+		width: "50%",
 		height: 100,
-		width: 100,
+		alignSelf: "center",
 	},
 	descriptionText: {
 		fontSize: 30,
 		alignSelf: "center",
+		fontStyle: "italic",
 	},
 	middle: {
 		width: "100%",
+		padding: 10,
+		backgroundColor: Colors.tertiary,
 	},
 });

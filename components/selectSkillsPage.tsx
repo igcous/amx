@@ -5,7 +5,7 @@ Description:
     Based on the Skill Deck component, similar to what is done on Signup (signup3.tsx)
 */
 
-import { StyleSheet, Text, View, ScrollView, Button } from "react-native";
+import { StyleSheet, Text, View, ScrollView, Pressable } from "react-native";
 import { useEffect, useState } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../constants/colorPalette";
@@ -79,23 +79,28 @@ export const SelectSkillsPage = ({
 					</View>
 				</View>
 				<View style={styles.bottom}>
-					<View style={styles.bottomButton}>
-						<Button
-							title="CONTINUE"
-							color={Colors.secondary}
-							disabled={skillSelection.length === 0}
-							onPress={() => {
-								if (saveToUserDoc) updateUserDoc();
-								router.replace({
-									pathname: goBackTo,
-									// mirror back params (only useful for string type)
-									params: {
-										...params,
-										skillSelection: skillSelection,
-									},
-								}); // replace to destroy, cant go back
-							}}></Button>
-					</View>
+					<Pressable
+						style={[
+							styles.bottomButton,
+							{
+								backgroundColor:
+									skillSelection.length === 0 ? "gray" : Colors.primary,
+							},
+						]}
+						disabled={skillSelection.length === 0}
+						onPress={() => {
+							if (saveToUserDoc) updateUserDoc();
+							router.replace({
+								pathname: goBackTo,
+								// mirror back params (only useful for string type)
+								params: {
+									...params,
+									skillSelection: skillSelection,
+								},
+							}); // replace to destroy, cant go back
+						}}>
+						<Text style={styles.buttonText}>CONTINUE</Text>
+					</Pressable>
 				</View>
 			</ScrollView>
 		</View>
@@ -122,11 +127,19 @@ const styles = StyleSheet.create({
 	bottom: {
 		width: "100%",
 		marginBottom: 40,
+		gap: 20,
 	},
 	bottomButton: {
 		alignSelf: "center",
 		width: "90%",
-		gap: 20,
+		paddingVertical: 15,
+		paddingHorizontal: 20,
+	},
+	buttonText: {
+		color: "white",
+		fontSize: 16,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 
 	// This part of the styleSheet is specific to this page

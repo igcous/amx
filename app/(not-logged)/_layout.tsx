@@ -1,5 +1,5 @@
 /*
-Title: Layout for not logged users
+Title: Layout for not-logged users
 
 Description:
 	Handles the redirection based on auth state
