@@ -1,3 +1,13 @@
+/*
+Title: Post Start Page
+
+Description:
+    Only for Recruiter
+		Make "New Post" option
+		List of the posts that the Recruiter has already made
+		Delete any of this posts
+*/
+
 import {
 	StyleSheet,
 	Text,
@@ -155,6 +165,9 @@ export default function Page() {
 				applicants: postList?.find((post) => post.postId === postId)
 					?.applicants,
 				seen: postList?.find((post) => post.postId === postId)?.seen,
+
+				//TODO: JSON THIS, left this halfway done
+				post: JSON.stringify(postList?.find((post) => post.postId === postId)),
 			},
 		});
 	};

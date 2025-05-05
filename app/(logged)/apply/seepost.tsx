@@ -1,4 +1,4 @@
-import { Button, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import { useState, useEffect } from "react";
 import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";

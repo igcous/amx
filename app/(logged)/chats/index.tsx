@@ -1,7 +1,6 @@
 import {
 	StyleSheet,
 	Text,
-	ScrollView,
 	View,
 	ListRenderItem,
 	FlatList,

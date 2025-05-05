@@ -3,7 +3,6 @@ import {
 	Text,
 	View,
 	Button,
-	ImageBackground,
 	Dimensions,
 	Pressable,
 } from "react-native";

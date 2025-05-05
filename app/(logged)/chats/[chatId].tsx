@@ -1,11 +1,4 @@
-import {
-	StyleSheet,
-	Text,
-	View,
-	TouchableOpacity,
-	Dimensions,
-	Pressable,
-} from "react-native";
+import { StyleSheet, Text, View, Dimensions, Pressable } from "react-native";
 import { useState, useLayoutEffect, useCallback } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { db } from "../../../config/firebaseConfig";
