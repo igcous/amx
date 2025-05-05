@@ -136,7 +136,7 @@ export default function Page() {
 				: prevUserDoc?.likedPosts,
 		}));
 
-		// Update the deck and set the new currentPostId
+		// Update the deck
 		setDeck(
 			(prevDeck) => prevDeck?.filter((item) => item.id !== post.id) || null
 		);
@@ -198,7 +198,7 @@ export default function Page() {
 								style={styles.card}
 								onPress={() => {
 									router.navigate({
-										pathname: `/apply/${post.id}`,
+										pathname: `/apply/seepost`,
 										params: {
 											post: JSON.stringify(post),
 										},

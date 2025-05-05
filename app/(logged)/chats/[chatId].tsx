@@ -4,6 +4,7 @@ import {
 	View,
 	TouchableOpacity,
 	Dimensions,
+	Pressable,
 } from "react-native";
 import { useState, useLayoutEffect, useCallback } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
@@ -17,7 +18,7 @@ import {
 	onSnapshot,
 } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useImage, Image } from "expo-image";
 
 export default function Page() {
@@ -32,6 +33,7 @@ export default function Page() {
 			picURL: string;
 			chatId: string;
 		}>();
+	const router = useRouter();
 
 	const profilePic = picURL
 		? useImage(picURL)
@@ -75,7 +77,11 @@ export default function Page() {
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<View style={styles.topBar}>
-					<View style={styles.header}>
+					<Pressable
+						style={styles.header}
+						onPress={() => {
+							router.navigate({ pathname: "/chats/seeprofile", params: {} });
+						}}>
 						<Image
 							contentFit="cover"
 							source={profilePic}
@@ -84,18 +90,23 @@ export default function Page() {
 						<Text style={styles.headerText}>
 							{firstname} {lastname}
 						</Text>
-					</View>
-					{userDoc?.role === "searcher" ? (
-						<Text style={styles.headerText}>
-							{jobtitle} position{"\n"}
-							{companyname}
-						</Text>
-					) : (
-						<Text style={styles.headerText}>
-							Applied as{"\n"}
-							{jobtitle}
-						</Text>
-					)}
+					</Pressable>
+					<Pressable
+						onPress={() => {
+							router.navigate({ pathname: "/chats/seepost", params: {} });
+						}}>
+						{userDoc?.role === "searcher" ? (
+							<Text style={styles.headerText}>
+								{jobtitle} position{"\n"}
+								{companyname}
+							</Text>
+						) : (
+							<Text style={styles.headerText}>
+								Applied as{"\n"}
+								{jobtitle}
+							</Text>
+						)}
+					</Pressable>
 				</View>
 			</View>
 			<GiftedChat

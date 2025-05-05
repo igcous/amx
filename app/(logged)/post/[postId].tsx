@@ -1,5 +1,12 @@
-import { Button, StyleSheet, Text, View } from "react-native";
-import { useState, useEffect } from "react";
+import {
+	Button,
+	Dimensions,
+	Pressable,
+	StyleSheet,
+	Text,
+	View,
+} from "react-native";
+import { useState, useEffect, useMemo } from "react";
 import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
@@ -20,6 +27,7 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
+import React from "react";
 
 type Application = {
 	applicantId: string;
@@ -39,8 +47,9 @@ export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const [currentApplication, setCurrentApplication] =
-		useState<Application | null>(null);
+	/*const [currentApplication, setCurrentApplication] =
+		useState<Application | null>(null);*/
+	const [deck, setDeck] = useState<Application[] | null>(null);
 
 	const params = useLocalSearchParams();
 
@@ -56,11 +65,11 @@ export default function Page() {
 	});
 
 	useEffect(() => {
-		getApplication();
+		// Get batches of n applicants
+		getApplication(3);
 	}, [currentPost]);
 
-	const getApplication = async () => {
-		setLoading(true);
+	const getApplication = async (n: number) => {
 		try {
 			// notes
 			// 1. have to get applications in an orderly way (skill matching)
@@ -73,32 +82,26 @@ export default function Page() {
 			const validApplicantIds = currentPost.applicantIds.filter(
 				(id) => !currentPost.seenApplicantIds.includes(id)
 			);
-			console.log(currentPost.applicantIds);
-			console.log(currentPost.seenApplicantIds);
-			console.log(validApplicantIds);
-			try {
-				if (validApplicantIds.length !== 0) {
-					const querySnapshot = await getDocs(
-						query(
-							collection(db, "users"),
-							where(documentId(), "in", validApplicantIds),
-							limit(1)
-						)
-					);
-					setCurrentApplication({
-						applicantId: querySnapshot.docs[0].id,
-						firstname: querySnapshot.docs[0].data().firstname,
-						lastname: querySnapshot.docs[0].data().lastname,
-						skills: querySnapshot.docs[0].data().skills,
-					});
-				} else {
-					setCurrentApplication(null);
-				}
-			} catch (e) {
-				console.error(e);
-			} finally {
-				setLoading(false);
+
+			if (validApplicantIds.length !== 0) {
+				const querySnapshot = await getDocs(
+					query(
+						collection(db, "users"),
+						where(documentId(), "in", validApplicantIds),
+						limit(n)
+					)
+				);
+
+				const applications: Application[] = querySnapshot.docs.map((doc) => ({
+					applicantId: doc.id,
+					firstname: doc.data().firstname,
+					lastname: doc.data().lastname,
+					skills: doc.data().skills,
+				}));
+
+				setDeck(applications);
 			}
+
 			/* TO TEST
 			const data = querySnapshot.docs.map((doc) => doc.data());
 			data.sort((a, b) => {
@@ -118,30 +121,35 @@ export default function Page() {
 		}
 	};
 
-	const handleSubmit = async (accepted: boolean) => {
-		console.log(currentApplication);
-		if (!currentApplication) return; // do nothing
-
-		if (!userAuth?.uid) {
+	const handleSubmit = async (application: Application, liked: boolean) => {
+		if (!userAuth?.uid || !userDoc) {
 			console.log("User Auth error, this should never happen");
-			return;
+			throw new Error();
 		}
 
-		const newSeenApplications = currentPost.seenApplicantIds
-			? [...currentPost.seenApplicantIds, currentApplication.applicantId]
-			: [currentApplication.applicantId];
+		// Firebase update
+		await updateDoc(doc(db, "posts", currentPost.id), {
+			seenApplicants: currentPost.seenApplicantIds
+				? [...currentPost.seenApplicantIds, application.applicantId]
+				: [application.applicantId],
+		});
 
-		// always update seenApplications
+		// Context update
 		setCurrentPost({
 			...currentPost,
-			seenApplicantIds: newSeenApplications,
+			seenApplicantIds: currentPost.seenApplicantIds
+				? [...currentPost.seenApplicantIds, application.applicantId]
+				: [application.applicantId],
 		});
-		await updateDoc(doc(db, "posts", currentPost.id), {
-			seenApplicants: newSeenApplications,
-		});
+		setDeck(
+			(prevDeck) =>
+				prevDeck?.filter(
+					(item) => item.applicantId !== application.applicantId
+				) || null
+		);
 
-		if (accepted) {
-			await createChat([userAuth.uid, currentApplication.applicantId]);
+		if (liked) {
+			await createChat([userAuth.uid, application.applicantId]);
 		}
 	};
 
@@ -164,40 +172,95 @@ export default function Page() {
 		setUserDoc({ ...userDoc, chatIds: [...userDoc?.chatIds, newChatId] });
 	};
 
+	// From react-tinder-card Advanced Example
+	// https://github.com/3DJakob/react-native-tinder-card-demo/blob/master/src/examples/Advanced.js
+	// This is used only to swipe programmatically
+	const childRefs = useMemo(
+		() =>
+			Array(deck?.length)
+				.fill(0)
+				.map(() => React.createRef<any>()),
+		[deck]
+	);
+	const swipe = (dir: string) => {
+		if (deck) {
+			if (childRefs[deck.length - 1]?.current) {
+				childRefs[deck.length - 1].current.swipe(dir);
+			} else {
+				console.error("Reference for card is undefined");
+			}
+		}
+	};
+
 	return loading ? (
-		<View>
-			<Text>Loading...</Text>
+		<View style={styles.container}>
+			<View style={styles.top}>
+				<View style={styles.info}>
+					<Text style={styles.infoText}>Loading...</Text>
+				</View>
+			</View>
 		</View>
-	) : currentApplication === null ? (
-		<View>
-			<Text>No more applications to display</Text>
+	) : deck === null || deck?.length === 0 ? (
+		<View style={styles.container}>
+			<View style={styles.top}>
+				<View style={styles.info}>
+					<Text style={styles.infoText}>No more posts to display</Text>
+				</View>
+			</View>
 		</View>
 	) : (
-		<View>
-			<Text>{currentApplication?.firstname}</Text>
-			<Text>{currentApplication?.lastname}</Text>
-			<Text>{currentApplication?.skills}</Text>
-			<Button title="Yes" onPress={() => handleSubmit(true)} />
-			<Button title="No" onPress={() => handleSubmit(false)} />
+		<View style={styles.container}>
+			<View style={styles.top}>
+				<View style={styles.cardContainer}>
+					{deck?.map((application, index) => (
+						<TinderCard
+							ref={childRefs[index]}
+							key={application.applicantId}
+							onSwipe={(dir) => {
+								handleSubmit(application, dir === "right" ? true : false);
+								//console.log("Index:", index);
+							}}
+							onCardLeftScreen={(dir) => {
+								//console.log("onCardLeftScreen:", dir);
+							}}
+							preventSwipe={["up", "down"]}>
+							<Pressable
+								style={styles.card}
+								onPress={() => {
+									router.navigate({
+										pathname: `/post/seeprofile`,
+										params: { application: JSON.stringify(application) },
+									});
+								}}>
+								<Text style={styles.cardTitle}>{application.applicantId}</Text>
+								<Text style={styles.cardTitle}>{application.firstname}</Text>
+								<Text style={styles.cardTitle}>{application.lastname}</Text>
+							</Pressable>
+						</TinderCard>
+					))}
+				</View>
+				<View style={styles.buttons}>
+					<Button title="Yes" onPress={() => swipe("right")}></Button>
+					<Button title="No" onPress={() => swipe("left")}></Button>
+				</View>
+			</View>
 		</View>
 	);
 }
 
+const { width, height } = Dimensions.get("window");
+
 const styles = StyleSheet.create({
+	// This part of the styleSheet is repeatable, do not change
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
-	},
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
-		justifyContent: "flex-start",
-		alignItems: "center",
 	},
 	top: {
 		width: "100%",
 		marginTop: 40,
 		gap: 20,
+		flex: 1,
 	},
 	bottom: {
 		width: "100%",
@@ -208,4 +271,32 @@ const styles = StyleSheet.create({
 		width: "90%",
 		gap: 20,
 	},
+
+	// This part of the styleSheet is specific to this page
+	info: { alignSelf: "center" },
+	infoText: { fontSize: 20 },
+	cardContainer: {
+		flex: 1,
+	},
+	card: {
+		position: "absolute",
+		backgroundColor: Colors.secondary,
+		width: "90%",
+		alignSelf: "center",
+		height: 0.5 * height,
+		borderRadius: 20,
+		shadowColor: "black",
+		shadowOpacity: 0.2,
+		shadowRadius: 20,
+		resizeMode: "cover",
+		justifyContent: "space-around",
+		alignContent: "center",
+	},
+	cardImage: {},
+	cardTitle: {
+		textAlign: "center",
+		fontSize: 20,
+		color: Colors.textPrimary,
+	},
+	buttons: {},
 });

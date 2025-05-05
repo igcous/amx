@@ -36,7 +36,6 @@ export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
 	const [postList, setPostList] = useState<PostSummary[] | null>([]);
-	const [currentPost, setCurrentPost] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -148,7 +147,6 @@ export default function Page() {
 	};
 
 	const goToApplications = (postId: string) => {
-		setCurrentPost(postId);
 		router.navigate({
 			pathname: `/post/${postId}`,
 			params: {
