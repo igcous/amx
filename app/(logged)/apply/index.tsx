@@ -27,15 +27,7 @@ import { Colors } from "../../../constants/colorPalette";
 import TinderCard from "react-tinder-card";
 import React from "react";
 import { useRouter } from "expo-router";
-
-type Post = {
-	id: string;
-	title: string;
-	text: string;
-	employer: string;
-	jobSkills: string[];
-	postedAt: Timestamp;
-};
+import { Post } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
@@ -77,10 +69,12 @@ export default function Page() {
 			const posts: Post[] = querySnapshot.docs.map((doc) => ({
 				id: doc.id,
 				title: doc.data().title,
-				text: doc.data().text,
 				employer: doc.data().employer,
-				jobSkills: doc.data().jobSkills,
+				text: doc.data().text,
 				postedAt: doc.data().postedAt,
+				postSkills: doc.data().jobSkills,
+				applicants: [],
+				seenApplicants: [],
 			}));
 
 			// Set the deck state with the array of Post objects

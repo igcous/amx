@@ -16,7 +16,6 @@ import {
 	ListRenderItem,
 	FlatList,
 	Pressable,
-	Button,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
@@ -26,26 +25,16 @@ import {
 	doc,
 	getDoc,
 	updateDoc,
-	setDoc,
-	Timestamp,
 	deleteDoc,
 	arrayRemove,
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
-
-type PostSummary = {
-	postId: string;
-	title: string;
-	postSkills: string[];
-	applicants: string;
-	seen: string;
-	postedAt: Timestamp;
-};
+import { Post } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
-	const [postList, setPostList] = useState<PostSummary[] | null>([]);
+	const [postList, setPostList] = useState<Post[] | null>([]);
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
@@ -57,30 +46,33 @@ export default function Page() {
 			}
 
 			if (userDoc.publishedPosts) {
-				const postSummaries: PostSummary[] | null = [];
+				const posts: Post[] | null = [];
 
 				for (const postId of userDoc.publishedPosts) {
 					try {
 						const docSnap = await getDoc(doc(db, "posts", postId));
+						if (!docSnap.exists() || !docSnap.data()) {
+							console.error(`Post with ID ${postId} does not exist`);
+							continue;
+						}
 
-						const postSummary: PostSummary = {
-							postId: docSnap.id,
-							title: docSnap.data()?.title,
-							postSkills: docSnap.data()?.jobSkills,
-							applicants: docSnap.data()?.applicants,
-							seen: docSnap.data()?.seenApplicants,
-							postedAt: docSnap.data()?.postedAt,
+						const newPost: Post = {
+							id: docSnap.id,
+							title: docSnap.data().title,
+							text: docSnap.data().text,
+							employer: docSnap.data().employer,
+							postedAt: docSnap.data().postedAt,
+							postSkills: docSnap.data().jobSkills,
+							applicants: docSnap.data().applicants,
+							seenApplicants: docSnap.data().seenApplicants,
 						};
-						console.log("Applicants: ", docSnap.data()?.applicants);
-						console.log("Seen applicants: ", docSnap.data()?.seen);
-
-						postSummaries?.push(postSummary);
+						posts.push(newPost);
 					} catch (e) {
 						console.log("Error fetching user data: ", e);
 						alert(e);
 					}
 				}
-				setPostList(postSummaries);
+				setPostList(posts);
 			}
 		};
 
@@ -122,13 +114,13 @@ export default function Page() {
 		}
 	};
 
-	const renderItem: ListRenderItem<PostSummary> = ({ item }) => {
+	const renderItem: ListRenderItem<Post> = ({ item }) => {
 		return (
 			<View style={styles.item}>
 				<Pressable
 					style={styles.itemBody}
 					onPress={() => {
-						goToApplications(item.postId);
+						goToApplications(item.id);
 					}}>
 					<View style={styles.itemHeader}>
 						<Text style={styles.itemText}>{item.title}</Text>
@@ -148,7 +140,7 @@ export default function Page() {
 				<Pressable
 					style={styles.itemSide}
 					onPress={() => {
-						deletePost(item.postId);
+						deletePost(item.id);
 					}}>
 					<Text>X</Text>
 				</Pressable>
@@ -160,14 +152,7 @@ export default function Page() {
 		router.navigate({
 			pathname: `/post/${postId}`,
 			params: {
-				postSkills: postList?.find((post) => post.postId === postId)
-					?.postSkills,
-				applicants: postList?.find((post) => post.postId === postId)
-					?.applicants,
-				seen: postList?.find((post) => post.postId === postId)?.seen,
-
-				//TODO: JSON THIS, left this halfway done
-				post: JSON.stringify(postList?.find((post) => post.postId === postId)),
+				post: JSON.stringify(postList?.find((post) => post.id === postId)),
 			},
 		});
 	};
@@ -187,6 +172,7 @@ export default function Page() {
 				<Pressable style={styles.topBar} onPress={newPost}>
 					<Text style={styles.topBarText}>New Post (+)</Text>
 				</Pressable>
+
 				<FlatList
 					data={postList}
 					renderItem={renderItem}

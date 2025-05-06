@@ -180,102 +180,95 @@ export default function Page() {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView contentContainerStyle={styles.scrollContent}>
-				<View style={styles.top}>
-					<Text style={styles.titleText}>
-						{userDoc?.firstname + " " + userDoc?.lastname}
-					</Text>
+			<View style={styles.top}>
+				<Text style={styles.titleText}>
+					{`${userDoc?.firstname} ${userDoc?.lastname}${
+						userDoc?.role === "recruiter" ? `, ${userDoc?.companyname}` : ""
+					}`}
+				</Text>
 
-					{/* Add/Change user profile picture */}
-					<Pressable
-						style={styles.image}
-						onPress={() => setDisplayPick(!displayPick)}>
-						<Image
-							contentFit="cover"
-							source={imageSource}
-							style={{ flex: 1 }}
-							onError={() =>
-								setImageSource(require("../../../assets/profile_icon.svg"))
-							}
-						/>
-						{displayPick ? (
-							<View style={styles.pickImage}>
-								<Pressable
-									onPress={() => {
-										pickImage(false);
-									}}
-									style={[styles.pickImageOptions]}>
-									<Text style={styles.pickImageText}>Pick from device</Text>
-								</Pressable>
-								<Pressable
-									onPress={() => pickImage(true)}
-									style={styles.pickImageOptions}>
-									<Text style={styles.pickImageText}>Use camera</Text>
-								</Pressable>
-							</View>
-						) : null}
-					</Pressable>
-
-					{/* Only for searcher*/}
-					{/* Note: keep separated for easier formatting */}
-					{/* Show user current skills */}
-
-					{userDoc?.role === "searcher" && userDoc?.skills ? (
-						<View style={styles.deck}>
-							<Text style={styles.descriptionText}>Your skills</Text>
-							{userDoc?.skills.map((skill: string, index: number) => (
-								<Pressable
-									onPress={() => {
-										router.push({
-											pathname: "/profile/editskills",
-										});
-									}}
-									key={index}
-									style={styles.card}>
-									<Text style={styles.cardText}>{skill}</Text>
-								</Pressable>
-							))}
-						</View>
-					) : (
-						<></>
-					)}
-
-					{/* Add CV */}
-					{userDoc?.role === "searcher" ? (
-						<View style={styles.cv}>
-							<Pressable style={styles.cvButton} onPress={pickDocumentFile}>
-								<Text style={styles.cvButtonText}>ADD CV</Text>
+				{/* Add/Change user profile picture */}
+				<Pressable
+					style={styles.image}
+					onPress={() => setDisplayPick(!displayPick)}>
+					<Image
+						contentFit="cover"
+						source={imageSource}
+						style={{ flex: 1 }}
+						onError={() =>
+							setImageSource(require("../../../assets/profile_icon.svg"))
+						}
+					/>
+					{displayPick ? (
+						<View style={styles.pickImage}>
+							<Pressable
+								onPress={() => {
+									pickImage(false);
+								}}
+								style={[styles.pickImageOptions]}>
+								<Text style={styles.pickImageText}>Pick from device</Text>
 							</Pressable>
-							<Pressable style={styles.cvButton} onPress={downloadDocumentFile}>
-								<Text style={styles.cvButtonText}>DOWNLOAD CV</Text>
+							<Pressable
+								onPress={() => pickImage(true)}
+								style={styles.pickImageOptions}>
+								<Text style={styles.pickImageText}>Use camera</Text>
 							</Pressable>
 						</View>
-					) : (
-						<></>
-					)}
+					) : null}
+				</Pressable>
 
-					{userDoc?.role === "recruiter" ? (
-						<Text style={styles.titleText}>{userDoc.companyname}</Text>
-					) : (
-						<></>
-					)}
-				</View>
-				<View style={styles.bottom}>
-					<Pressable
-						style={[
-							styles.bottomButton,
-							{
-								backgroundColor:
-									userDoc?.role === "recruiter"
-										? Colors.secondary
-										: Colors.primary,
-							},
-						]}
-						onPress={logout}>
-						<Text style={styles.buttonText}>LOGOUT</Text>
-					</Pressable>
-				</View>
-			</ScrollView>
+				{/* Only for searcher*/}
+				{/* Note: keep separated for easier formatting */}
+				{/* Show user current skills */}
+
+				{userDoc?.role === "searcher" && userDoc?.skills ? (
+					<View style={styles.deck}>
+						{/*<Text style={styles.descriptionText}>Your skills</Text>*/}
+						{userDoc?.skills.map((skill: string, index: number) => (
+							<Pressable
+								onPress={() => {
+									router.push({
+										pathname: "/profile/editskills",
+									});
+								}}
+								key={index}
+								style={styles.card}>
+								<Text style={styles.cardText}>{skill}</Text>
+							</Pressable>
+						))}
+					</View>
+				) : (
+					<></>
+				)}
+			</View>
+			<View style={styles.bottom}>
+				{/* Add CV */}
+				{userDoc?.role === "searcher" ? (
+					<View style={styles.cv}>
+						<Pressable style={styles.cvButton} onPress={pickDocumentFile}>
+							<Text style={styles.cvButtonText}>ADD CV</Text>
+						</Pressable>
+						<Pressable style={styles.cvButton} onPress={downloadDocumentFile}>
+							<Text style={styles.cvButtonText}>DOWNLOAD CV</Text>
+						</Pressable>
+					</View>
+				) : (
+					<></>
+				)}
+				<Pressable
+					style={[
+						styles.bottomButton,
+						{
+							backgroundColor:
+								userDoc?.role === "recruiter"
+									? Colors.secondary
+									: Colors.primary,
+						},
+					]}
+					onPress={logout}>
+					<Text style={styles.buttonText}>LOGOUT</Text>
+				</Pressable>
+			</View>
 		</View>
 	);
 }
@@ -287,13 +280,17 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Colors.background,
+		justifyContent: "space-between",
+		alignItems: "center",
 	},
+	/*
 	scrollContent: {
 		width: "100%",
 		flexGrow: 1,
 		justifyContent: "flex-start",
 		alignItems: "center",
 	},
+	*/
 	top: {
 		width: "100%",
 		marginTop: 20,
@@ -323,7 +320,7 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		alignSelf: "center",
 		textAlign: "center",
-		marginBottom: 10,
+		marginBottom: 0,
 	},
 	descriptionText: {
 		width: "90%",
@@ -363,12 +360,11 @@ const styles = StyleSheet.create({
 
 	activityIndicator: {},
 	cv: {
-		flex: 1,
 		width: "90%",
 		alignSelf: "center",
 		flexDirection: "row",
 		justifyContent: "space-between",
-		marginBottom: 20,
+		marginBottom: 0,
 	},
 	cvButton: {
 		backgroundColor: Colors.primary,
@@ -398,7 +394,7 @@ const styles = StyleSheet.create({
 	},
 	pickImageOptions: {
 		padding: 10,
-		borderRadius: 10,
+		borderRadius: 0,
 		backgroundColor: Colors.primary,
 	},
 	pickImageText: {

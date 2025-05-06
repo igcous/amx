@@ -17,12 +17,9 @@ import {
 	documentId,
 	arrayUnion,
 } from "firebase/firestore";
-import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 
 export default function Page() {
-	const router = useRouter();
-	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));

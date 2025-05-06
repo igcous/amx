@@ -12,7 +12,6 @@ import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import {
 	doc,
-	getDoc,
 	getDocs,
 	collection,
 	where,
@@ -23,46 +22,21 @@ import {
 	orderBy,
 	documentId,
 	arrayUnion,
+	Timestamp,
 } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
 import React from "react";
-
-type Application = {
-	applicantId: string;
-	firstname: string;
-	lastname: string;
-	skills: string[];
-};
-
-type Post = {
-	id: string;
-	postSkills: string[];
-	applicantIds: string[];
-	seenApplicantIds: string[];
-};
+import { Post, Searcher } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	/*const [currentApplication, setCurrentApplication] =
-		useState<Application | null>(null);*/
-	const [deck, setDeck] = useState<Application[] | null>(null);
-
-	const params = useLocalSearchParams();
-
-	const [currentPost, setCurrentPost] = useState<Post>({
-		id: params.postId.toString(),
-		postSkills: params.postSkills
-			? params.postSkills.toString().split(",")
-			: [],
-		applicantIds: params.applicants
-			? params.applicants.toString().split(",")
-			: [],
-		seenApplicantIds: params.seen ? params.seen.toString().split(",") : [],
-	});
+	const [deck, setDeck] = useState<Searcher[] | null>(null);
+	const { post } = useLocalSearchParams<{ post: string }>();
+	const [currentPost, setCurrentPost] = useState<Post>(JSON.parse(post));
 
 	useEffect(() => {
 		// Get batches of n applicants
@@ -79,8 +53,8 @@ export default function Page() {
 			setLoading(true);
 
 			// Filter out seen applicants
-			const validApplicantIds = currentPost.applicantIds.filter(
-				(id) => !currentPost.seenApplicantIds.includes(id)
+			const validApplicantIds = currentPost.applicants.filter(
+				(id: string) => !currentPost.seenApplicants.includes(id)
 			);
 
 			if (validApplicantIds.length !== 0) {
@@ -92,14 +66,15 @@ export default function Page() {
 					)
 				);
 
-				const applications: Application[] = querySnapshot.docs.map((doc) => ({
-					applicantId: doc.id,
+				const applicants: Searcher[] = querySnapshot.docs.map((doc) => ({
+					id: doc.id,
 					firstname: doc.data().firstname,
 					lastname: doc.data().lastname,
 					skills: doc.data().skills,
+					email: doc.data().email,
 				}));
 
-				setDeck(applications);
+				setDeck(applicants);
 			}
 
 			/* TO TEST
@@ -121,7 +96,7 @@ export default function Page() {
 		}
 	};
 
-	const handleSubmit = async (application: Application, liked: boolean) => {
+	const handleSubmit = async (applicant: Searcher, liked: boolean) => {
 		if (!userAuth?.uid || !userDoc) {
 			console.log("User Auth error, this should never happen");
 			throw new Error();
@@ -129,27 +104,24 @@ export default function Page() {
 
 		// Firebase update
 		await updateDoc(doc(db, "posts", currentPost.id), {
-			seenApplicants: currentPost.seenApplicantIds
-				? [...currentPost.seenApplicantIds, application.applicantId]
-				: [application.applicantId],
+			seenApplicants: currentPost.seenApplicants
+				? [...currentPost.seenApplicants, applicant.id]
+				: [applicant.id],
 		});
 
 		// Context update
 		setCurrentPost({
 			...currentPost,
-			seenApplicantIds: currentPost.seenApplicantIds
-				? [...currentPost.seenApplicantIds, application.applicantId]
-				: [application.applicantId],
+			seenApplicants: currentPost.seenApplicants
+				? [...currentPost.seenApplicants, applicant.id]
+				: [applicant.id],
 		});
 		setDeck(
-			(prevDeck) =>
-				prevDeck?.filter(
-					(item) => item.applicantId !== application.applicantId
-				) || null
+			(prevDeck) => prevDeck?.filter((item) => item.id !== applicant.id) || null
 		);
 
 		if (liked) {
-			await createChat([userAuth.uid, application.applicantId]);
+			await createChat([userAuth.uid, applicant.id]);
 		}
 	};
 
@@ -212,12 +184,12 @@ export default function Page() {
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<View style={styles.cardContainer}>
-					{deck?.map((application, index) => (
+					{deck?.map((applicant, index) => (
 						<TinderCard
 							ref={childRefs[index]}
-							key={application.applicantId}
+							key={applicant.id}
 							onSwipe={(dir) => {
-								handleSubmit(application, dir === "right" ? true : false);
+								handleSubmit(applicant, dir === "right" ? true : false);
 								//console.log("Index:", index);
 							}}
 							onCardLeftScreen={(dir) => {
@@ -229,12 +201,12 @@ export default function Page() {
 								onPress={() => {
 									router.navigate({
 										pathname: `/post/seeprofile`,
-										params: { application: JSON.stringify(application) },
+										params: { application: JSON.stringify(applicant) },
 									});
 								}}>
-								<Text style={styles.cardTitle}>{application.applicantId}</Text>
-								<Text style={styles.cardTitle}>{application.firstname}</Text>
-								<Text style={styles.cardTitle}>{application.lastname}</Text>
+								<Text style={styles.cardTitle}>{applicant.id}</Text>
+								<Text style={styles.cardTitle}>{applicant.firstname}</Text>
+								<Text style={styles.cardTitle}>{applicant.lastname}</Text>
 							</Pressable>
 						</TinderCard>
 					))}
