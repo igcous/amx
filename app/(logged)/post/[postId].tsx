@@ -130,29 +130,40 @@ export default function Page() {
 		);
 
 		if (liked) {
+			alert("Matched!");
 			await createChat([userAuth.uid, applicant.id]);
 		}
 	};
 
 	const createChat = async (userIds: string[]) => {
 		// create chat room
-		const docRef = await addDoc(collection(db, "chats"), {
-			users: userIds.sort(),
-			postId: currentPost.id,
-		});
-		const newChatId = docRef.id;
-
-		// add chat id to users
-		userIds.forEach(async (user) => {
-			await updateDoc(doc(db, "users", user), {
-				chatIds: arrayUnion(newChatId),
+		try {
+			setLoading(true);
+			const docRef = await addDoc(collection(db, "chats"), {
+				users: userIds.sort(),
+				postId: currentPost.id,
 			});
-		});
+			const newChatId = docRef.id;
 
-		// update context
-		setUserDoc({ ...userDoc, chatIds: [...userDoc?.chatIds, newChatId] });
+			// add chat id to users
+			userIds.forEach(async (user) => {
+				await updateDoc(doc(db, "users", user), {
+					chatIds: arrayUnion(newChatId),
+				});
+			});
 
-		alert("Matched!");
+			// Update Context
+			setUserDoc((prevUserDoc) => ({
+				...prevUserDoc,
+				chatIds: prevUserDoc?.chatIds
+					? [...prevUserDoc.chatIds, newChatId]
+					: [newChatId],
+			}));
+		} catch (e) {
+			console.log(e);
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	// From react-tinder-card Advanced Example
