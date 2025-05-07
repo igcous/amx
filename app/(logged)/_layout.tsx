@@ -50,19 +50,31 @@ export default function LoggedLayout() {
 				transform: [{ scale: 2 }],
 			}}
 		/>
-	) : userDoc?.role === "searcher" ? (
-		<Tabs>
-			<Tabs.Screen name="apply" options={{ title: "Apply" }}></Tabs.Screen>
-			<Tabs.Screen name="profile" options={{ title: "Profile" }}></Tabs.Screen>
-			<Tabs.Screen name="chats" options={{ title: "Chats" }}></Tabs.Screen>
-			<Tabs.Screen name="post" options={{ href: null }}></Tabs.Screen>
-		</Tabs>
 	) : (
-		<Tabs>
-			<Tabs.Screen name="post" options={{ title: "Post" }}></Tabs.Screen>
-			<Tabs.Screen name="profile" options={{ title: "Profile" }}></Tabs.Screen>
-			<Tabs.Screen name="chats" options={{ title: "Chats" }}></Tabs.Screen>
-			<Tabs.Screen name="apply" options={{ href: null }}></Tabs.Screen>
+		<Tabs
+			screenOptions={{
+				tabBarStyle: {
+					height: 70,
+				},
+				tabBarLabelStyle: {
+					fontSize: 20,
+				},
+			}}>
+			<Tabs.Screen
+				name={userDoc?.role === "searcher" ? "apply" : "post"}
+				options={{
+					title: userDoc?.role === "searcher" ? "Apply" : "Post",
+					headerShown: false,
+				}}></Tabs.Screen>
+			<Tabs.Screen
+				name={userDoc?.role === "searcher" ? "post" : "apply"}
+				options={{ href: null }}></Tabs.Screen>
+			<Tabs.Screen
+				name="profile"
+				options={{ title: "Profile", headerShown: false }}></Tabs.Screen>
+			<Tabs.Screen
+				name="chats"
+				options={{ title: "Chats", headerShown: false }}></Tabs.Screen>
 		</Tabs>
 	);
 }

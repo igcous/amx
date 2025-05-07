@@ -12,5 +12,9 @@ import { useAuth } from "../../context/AuthContext";
 export default function NotLoggedLayout() {
 	const { userAuth } = useAuth();
 
-	return userAuth ? <Redirect href="/(logged)/profile/"></Redirect> : <Stack />;
+	return userAuth ? (
+		<Redirect href="/(logged)/profile/"></Redirect>
+	) : (
+		<Stack screenOptions={{ headerShown: false }} />
+	);
 }

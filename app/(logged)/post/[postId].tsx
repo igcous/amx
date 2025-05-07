@@ -1,4 +1,5 @@
 import {
+	ActivityIndicator,
 	Button,
 	Dimensions,
 	Pressable,
@@ -7,6 +8,7 @@ import {
 	View,
 } from "react-native";
 import { useState, useEffect, useMemo } from "react";
+import * as WebBrowser from "expo-web-browser";
 import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
@@ -22,13 +24,13 @@ import {
 	orderBy,
 	documentId,
 	arrayUnion,
-	Timestamp,
+	getDoc,
 } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
 import React from "react";
-import { Post, Searcher } from "../../../constants/dataTypes";
+import { Searcher } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const router = useRouter();
@@ -36,7 +38,11 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Searcher[] | null>(null);
 	const { post } = useLocalSearchParams<{ post: string }>();
-	const [currentPost, setCurrentPost] = useState<Post>(JSON.parse(post));
+	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
+
+	useEffect(() => {
+		console.log(userDoc);
+	}, []);
 
 	useEffect(() => {
 		// Get batches of n applicants
@@ -53,15 +59,18 @@ export default function Page() {
 			setLoading(true);
 
 			// Filter out seen applicants
-			const validApplicantIds = currentPost.applicants.filter(
-				(id: string) => !currentPost.seenApplicants.includes(id)
-			);
 
-			if (validApplicantIds.length !== 0) {
+			const validApplicants = currentPost.seenApplicants
+				? currentPost.applicants.filter(
+						(id: string) => !currentPost.seenApplicants.includes(id)
+				  )
+				: currentPost.applicants;
+
+			if (currentPost.applicants && validApplicants.length !== 0) {
 				const querySnapshot = await getDocs(
 					query(
 						collection(db, "users"),
-						where(documentId(), "in", validApplicantIds),
+						where(documentId(), "in", validApplicants),
 						limit(n)
 					)
 				);
@@ -142,6 +151,8 @@ export default function Page() {
 
 		// update context
 		setUserDoc({ ...userDoc, chatIds: [...userDoc?.chatIds, newChatId] });
+
+		alert("Matched!");
 	};
 
 	// From react-tinder-card Advanced Example
@@ -164,19 +175,42 @@ export default function Page() {
 		}
 	};
 
+	const downloadCV = async (applicantId: string) => {
+		try {
+			const docSnap = await getDoc(doc(db, "users", applicantId));
+
+			const resumeURL = docSnap.data()?.resumeURL;
+			if (resumeURL) {
+				const result = await WebBrowser.openBrowserAsync(resumeURL);
+				console.log("Browser result:", result);
+			} else {
+				alert("No uploaded CV found.");
+			}
+		} catch (error) {
+			console.error("Error downloading file:", error);
+			alert("Failed to download the file. Please try again.");
+		}
+	};
+
 	return loading ? (
-		<View style={styles.container}>
-			<View style={styles.top}>
-				<View style={styles.info}>
-					<Text style={styles.infoText}>Loading...</Text>
-				</View>
-			</View>
-		</View>
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
 	) : deck === null || deck?.length === 0 ? (
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<View style={styles.info}>
-					<Text style={styles.infoText}>No more posts to display</Text>
+					<Text style={styles.infoText}>
+						No more applicants for this job post
+					</Text>
 				</View>
 			</View>
 		</View>
@@ -200,20 +234,51 @@ export default function Page() {
 								style={styles.card}
 								onPress={() => {
 									router.navigate({
-										pathname: `/post/seeprofile`,
-										params: { application: JSON.stringify(applicant) },
+										pathname: `/post/seepost`,
+										params: {
+											post: post,
+										},
 									});
 								}}>
-								<Text style={styles.cardTitle}>{applicant.id}</Text>
-								<Text style={styles.cardTitle}>{applicant.firstname}</Text>
-								<Text style={styles.cardTitle}>{applicant.lastname}</Text>
+								<View style={styles.cardContent}>
+									<Text style={styles.cardTitle}>
+										{applicant.firstname + " " + applicant.lastname}
+									</Text>
+								</View>
+
+								<View style={styles.cardContent}>
+									<View style={styles.skillDeck}>
+										{applicant.skills.map((skill: string, index: number) => (
+											<Text key={index} style={styles.skillCard}>
+												{skill.trim()}
+											</Text>
+										))}
+									</View>
+								</View>
+
+								<View style={styles.cardContent}>
+									<Pressable
+										onPress={() => downloadCV(applicant.id)}
+										style={styles.link}>
+										<Text style={styles.linkText}>Download CV</Text>
+									</Pressable>
+									{/*<Pressable onPress={() => {}} style={styles.link}>
+										<Text style={styles.linkText}>See job post</Text>
+									</Pressable>*/}
+								</View>
 							</Pressable>
 						</TinderCard>
 					))}
 				</View>
-				<View style={styles.buttons}>
-					<Button title="Yes" onPress={() => swipe("right")}></Button>
-					<Button title="No" onPress={() => swipe("left")}></Button>
+			</View>
+			<View style={styles.bottom}>
+				<View style={styles.buttonsContainer}>
+					<Pressable style={styles.buttons} onPress={() => swipe("left")}>
+						<Text style={styles.buttonsText}>NO</Text>
+					</Pressable>
+					<Pressable style={styles.buttons} onPress={() => swipe("right")}>
+						<Text style={styles.buttonsText}>YES</Text>
+					</Pressable>
 				</View>
 			</View>
 		</View>
@@ -245,30 +310,90 @@ const styles = StyleSheet.create({
 	},
 
 	// This part of the styleSheet is specific to this page
-	info: { alignSelf: "center" },
-	infoText: { fontSize: 20 },
+	info: {
+		flex: 1,
+		justifyContent: "center",
+		alignSelf: "center",
+	},
+	infoText: {
+		fontSize: 20,
+	},
 	cardContainer: {
 		flex: 1,
+		borderWidth: 0,
+		justifyContent: "flex-start",
+		//backgroundColor: "red",
 	},
 	card: {
+		flex: 1,
 		position: "absolute",
-		backgroundColor: Colors.secondary,
-		width: "90%",
+		backgroundColor: Colors.tertiary,
+		width: "95%",
+		height: 0.7 * height,
 		alignSelf: "center",
-		height: 0.5 * height,
-		borderRadius: 20,
-		shadowColor: "black",
-		shadowOpacity: 0.2,
-		shadowRadius: 20,
-		resizeMode: "cover",
 		justifyContent: "space-around",
-		alignContent: "center",
+		borderWidth: 2,
+		borderRadius: 20,
 	},
 	cardImage: {},
-	cardTitle: {
-		textAlign: "center",
-		fontSize: 20,
-		color: Colors.textPrimary,
+	cardContent: {
+		width: "90%",
+		alignSelf: "center",
 	},
-	buttons: {},
+	cardTitle: {
+		fontSize: 30,
+		color: Colors.textPrimary,
+		textAlign: "center",
+	},
+	cardDescription: {
+		fontSize: 24,
+		color: Colors.textPrimary,
+		textAlign: "left",
+	},
+	buttonsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "95%",
+		alignSelf: "center",
+	},
+	buttons: {
+		backgroundColor: Colors.secondary,
+		width: "49%",
+		paddingVertical: 15,
+	},
+	buttonsText: {
+		color: "white",
+		fontSize: 30,
+		textAlign: "center",
+	},
+	skillDeck: {
+		flexGrow: 1,
+		justifyContent: "center",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		width: "90%",
+		alignSelf: "center",
+		marginTop: 10,
+		gap: 10,
+		marginBottom: 10,
+	},
+	skillCard: {
+		alignSelf: "center",
+		backgroundColor: Colors.secondary,
+		paddingHorizontal: 15,
+		paddingVertical: 5,
+		borderRadius: 20,
+		fontSize: 24,
+		color: Colors.tertiary,
+	},
+	link: {
+		backgroundColor: Colors.secondary,
+		padding: 5,
+		marginBottom: 20,
+	},
+	linkText: {
+		fontSize: 30,
+		color: "white",
+		textAlign: "center",
+	},
 });

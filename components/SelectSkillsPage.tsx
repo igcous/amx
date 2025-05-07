@@ -12,7 +12,7 @@ import { Colors } from "../constants/colorPalette";
 import { doc, updateDoc } from "firebase/firestore";
 import { db } from "../config/firebaseConfig";
 import { useAuth } from "../context/AuthContext";
-import { SkillDeck } from "./skillDeck";
+import { SkillDeck } from "./SkillDeck";
 
 export const SelectSkillsPage = ({
 	goBackTo,

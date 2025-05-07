@@ -283,14 +283,6 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
-	/*
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
-		justifyContent: "flex-start",
-		alignItems: "center",
-	},
-	*/
 	top: {
 		width: "100%",
 		marginTop: 20,
@@ -298,7 +290,7 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		width: "100%",
-		marginBottom: 40,
+		marginBottom: 20,
 		gap: 20,
 	},
 	bottomButton: {
@@ -395,7 +387,7 @@ const styles = StyleSheet.create({
 	pickImageOptions: {
 		padding: 10,
 		borderRadius: 0,
-		backgroundColor: Colors.primary,
+		backgroundColor: "black",
 	},
 	pickImageText: {
 		color: "white", // Text color for visibility

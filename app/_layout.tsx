@@ -18,7 +18,7 @@ export default function RootLayout() {
 	return (
 		<AuthProvider>
 			<SafeAreaProvider>
-				<Stack />
+				<Stack screenOptions={{ headerShown: false }} />
 			</SafeAreaProvider>
 		</AuthProvider>
 	);

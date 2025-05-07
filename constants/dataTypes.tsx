@@ -23,3 +23,14 @@ export type Searcher = {
 	email: string;
 	// hide chatIds
 };
+
+export type ChatUser = {
+	id: string;
+	chatId: string;
+	postId: string;
+	firstname: string;
+	lastname: string;
+	companyname: string;
+	jobtitle: string;
+	picURL: string;
+};

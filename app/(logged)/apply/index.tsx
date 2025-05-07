@@ -1,26 +1,34 @@
+/*
+Title: Apply Page
+
+Description:
+    Only for Searcher
+		Swipe on job post suggestions
+
+
+	TODO: Make the suggestions skill-based
+*/
+
 import {
 	StyleSheet,
 	Text,
 	View,
-	Button,
 	Dimensions,
 	Pressable,
+	ActivityIndicator,
 } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import {
-	doc,
-	addDoc,
-	getDoc,
 	getDocs,
-	updateDoc,
 	collection,
 	query,
 	where,
 	limit,
 	documentId,
-	Timestamp,
+	updateDoc,
 	arrayUnion,
+	doc,
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
@@ -96,7 +104,6 @@ export default function Page() {
 		//console.log("Current Post ID ", post.id);
 		//liked ? console.log("yes") : console.log("no");
 
-		/*
 		// Firebase update
 		if (liked) {
 			await updateDoc(doc(db, "users", userAuth.uid), {
@@ -114,7 +121,6 @@ export default function Page() {
 				seenPosts: arrayUnion(post.id),
 			});
 		}
-		*/
 
 		// Update Context
 		setUserDoc((prevUserDoc) => ({
@@ -156,19 +162,21 @@ export default function Page() {
 	};
 
 	return loading ? (
-		<View style={styles.container}>
-			<View style={styles.top}>
-				<View style={styles.info}>
-					<Text style={styles.infoText}>Loading...</Text>
-				</View>
-			</View>
-		</View>
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
 	) : deck === null || deck?.length === 0 ? (
 		<View style={styles.container}>
-			<View style={styles.top}>
-				<View style={styles.info}>
-					<Text style={styles.infoText}>No more posts to display</Text>
-				</View>
+			<View style={styles.info}>
+				<Text style={styles.infoText}>No more job posts to display</Text>
 			</View>
 		</View>
 	) : (
@@ -181,7 +189,6 @@ export default function Page() {
 							key={post.id}
 							onSwipe={(dir) => {
 								handleSubmit(post, dir === "right" ? true : false);
-								//console.log("Index:", index);
 							}}
 							onCardLeftScreen={(dir) => {
 								//console.log("onCardLeftScreen:", dir);
@@ -197,16 +204,42 @@ export default function Page() {
 										},
 									});
 								}}>
-								<Text style={styles.cardTitle}>{post.id}</Text>
-								<Text style={styles.cardTitle}>{post.title}</Text>
-								<Text style={styles.cardTitle}>{post.employer}</Text>
+								<View style={styles.cardContent}>
+									<Text style={styles.cardTitle}>{post.title}</Text>
+									<Text style={styles.cardTitle}>{post.employer}</Text>
+									<Text style={styles.cardTitle}>
+										{post.postedAt.toDate().toLocaleDateString(undefined, {
+											year: "numeric",
+											month: "long",
+											day: "numeric",
+										})}
+									</Text>
+								</View>
+								<View style={styles.cardContent}>
+									<View style={styles.skillDeck}>
+										{post.postSkills.map((skill: string, index: number) => (
+											<Text key={index} style={styles.skillCard}>
+												{skill.trim()}
+											</Text>
+										))}
+									</View>
+								</View>
+								<View style={styles.cardContent}>
+									<Text style={styles.cardDescription}>{post.text}</Text>
+								</View>
 							</Pressable>
 						</TinderCard>
 					))}
 				</View>
-				<View style={styles.buttons}>
-					<Button title="Yes" onPress={() => swipe("right")}></Button>
-					<Button title="No" onPress={() => swipe("left")}></Button>
+			</View>
+			<View style={styles.bottom}>
+				<View style={styles.buttonsContainer}>
+					<Pressable style={styles.buttons} onPress={() => swipe("left")}>
+						<Text style={styles.buttonsText}>NO</Text>
+					</Pressable>
+					<Pressable style={styles.buttons} onPress={() => swipe("right")}>
+						<Text style={styles.buttonsText}>YES</Text>
+					</Pressable>
 				</View>
 			</View>
 		</View>
@@ -229,39 +262,84 @@ const styles = StyleSheet.create({
 	},
 	bottom: {
 		width: "100%",
-		marginBottom: 40,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
+		marginBottom: 20,
 	},
 
 	// This part of the styleSheet is specific to this page
-	info: { alignSelf: "center" },
-	infoText: { fontSize: 20 },
+	info: {
+		flex: 1,
+		justifyContent: "center",
+		alignSelf: "center",
+	},
+	infoText: {
+		fontSize: 20,
+	},
 	cardContainer: {
 		flex: 1,
+		borderWidth: 0,
+		justifyContent: "flex-start",
+		//backgroundColor: "red",
 	},
 	card: {
+		flex: 1,
 		position: "absolute",
-		backgroundColor: Colors.secondary,
-		width: "90%",
+		backgroundColor: Colors.tertiary,
+		width: "95%",
+		height: 0.7 * height,
 		alignSelf: "center",
-		height: 0.5 * height,
-		borderRadius: 20,
-		shadowColor: "black",
-		shadowOpacity: 0.2,
-		shadowRadius: 20,
-		resizeMode: "cover",
 		justifyContent: "space-around",
-		alignContent: "center",
+		borderWidth: 2,
+		borderRadius: 20,
 	},
 	cardImage: {},
-	cardTitle: {
-		textAlign: "center",
-		fontSize: 20,
-		color: Colors.textPrimary,
+	cardContent: {
+		width: "90%",
+		alignSelf: "center",
 	},
-	buttons: {},
+	cardTitle: {
+		fontSize: 30,
+		color: Colors.textPrimary,
+		textAlign: "center",
+	},
+	cardDescription: {
+		fontSize: 24,
+		color: Colors.textPrimary,
+		textAlign: "left",
+	},
+	buttonsContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		width: "95%",
+		alignSelf: "center",
+	},
+	buttons: {
+		backgroundColor: Colors.primary,
+		width: "49%",
+		paddingVertical: 15,
+	},
+	buttonsText: {
+		color: "white",
+		fontSize: 30,
+		textAlign: "center",
+	},
+	skillDeck: {
+		flexGrow: 1,
+		justifyContent: "center",
+		flexDirection: "row",
+		flexWrap: "wrap",
+		width: "90%",
+		alignSelf: "center",
+		marginTop: 10,
+		gap: 10,
+		marginBottom: 10,
+	},
+	skillCard: {
+		alignSelf: "center",
+		backgroundColor: Colors.secondary,
+		paddingHorizontal: 15,
+		paddingVertical: 5,
+		borderRadius: 20,
+		fontSize: 24,
+		color: Colors.tertiary,
+	},
 });

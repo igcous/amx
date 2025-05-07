@@ -18,7 +18,7 @@ import {
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
-import { SkillDeck } from "../../../components/skillDeck";
+import { SkillDeck } from "../../../components/SkillDeck";
 
 export default function Page() {
 	const router = useRouter();

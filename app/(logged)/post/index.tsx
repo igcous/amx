@@ -16,6 +16,8 @@ import {
 	ListRenderItem,
 	FlatList,
 	Pressable,
+	Alert,
+	ActivityIndicator,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
@@ -34,8 +36,8 @@ import { Post } from "../../../constants/dataTypes";
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
-	const [postList, setPostList] = useState<Post[] | null>([]);
-	const [loading, setLoading] = useState(false);
+	const [postList, setPostList] = useState<Post[]>([]);
+	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		setLoading(true);
@@ -52,10 +54,10 @@ export default function Page() {
 					try {
 						const docSnap = await getDoc(doc(db, "posts", postId));
 						if (!docSnap.exists() || !docSnap.data()) {
-							console.error(`Post with ID ${postId} does not exist`);
+							// ignore
+							//console.error(`Post with ID ${postId} does not exist`);
 							continue;
 						}
-
 						const newPost: Post = {
 							id: docSnap.id,
 							title: docSnap.data().title,
@@ -99,13 +101,11 @@ export default function Page() {
 			console.log("Deleted post", postId);
 
 			// Update the local userDoc context
-			const updatedPublishedPosts = userDoc.publishedPosts.filter(
-				(id: string) => id !== postId
-			);
-
 			setUserDoc({
 				...userDoc,
-				publishedPosts: updatedPublishedPosts,
+				publishedPosts: userDoc.publishedPosts.filter(
+					(id: string) => id !== postId
+				),
 			});
 		} catch (e) {
 			console.log(e);
@@ -120,12 +120,33 @@ export default function Page() {
 				<Pressable
 					style={styles.itemBody}
 					onPress={() => {
-						goToApplications(item.id);
+						router.push({
+							pathname: `/post/${item.id}`,
+							params: {
+								post: JSON.stringify(
+									postList?.find((post) => post.id === item.id)
+								),
+							},
+						});
+					}}
+					onLongPress={() => {
+						router.push({
+							pathname: `/post/seepost`,
+							params: {
+								post: JSON.stringify(
+									postList?.find((post) => post.id === item.id)
+								),
+							},
+						});
 					}}>
 					<View style={styles.itemHeader}>
 						<Text style={styles.itemText}>{item.title}</Text>
 						<Text style={styles.itemText}>
-							{item.postedAt.toDate().toLocaleString()}
+							{item.postedAt.toDate().toLocaleDateString(undefined, {
+								year: "numeric",
+								month: "long",
+								day: "numeric",
+							})}
 						</Text>
 					</View>
 
@@ -140,21 +161,29 @@ export default function Page() {
 				<Pressable
 					style={styles.itemSide}
 					onPress={() => {
-						deletePost(item.id);
+						Alert.alert(
+							"Confirm post deletion?",
+							"",
+							[
+								{
+									text: "Confirm",
+									onPress: () => deletePost(item.id),
+									style: "default",
+								},
+								{
+									text: "Cancel",
+									style: "cancel",
+								},
+							],
+							{
+								cancelable: true,
+							}
+						);
 					}}>
 					<Text>X</Text>
 				</Pressable>
 			</View>
 		);
-	};
-
-	const goToApplications = (postId: string) => {
-		router.navigate({
-			pathname: `/post/${postId}`,
-			params: {
-				post: JSON.stringify(postList?.find((post) => post.id === postId)),
-			},
-		});
 	};
 
 	const newPost = () => {
@@ -166,17 +195,35 @@ export default function Page() {
 		});
 	};
 
-	return (
+	return loading ? (
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
+	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<Pressable style={styles.topBar} onPress={newPost}>
 					<Text style={styles.topBarText}>New Post (+)</Text>
 				</Pressable>
 
-				<FlatList
-					data={postList}
-					renderItem={renderItem}
-					contentContainerStyle={styles.list}></FlatList>
+				{postList.length === 0 ? (
+					<View style={styles.info}>
+						<Text style={styles.infoText}>Let's make some posts!</Text>
+					</View>
+				) : (
+					<FlatList
+						data={postList}
+						renderItem={renderItem}
+						contentContainerStyle={styles.list}></FlatList>
+				)}
 			</View>
 		</View>
 	);
@@ -198,6 +245,7 @@ const styles = StyleSheet.create({
 		width: "100%",
 		marginTop: 0,
 		gap: 20,
+		flex: 1,
 	},
 	bottom: {
 		width: "100%",
@@ -210,6 +258,14 @@ const styles = StyleSheet.create({
 	},
 
 	// This part of the styleSheet is specific to this page
+	info: {
+		flex: 1,
+		justifyContent: "center",
+		alignSelf: "center",
+	},
+	infoText: {
+		fontSize: 20,
+	},
 	list: {
 		flexGrow: 1,
 		width: "90%",

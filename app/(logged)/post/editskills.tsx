@@ -5,7 +5,7 @@ Description:
     Based on the Skill Deck component, similar to what is done on Signup (signup3.tsx)
 */
 
-import { SelectSkillsPage } from "../../../components/selectSkillsPage";
+import { SelectSkillsPage } from "../../../components/SelectSkillsPage";
 
 export default function Page() {
 	return (

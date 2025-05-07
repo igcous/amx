@@ -6,33 +6,26 @@ import {
 	FlatList,
 	Pressable,
 	Dimensions,
+	ActivityIndicator,
+	Alert,
 } from "react-native";
-import { useImage, Image } from "expo-image";
+import { Image } from "expo-image";
 import { useState, useEffect } from "react";
 import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { doc, getDoc } from "firebase/firestore";
+import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
-
-type ChatUser = {
-	id: string;
-	chatId: string;
-	postId: string;
-	firstname: string;
-	lastname: string;
-	companyname: string;
-	jobtitle: string;
-	picURL: string;
-};
+import { ChatUser } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const router = useRouter();
-	const { userAuth, userDoc } = useAuth();
-	const [chatList, setChatList] = useState<ChatUser[] | null>([]);
+	const { userAuth, userDoc, setUserDoc } = useAuth();
+	const [chatList, setChatList] = useState<ChatUser[]>([]);
+	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		console.log(userDoc);
+		setLoading(true);
 		const fetchChatList = async () => {
 			if (!userDoc) {
 				console.error("userDoc is undefined");
@@ -40,12 +33,15 @@ export default function Page() {
 			}
 
 			if (userDoc.chatIds) {
-				const chatUsers: ChatUser[] | null = [];
+				const chatUsers: ChatUser[] = [];
 
 				for (const chatId of userDoc.chatIds) {
 					try {
-						// get chat info -> users
 						const chatSnap = await getDoc(doc(db, "chats", chatId));
+						if (!chatSnap.exists()) {
+							// ignore
+							continue;
+						}
 
 						// assume 1-on-1 chats
 						const userToFetch =
@@ -55,22 +51,30 @@ export default function Page() {
 
 						// get other user info
 						const userDocSnap = await getDoc(doc(db, "users", userToFetch));
+						if (!userDocSnap.exists()) {
+							// ignore
+							continue;
+						}
 
 						// fetch post info
-						const postId = chatSnap.data()?.postId;
+						const postId = chatSnap.data().postId;
 						const postSnap = await getDoc(doc(db, "posts", postId));
+						if (!postSnap.exists()) {
+							// ignore
+							continue;
+						}
 
 						const chatUser: ChatUser = {
 							id: userToFetch,
 							chatId: chatId,
 							postId: postId,
-							firstname: userDocSnap.data()?.firstname,
-							lastname: userDocSnap.data()?.lastname,
-							companyname: userDocSnap.data()?.companyname,
-							jobtitle: postSnap.data()?.title,
-							picURL: userDocSnap.data()?.profilePicURL,
+							firstname: userDocSnap.data().firstname,
+							lastname: userDocSnap.data().lastname,
+							companyname: userDocSnap.data().companyname,
+							jobtitle: postSnap.data().title,
+							picURL: userDocSnap.data().profilePicURL,
 						};
-
+						//console.log(chatUser.picURL);
 						chatUsers.push(chatUser);
 					} catch (e) {
 						console.error("Error fetching user data:", e);
@@ -81,6 +85,7 @@ export default function Page() {
 			}
 		};
 		fetchChatList();
+		setLoading(false);
 	}, [userDoc]);
 
 	const renderItem: ListRenderItem<ChatUser> = ({ item }) => {
@@ -88,64 +93,131 @@ export default function Page() {
 			<Pressable
 				style={styles.item}
 				onPress={() => {
-					console.log(item.chatId);
-					router.navigate({
+					//console.log(item.chatId);
+					router.push({
 						pathname: `/chats/${item.chatId}`,
 						params: {
-							firstname: item.firstname,
-							lastname: item.lastname,
-							companyname: item.companyname,
-							picUrl: item.picURL,
-							jobtitle: item.jobtitle,
+							chatUser: JSON.stringify(item),
+							postId: item.postId,
 						},
 					});
-				}}
-				onLongPress={() => {
-					// see post page
 				}}>
-				<View style={styles.itemHeader}>
-					{item.picURL ? (
-						<Image
-							contentFit="cover"
-							source={{ uri: item.picURL }}
-							style={styles.profilePic}
-						/>
+				<View style={styles.itemBody}>
+					<View style={styles.itemHeader}>
+						{item.picURL ? (
+							<Image
+								contentFit="cover"
+								source={{ uri: item.picURL }}
+								style={styles.profilePic}
+							/>
+						) : (
+							// Fallback when there is no image
+							<Image
+								contentFit="contain"
+								source={require("../../../assets/profile_icon.svg")}
+								style={styles.profilePic}
+							/>
+						)}
+						<Text style={styles.itemText}>
+							{item.firstname} {item.lastname}
+						</Text>
+					</View>
+					{userDoc?.role === "searcher" ? (
+						<Text style={styles.itemText}>
+							{item.jobtitle} position{"\n"}
+							{item.companyname}
+						</Text>
 					) : (
-						// No image fallback
-						<Image
-							contentFit="contain"
-							source={require("../../../assets/profile_icon.svg")}
-							style={styles.profilePic}
-						/>
+						<Text style={styles.itemText}>
+							Applied as{"\n"}
+							{item.jobtitle}
+						</Text>
 					)}
-					<Text style={styles.itemText}>
-						{item.firstname} {item.lastname}
-					</Text>
 				</View>
-				{userDoc?.role === "searcher" ? (
-					<Text style={styles.itemText}>
-						{item.jobtitle} position{"\n"}
-						{item.companyname}
-					</Text>
-				) : (
-					<Text style={styles.itemText}>
-						Applied as{"\n"}
-						{item.jobtitle}
-					</Text>
-				)}
+				<View style={styles.itemSide}>
+					<Pressable
+						onPress={() => {
+							Alert.alert(
+								"Confirm chat deletion?",
+								"",
+								[
+									{
+										text: "Confirm",
+										onPress: () => deleteChat(item.chatId),
+										style: "default",
+									},
+									{
+										text: "Cancel",
+										style: "cancel",
+									},
+								],
+								{
+									cancelable: true,
+								}
+							);
+						}}>
+						<Text
+							style={[styles.itemText, { fontWeight: "bold", color: "white" }]}>
+							X
+						</Text>
+					</Pressable>
+				</View>
 			</Pressable>
 		);
 	};
 
-	return (
+	const deleteChat = async (chatId: string) => {
+		try {
+			setLoading(true);
+			if (!userDoc || !userAuth?.uid) {
+				console.error("user error is undefined");
+				return;
+			}
+
+			// Delete chatId in User chatIds
+			await updateDoc(doc(db, "users", userAuth.uid), {
+				chatIds: arrayRemove(chatId),
+			});
+
+			console.log("Deleted chat", chatId);
+
+			// Update the local userDoc context
+			setUserDoc({
+				...userDoc,
+				chatIds: userDoc.chatIds.filter((id: string) => id !== chatId),
+			});
+		} catch (e) {
+			console.log(e);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return loading ? (
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
+	) : (
 		<View style={styles.container}>
-			<View style={styles.top}>
+			{chatList.length === 0 ? (
+				<View style={styles.info}>
+					<Text style={styles.infoText}>Let's make some connections!</Text>
+				</View>
+			) : (
 				<FlatList
 					data={chatList}
 					renderItem={renderItem}
 					keyExtractor={(item) => item.chatId}
 					contentContainerStyle={styles.list}></FlatList>
-			</View>
+			)}
 		</View>
 	);
 }
@@ -180,18 +252,32 @@ const styles = StyleSheet.create({
 	},
 
 	// This part of the styleSheet is specific to this page
+	info: {
+		flex: 1,
+		justifyContent: "center",
+		alignSelf: "center",
+	},
+	infoText: {
+		fontSize: 20,
+	},
 	list: {
 		flexGrow: 1,
-		width: "90%",
+		marginTop: 10,
+		width: "95%",
 		alignSelf: "center",
 		justifyContent: "flex-start",
 	},
 	item: {
 		backgroundColor: Colors.tertiary,
 		padding: 16,
-		borderWidth: 1,
+		borderWidth: 2,
 		borderRadius: 20,
 		marginBottom: 10,
+		flexDirection: "row",
+		zIndex: 0,
+	},
+	itemBody: {
+		flex: 1,
 	},
 	itemHeader: {
 		flex: 1,
@@ -201,8 +287,15 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 	},
 	itemText: {
-		fontSize: 18,
+		fontSize: 24,
 		verticalAlign: "middle",
+	},
+	itemSide: {
+		padding: 10,
+		backgroundColor: Colors.primary,
+		borderRadius: 20,
+		alignSelf: "center",
+		zIndex: 1,
 	},
 	profilePic: {
 		width: width * 0.1,
