@@ -6,33 +6,22 @@ Description:
 
 */
 
-import { View, Text, Pressable, StyleSheet } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { View, Text, Pressable } from "react-native";
+import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import styles from "../style";
 
 export default function Page() {
 	const router = useRouter();
-	const [buttonDisabled, setButtonDisabled] = useState<boolean>(true);
 	const [roleSelection, setRoleSelection] = useState<string | null>(null);
-	const params = useLocalSearchParams();
-
-	useEffect(() => {
-		// Only for debug
-		console.log("Current params", params);
-	}, []);
-
-	const handleSelection = (value: string) => {
-		setButtonDisabled(false);
-		setRoleSelection(value);
-	};
 
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>You are...</Text>
+				<Text style={styles.title}>You are...</Text>
 				<Pressable
-					onPress={() => handleSelection("searcher")}
+					onPress={() => setRoleSelection("searcher")}
 					style={{
 						...styles.card,
 						borderColor:
@@ -41,7 +30,7 @@ export default function Page() {
 					<Text style={styles.cardText}>Looking for a job</Text>
 				</Pressable>
 				<Pressable
-					onPress={() => handleSelection("recruiter")}
+					onPress={() => setRoleSelection("recruiter")}
 					style={{
 						...styles.card,
 						borderColor:
@@ -55,7 +44,7 @@ export default function Page() {
 
 			<View style={styles.bottom}>
 				<Pressable
-					disabled={buttonDisabled}
+					disabled={!roleSelection}
 					style={[
 						styles.bottomButton,
 						{
@@ -67,69 +56,14 @@ export default function Page() {
 						},
 					]}
 					onPress={() => {
-						console.log("Old params", params);
-						console.log("New params", roleSelection);
 						router.push({
 							pathname: "/signup/signup2",
-							params: { ...params, role: roleSelection },
+							params: { role: roleSelection },
 						});
 					}}>
-					<Text style={styles.buttonText}>CONTINUE</Text>
+					<Text style={styles.bottomButtonText}>CONTINUE</Text>
 				</Pressable>
 			</View>
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-		gap: 20,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		paddingVertical: 15,
-		paddingHorizontal: 20,
-	},
-	buttonText: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-
-	// This part of the styleSheet is specific to this page
-	card: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 20,
-		backgroundColor: Colors.tertiary,
-		padding: 20,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-		textAlign: "center",
-	},
-	titleText: {
-		width: "90%",
-		fontSize: 30,
-		alignSelf: "center",
-		marginBottom: 40,
-	},
-});

@@ -10,20 +10,13 @@ TODO:
 */
 
 import { useState, useEffect } from "react";
-import {
-	View,
-	Text,
-	TextInput,
-	StyleSheet,
-	Button,
-	Pressable,
-	ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 import { Colors } from "../../../constants/colorPalette";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { auth, db } from "../../../config/firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
+import styles from "../style";
 
 export default function Page() {
 	const [form, setForm] = useState({
@@ -99,7 +92,7 @@ export default function Page() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>Account credentials</Text>
+				<Text style={styles.title}>Account credentials</Text>
 				<View style={styles.input}>
 					<Text style={styles.inputLabel}>E-mail</Text>
 					<TextInput
@@ -176,76 +169,9 @@ export default function Page() {
 					]}
 					disabled={buttonDisabled}
 					onPress={signup}>
-					<Text style={styles.buttonText}>CREATE ACCOUNT</Text>
+					<Text style={styles.bottomButtonText}>CREATE ACCOUNT</Text>
 				</Pressable>
 			</View>
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-		gap: 20,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		paddingVertical: 15,
-		paddingHorizontal: 20,
-	},
-	buttonText: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-	// This part of the styleSheet is specific to this page
-	input: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 40,
-	},
-	inputLabel: {
-		fontSize: 20,
-	},
-	inputBox: {
-		width: "100%",
-		textAlign: "center",
-		borderBottomWidth: 4,
-		borderBottomColor: Colors.secondary,
-		alignSelf: "center",
-	},
-	titleText: {
-		width: "90%",
-		fontSize: 30,
-		alignSelf: "center",
-		marginBottom: 10,
-	},
-	terms: {
-		fontSize: 20,
-		textDecorationLine: "underline",
-		color: Colors.primary,
-	},
-	/* unused
-	activityIndicator: {
-		flex: 1,
-		justifyContent: "center",
-		backgroundColor: Colors.background,
-		transform: [{ scale: 3 }],
-	},
-	*/
-});

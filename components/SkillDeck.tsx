@@ -2,7 +2,7 @@
 Title: Skill Deck
 
 Description:
-	Component that display a list of selectable cards (buttons/pressables)
+	Component that display a list of selectable cards (Pressables)
 	Must be provided the useState skillSelection and setSkillSelection from the parent to take them outside of the component
 	There is also a default styling that can be overridden
 	Recommended use inside a View component
@@ -34,9 +34,12 @@ export const SkillDeck = ({
 	cardStyle?: ViewStyle;
 	cardTextStyle?: TextStyle;
 }) => {
+	/*
+	// debug
 	useEffect(() => {
 		console.log("Selection length: ", skillSelection.length);
 	});
+	*/
 
 	//TODO Store this skills somewhere persistent (DB or localfile)
 	const skillList: string[] = [
@@ -70,6 +73,13 @@ export const SkillDeck = ({
 		"UI/UX Design",
 		"Agile",
 		"Scrum",
+		"SAP",
+		"GraphQL",
+		"Node.js",
+		"Express.js",
+		"Linux",
+		"Elixir",
+		"Bash",
 	];
 
 	const handleSelection = (value: string) => {

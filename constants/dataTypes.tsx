@@ -1,29 +1,37 @@
+/*
+Title: Data Types
+
+Description:
+	These types are defined to make the handling of Firebase docs easier
+	Note: Firebase has a all-or-nothing document retrieval policy (in other words, no SQL select statement)
+
+*/
+
 import { Timestamp } from "firebase/firestore";
 
 // Post data
-// hide applicants for Searchers
+// note: hide applicants for Searchers
 export type Post = {
 	id: string;
 	title: string;
 	employer: string;
 	text: string; // description, content
-	postedAt: Timestamp;
+	postedAt: Timestamp; // Timestamp is Firebase's type for datetimes
 	postSkills: string[];
 	applicants: string[]; // applicant ids
 	seenApplicants: string[]; // already swiped applicants id
 };
 
 // Searcher/Applicant seen from Recruiter side
-//
 export type Searcher = {
 	id: string;
 	firstname: string;
 	lastname: string;
 	skills: string[];
 	email: string;
-	// hide chatIds
 };
 
+// Chat Partner
 export type ChatUser = {
 	id: string;
 	chatId: string;

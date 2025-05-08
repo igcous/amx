@@ -1,3 +1,12 @@
+/*
+Title: See Post Page
+
+Description:
+	Component that displays a Post, as defined in dataTypes
+	Repeatable
+	Recommened use inside its own file (for Expo Router)
+*/
+
 import { StyleSheet, Text, View, ScrollView } from "react-native";
 import { useState } from "react";
 import { Colors } from "../constants/colorPalette";

@@ -2,8 +2,8 @@
 Title: Auth context Provider
 
 Description:
-This context handles the user Authenthication
-It subscribes to the auth state changes and fetches the corresponding user document from Firestore
+	This context handles the user Authenthication
+	It subscribes to the auth state changes and fetches the corresponding user document from Firestore
 
 */
 
