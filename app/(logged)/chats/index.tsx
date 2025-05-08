@@ -133,34 +133,34 @@ export default function Page() {
 						</Text>
 					)}
 				</View>
-				<View style={styles.itemSide}>
-					<Pressable
-						onPress={() => {
-							Alert.alert(
-								"Confirm chat deletion?",
-								"",
-								[
-									{
-										text: "Confirm",
-										onPress: () => deleteChat(item.chatId),
-										style: "default",
-									},
-									{
-										text: "Cancel",
-										style: "cancel",
-									},
-								],
+
+				<Pressable
+					style={styles.itemSide}
+					onPress={() => {
+						Alert.alert(
+							"Confirm chat deletion?",
+							"",
+							[
 								{
-									cancelable: true,
-								}
-							);
-						}}>
-						<Text
-							style={[styles.itemText, { fontWeight: "bold", color: "white" }]}>
-							X
-						</Text>
-					</Pressable>
-				</View>
+									text: "Confirm",
+									onPress: () => deleteChat(item.chatId),
+									style: "default",
+								},
+								{
+									text: "Cancel",
+									style: "cancel",
+								},
+							],
+							{
+								cancelable: true,
+							}
+						);
+					}}>
+					<Text
+						style={[styles.itemText, { fontWeight: "bold", color: "white" }]}>
+						X
+					</Text>
+				</Pressable>
 			</Pressable>
 		);
 	};

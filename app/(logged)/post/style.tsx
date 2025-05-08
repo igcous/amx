@@ -189,13 +189,6 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		justifyContent: "flex-start",
 	},
-	itemBody: { flex: 1 },
-	itemHeader: {
-		marginBottom: 10,
-	},
-	itemText: {
-		fontSize: 18,
-	},
 	topBar: {
 		backgroundColor: Colors.secondary,
 		width: "100%",
@@ -205,16 +198,35 @@ const styles = StyleSheet.create({
 		fontSize: 24,
 		textAlign: "center",
 	},
-	itemSide: {},
+
+	// item
 	item: {
-		flex: 1,
-		flexDirection: "row",
-		flexWrap: "nowrap",
 		backgroundColor: Colors.tertiary,
 		padding: 16,
-		borderWidth: 1,
+		borderWidth: 2,
 		borderRadius: 20,
 		marginBottom: 10,
+		flexDirection: "row",
+		zIndex: 0,
+	},
+	itemBody: {
+		flex: 1,
+	},
+	itemHeader: {
+		flex: 1,
+		gap: 10,
+		marginBottom: 5,
+	},
+	itemText: {
+		fontSize: 24,
+		verticalAlign: "middle",
+	},
+	itemSide: {
+		padding: 10,
+		backgroundColor: Colors.primary,
+		borderRadius: 20,
+		alignSelf: "center",
+		zIndex: 1,
 	},
 });
 

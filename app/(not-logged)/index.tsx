@@ -16,10 +16,12 @@ export default function Index() {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.top}>
+			<View style={[styles.top, { justifyContent: "space-around" }]}>
 				<Image source={require("../../assets/logo.png")} style={styles.logo} />
 				<View style={styles.middle}>
-					<Text style={styles.middleText}>Swipe. Apply. Hired.</Text>
+					<Text style={styles.middleText}>
+						Swipe. Apply. <Text style={{ fontWeight: "bold" }}>Hired.</Text>
+					</Text>
 				</View>
 			</View>
 			<View style={styles.bottom}>

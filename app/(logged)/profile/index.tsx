@@ -21,7 +21,7 @@ Description:
 		*/
 
 // React - React Native
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Text, View, Pressable } from "react-native";
 // Expo utilities
 import { useRouter } from "expo-router";

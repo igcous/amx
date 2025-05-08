@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
 
 	// Start page
 	logo: {
-		marginTop: 40,
 		width: "50%",
 		height: 100,
 		alignSelf: "center",
