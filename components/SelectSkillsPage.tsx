@@ -19,13 +19,11 @@ export const SelectSkillsPage = ({
 	textHeader,
 	textDescription,
 	saveToUserDoc,
-	color,
 }: {
 	goBackTo: string;
 	textHeader: string;
 	textDescription: string;
 	saveToUserDoc: boolean;
-	color: string;
 }) => {
 	const router = useRouter();
 	const [skillSelection, setSkillSelection] = useState<string[]>([]);

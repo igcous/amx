@@ -10,7 +10,7 @@ TODO:
 */
 
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
+import { View, Text, TextInput, Pressable } from "react-native";
 import { Colors } from "../../../constants/colorPalette";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { auth, db } from "../../../config/firebaseConfig";

@@ -22,14 +22,7 @@ Description:
 
 // React - React Native
 import { useState } from "react";
-import {
-	StyleSheet,
-	ScrollView,
-	Text,
-	View,
-	Pressable,
-	Dimensions,
-} from "react-native";
+import { Text, View, Pressable } from "react-native";
 // Expo utilities
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -44,6 +37,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { auth, db, storage } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
+import styles from "./style";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -181,7 +175,7 @@ export default function Page() {
 	return (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Text style={styles.titleText}>
+				<Text style={styles.title}>
 					{`${userDoc?.firstname} ${userDoc?.lastname}${
 						userDoc?.role === "recruiter" ? `, ${userDoc?.companyname}` : ""
 					}`}
@@ -222,8 +216,7 @@ export default function Page() {
 				{/* Show user current skills */}
 
 				{userDoc?.role === "searcher" && userDoc?.skills ? (
-					<View style={styles.deck}>
-						{/*<Text style={styles.descriptionText}>Your skills</Text>*/}
+					<View style={styles.skillDeck}>
 						{userDoc?.skills.map((skill: string, index: number) => (
 							<Pressable
 								onPress={() => {
@@ -232,8 +225,8 @@ export default function Page() {
 									});
 								}}
 								key={index}
-								style={styles.card}>
-								<Text style={styles.cardText}>{skill}</Text>
+								style={styles.skillCard}>
+								<Text style={styles.skillCardText}>{skill}</Text>
 							</Pressable>
 						))}
 					</View>
@@ -266,133 +259,9 @@ export default function Page() {
 						},
 					]}
 					onPress={logout}>
-					<Text style={styles.buttonText}>LOGOUT</Text>
+					<Text style={styles.bottomButtonText}>LOGOUT</Text>
 				</Pressable>
 			</View>
 		</View>
 	);
 }
-
-const { width } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-		justifyContent: "space-between",
-		alignItems: "center",
-	},
-	top: {
-		width: "100%",
-		marginTop: 20,
-		gap: 20,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 20,
-		gap: 20,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		paddingVertical: 15,
-		paddingHorizontal: 20,
-	},
-	buttonText: {
-		color: "white",
-		fontSize: 16,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-
-	// This part of the styleSheet is specific to this page
-	titleText: {
-		width: "90%",
-		fontSize: 30,
-		alignSelf: "center",
-		textAlign: "center",
-		marginBottom: 0,
-	},
-	descriptionText: {
-		width: "90%",
-		fontSize: 20,
-		alignSelf: "center",
-		textAlign: "center",
-	},
-	card: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.tertiary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-	},
-	deck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 20,
-	},
-	image: {
-		width: width * 0.8, // 4:3 aspect ratio
-		height: width * 0.6,
-		//borderWidth: 5, // remove this
-		alignSelf: "center",
-		zIndex: 0,
-	},
-
-	activityIndicator: {},
-	cv: {
-		width: "90%",
-		alignSelf: "center",
-		flexDirection: "row",
-		justifyContent: "space-between",
-		marginBottom: 0,
-	},
-	cvButton: {
-		backgroundColor: Colors.primary,
-		paddingVertical: 15,
-		paddingHorizontal: 20,
-	},
-	cvButtonText: {
-		fontSize: 16,
-		color: "white",
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-	editButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
-	},
-	editButtonText: {
-		fontSize: 20,
-	},
-	pickImage: {
-		position: "absolute", // Ensure it overlays the Image
-		zIndex: 1, // Higher zIndex to appear on top of the Image
-		gap: 20,
-		flexDirection: "row",
-		alignSelf: "center",
-	},
-	pickImageOptions: {
-		padding: 10,
-		borderRadius: 0,
-		backgroundColor: "black",
-	},
-	pickImageText: {
-		color: "white", // Text color for visibility
-		fontSize: 16,
-		fontWeight: "bold",
-		textAlign: "center",
-	},
-});

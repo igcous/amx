@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	top: {
+		flex: 1,
 		width: "100%",
 		marginTop: 20,
 		gap: 20,
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
 	},
 
 	// Same as in Profile
-	card: {
+	skillCard: {
 		alignSelf: "center",
 		marginBottom: 10,
 		backgroundColor: Colors.secondary,
@@ -85,13 +86,12 @@ const styles = StyleSheet.create({
 		marginHorizontal: 5,
 		paddingVertical: 5,
 		borderRadius: 30,
-		borderWidth: 1,
 	},
-	cardText: {
+	skillCardText: {
 		fontSize: 20,
 		color: Colors.tertiary,
 	},
-	deck: {
+	skillDeck: {
 		flexGrow: 1,
 		justifyContent: "center",
 		flexDirection: "row",
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 	},
 	buttonsYesNo: {
-		backgroundColor: Colors.primary,
+		backgroundColor: Colors.secondary,
 		width: "49%",
 		paddingVertical: 15,
 	},
@@ -170,26 +170,6 @@ const styles = StyleSheet.create({
 		color: "white",
 		fontSize: 30,
 		textAlign: "center",
-	},
-	skillDeck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginTop: 10,
-		gap: 10,
-		marginBottom: 10,
-	},
-	skillCard: {
-		alignSelf: "center",
-		backgroundColor: Colors.primary,
-		paddingHorizontal: 20,
-		paddingVertical: 10,
-		borderRadius: 20,
-		fontSize: 24,
-		color: Colors.tertiary,
 	},
 	downloadLink: {
 		backgroundColor: Colors.secondary,
@@ -200,6 +180,41 @@ const styles = StyleSheet.create({
 		fontSize: 30,
 		color: "white",
 		textAlign: "center",
+	},
+
+	// index
+	list: {
+		flexGrow: 1,
+		width: "90%",
+		alignSelf: "center",
+		justifyContent: "flex-start",
+	},
+	itemBody: { flex: 1 },
+	itemHeader: {
+		marginBottom: 10,
+	},
+	itemText: {
+		fontSize: 18,
+	},
+	topBar: {
+		backgroundColor: Colors.secondary,
+		width: "100%",
+		padding: 16,
+	},
+	topBarText: {
+		fontSize: 24,
+		textAlign: "center",
+	},
+	itemSide: {},
+	item: {
+		flex: 1,
+		flexDirection: "row",
+		flexWrap: "nowrap",
+		backgroundColor: Colors.tertiary,
+		padding: 16,
+		borderWidth: 1,
+		borderRadius: 20,
+		marginBottom: 10,
 	},
 });
 

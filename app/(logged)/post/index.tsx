@@ -9,10 +9,8 @@ Description:
 */
 
 import {
-	StyleSheet,
 	Text,
 	View,
-	ScrollView,
 	ListRenderItem,
 	FlatList,
 	Pressable,
@@ -32,6 +30,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 import { Post } from "../../../constants/dataTypes";
+import styles from "./style";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
@@ -150,11 +149,11 @@ export default function Page() {
 						</Text>
 					</View>
 
-					<View style={styles.deck}>
+					<View style={styles.skillDeck}>
 						{item.postSkills.map((skill: string, index: number) => (
-							<Text key={index} style={styles.card}>
-								{skill.trim()}
-							</Text>
+							<View key={index} style={styles.skillCard}>
+								<Text style={styles.skillCardText}>{skill.trim()}</Text>
+							</View>
 						))}
 					</View>
 				</Pressable>
@@ -186,15 +185,6 @@ export default function Page() {
 		);
 	};
 
-	const newPost = () => {
-		console.log("New Post");
-
-		router.push({
-			pathname: "/post/newpost",
-			params: {},
-		});
-	};
-
 	return loading ? (
 		<ActivityIndicator
 			size="large"
@@ -210,7 +200,14 @@ export default function Page() {
 	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<Pressable style={styles.topBar} onPress={newPost}>
+				<Pressable
+					style={styles.topBar}
+					onPress={() => {
+						router.push({
+							pathname: "/post/newpost",
+							params: {},
+						});
+					}}>
 					<Text style={styles.topBarText}>New Post (+)</Text>
 				</Pressable>
 
@@ -229,6 +226,7 @@ export default function Page() {
 	);
 }
 
+/*
 const styles = StyleSheet.create({
 	// This part of the styleSheet is repeatable, do not change
 	container: {
@@ -320,3 +318,4 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 });
+*/

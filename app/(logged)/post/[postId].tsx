@@ -1,11 +1,4 @@
-import {
-	ActivityIndicator,
-	Dimensions,
-	Pressable,
-	StyleSheet,
-	Text,
-	View,
-} from "react-native";
+import { ActivityIndicator, Pressable, Text, View } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import * as WebBrowser from "expo-web-browser";
 import { db } from "../../../config/firebaseConfig";

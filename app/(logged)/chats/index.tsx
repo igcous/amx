@@ -1,11 +1,9 @@
 import {
-	StyleSheet,
 	Text,
 	View,
 	ListRenderItem,
 	FlatList,
 	Pressable,
-	Dimensions,
 	ActivityIndicator,
 	Alert,
 } from "react-native";
@@ -17,6 +15,7 @@ import { Colors } from "../../../constants/colorPalette";
 import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
 import { ChatUser } from "../../../constants/dataTypes";
+import styles from "./style";
 
 export default function Page() {
 	const router = useRouter();
@@ -207,99 +206,19 @@ export default function Page() {
 		/>
 	) : (
 		<View style={styles.container}>
-			{chatList.length === 0 ? (
-				<View style={styles.info}>
-					<Text style={styles.infoText}>Let's make some connections!</Text>
-				</View>
-			) : (
-				<FlatList
-					data={chatList}
-					renderItem={renderItem}
-					keyExtractor={(item) => item.chatId}
-					contentContainerStyle={styles.list}></FlatList>
-			)}
+			<View style={styles.top}>
+				{chatList.length === 0 ? (
+					<View style={styles.info}>
+						<Text style={styles.infoText}>Let's make some connections!</Text>
+					</View>
+				) : (
+					<FlatList
+						data={chatList}
+						renderItem={renderItem}
+						keyExtractor={(item) => item.chatId}
+						contentContainerStyle={styles.list}></FlatList>
+				)}
+			</View>
 		</View>
 	);
 }
-
-const { width } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-	},
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
-		justifyContent: "flex-start",
-		alignItems: "center",
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
-	},
-
-	// This part of the styleSheet is specific to this page
-	info: {
-		flex: 1,
-		justifyContent: "center",
-		alignSelf: "center",
-	},
-	infoText: {
-		fontSize: 20,
-	},
-	list: {
-		flexGrow: 1,
-		marginTop: 10,
-		width: "95%",
-		alignSelf: "center",
-		justifyContent: "flex-start",
-	},
-	item: {
-		backgroundColor: Colors.tertiary,
-		padding: 16,
-		borderWidth: 2,
-		borderRadius: 20,
-		marginBottom: 10,
-		flexDirection: "row",
-		zIndex: 0,
-	},
-	itemBody: {
-		flex: 1,
-	},
-	itemHeader: {
-		flex: 1,
-		flexDirection: "row",
-		justifyContent: "flex-start",
-		gap: 10,
-		marginBottom: 5,
-	},
-	itemText: {
-		fontSize: 24,
-		verticalAlign: "middle",
-	},
-	itemSide: {
-		padding: 10,
-		backgroundColor: Colors.primary,
-		borderRadius: 20,
-		alignSelf: "center",
-		zIndex: 1,
-	},
-	profilePic: {
-		width: width * 0.1,
-		height: width * 0.1,
-		alignSelf: "center",
-	},
-});

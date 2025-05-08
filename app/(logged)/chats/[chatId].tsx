@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, Pressable } from "react-native";
+import { Text, View, Pressable } from "react-native";
 import { useState, useLayoutEffect, useCallback, useEffect } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { db } from "../../../config/firebaseConfig";
@@ -17,6 +17,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
 import { Post } from "../../../constants/dataTypes";
 import * as WebBrowser from "expo-web-browser";
+import styles from "./style";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
@@ -125,11 +126,15 @@ export default function Page() {
 	};
 
 	return (
-		<View style={styles.container}>
+		<View style={styles.chatContainer}>
 			<View style={styles.top}>
-				<View style={[styles.topBar, { backgroundColor: Colors.secondary }]}>
+				<View
+					style={[
+						styles.chatBarContainer,
+						{ backgroundColor: Colors.secondary },
+					]}>
 					<Pressable
-						style={styles.header}
+						style={styles.chatBar}
 						onPress={() => {
 							if (userDoc?.role === "recruiter") {
 								downloadCV(currentChatUser.id);
@@ -143,14 +148,14 @@ export default function Page() {
 								setImageSource(require("../../../assets/profile_icon.svg"));
 							}}
 						/>
-						<Text style={styles.headerText}>
+						<Text style={[styles.chatBarText, { color: "white" }]}>
 							{currentChatUser.firstname} {currentChatUser.lastname}
 						</Text>
 					</Pressable>
 				</View>
-				<View style={styles.topBar}>
+				<View style={styles.chatBarContainer}>
 					<Pressable
-						style={styles.header}
+						style={styles.chatBar}
 						onPress={() => {
 							router.navigate({
 								pathname: "/chats/seepost",
@@ -160,12 +165,12 @@ export default function Page() {
 							});
 						}}>
 						{userDoc?.role === "searcher" ? (
-							<Text style={styles.headerText}>
-								{currentChatUser.jobtitle} position{"\n"}
+							<Text style={styles.chatBarText}>
+								{currentChatUser.jobtitle} job post{"\n"}
 								{currentChatUser.companyname}
 							</Text>
 						) : (
-							<Text style={styles.headerText}>
+							<Text style={styles.chatBarText}>
 								Applied as{"\n"}
 								{currentChatUser.jobtitle}
 							</Text>
@@ -181,57 +186,3 @@ export default function Page() {
 		</View>
 	);
 }
-
-const { width } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-	},
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
-		justifyContent: "flex-start",
-		alignItems: "center",
-	},
-	top: {
-		width: "100%",
-		marginTop: 10,
-		gap: 15,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
-	},
-
-	// This part of the styleSheet is specific to this page
-	topBar: {
-		backgroundColor: Colors.tertiary,
-		padding: 16,
-		marginBottom: 0,
-		width: "100%",
-		alignSelf: "center",
-		justifyContent: "flex-start",
-	},
-	header: {
-		flexDirection: "row",
-		gap: 10,
-		marginBottom: 0,
-	},
-	headerText: {
-		fontSize: 24,
-		verticalAlign: "middle",
-	},
-	profilePic: {
-		width: 0.1 * width,
-		height: 0.1 * width,
-		alignSelf: "center",
-	},
-});

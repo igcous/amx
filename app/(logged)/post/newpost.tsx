@@ -139,7 +139,7 @@ export default function Page() {
 					</Text>
 
 					{skillSelection ? (
-						<View style={styles.deck}>
+						<View style={styles.skillDeck}>
 							{skillSelection.split(",").map((skill: string, index: number) => (
 								<Pressable
 									onPress={() => {
@@ -152,8 +152,8 @@ export default function Page() {
 										});
 									}}
 									key={index}
-									style={styles.card}>
-									<Text style={styles.cardText}>{skill}</Text>
+									style={styles.skillCard}>
+									<Text style={styles.skillCardText}>{skill}</Text>
 								</Pressable>
 							))}
 						</View>
@@ -195,107 +195,3 @@ export default function Page() {
 		</View>
 	);
 }
-
-/*
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-	},
-	scrollContent: {
-		width: "100%",
-		flexGrow: 1,
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-		flex: 1,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
-	},
-
-	// This part of the styleSheet is specific to this page
-	inputSmall: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 10,
-		flex: 1,
-	},
-	inputBig: {
-		width: "90%",
-		alignSelf: "center",
-		marginBottom: 10,
-		flex: 2,
-	},
-	inputLabel: {
-		fontSize: 20,
-	},
-	inputLine: {
-		width: "100%",
-		textAlign: "center",
-		borderBottomWidth: 4,
-		borderBottomColor: Colors.primary,
-		borderRadius: 5,
-		alignSelf: "center",
-		fontSize: 16,
-	},
-	inputBox: {
-		marginTop: 10,
-		backgroundColor: Colors.tertiary,
-		width: "100%",
-		height: 120,
-		fontSize: 16,
-	},
-	titleText: {
-		width: "90%",
-		fontSize: 30,
-		alignSelf: "center",
-		marginBottom: 20,
-	},
-	card: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.tertiary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-		borderWidth: 3,
-	},
-	cardText: {
-		fontSize: 20,
-	},
-	deck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginTop: 10,
-		marginBottom: 10,
-	},
-	choose: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.secondary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-	},
-	chooseText: {
-		fontSize: 20,
-		color: Colors.tertiary,
-	},
-});
-*/
