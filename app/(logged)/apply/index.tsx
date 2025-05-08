@@ -9,14 +9,7 @@ Description:
 	TODO: Make the suggestions skill-based
 */
 
-import {
-	StyleSheet,
-	Text,
-	View,
-	Dimensions,
-	Pressable,
-	ActivityIndicator,
-} from "react-native";
+import { Text, View, Pressable, ActivityIndicator } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -36,6 +29,7 @@ import TinderCard from "react-tinder-card";
 import React from "react";
 import { useRouter } from "expo-router";
 import { Post } from "../../../constants/dataTypes";
+import styles from "./style";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
@@ -182,7 +176,7 @@ export default function Page() {
 	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<View style={styles.cardContainer}>
+				<View style={styles.tinderCardContainer}>
 					{deck?.map((post, index) => (
 						<TinderCard
 							ref={childRefs[index]}
@@ -195,7 +189,7 @@ export default function Page() {
 							}}
 							preventSwipe={["up", "down"]}>
 							<Pressable
-								style={styles.card}
+								style={styles.tinderCard}
 								onPress={() => {
 									router.navigate({
 										pathname: `/apply/seepost`,
@@ -204,10 +198,10 @@ export default function Page() {
 										},
 									});
 								}}>
-								<View style={styles.cardContent}>
-									<Text style={styles.cardTitle}>{post.title}</Text>
-									<Text style={styles.cardTitle}>{post.employer}</Text>
-									<Text style={styles.cardTitle}>
+								<View style={styles.tinderCardContent}>
+									<Text style={styles.tinderCardText}>{post.title}</Text>
+									<Text style={styles.tinderCardText}>{post.employer}</Text>
+									<Text style={styles.tinderCardText}>
 										{post.postedAt.toDate().toLocaleDateString(undefined, {
 											year: "numeric",
 											month: "long",
@@ -215,7 +209,7 @@ export default function Page() {
 										})}
 									</Text>
 								</View>
-								<View style={styles.cardContent}>
+								<View style={styles.tinderCardContent}>
 									<View style={styles.skillDeck}>
 										{post.postSkills.map((skill: string, index: number) => (
 											<Text key={index} style={styles.skillCard}>
@@ -224,8 +218,8 @@ export default function Page() {
 										))}
 									</View>
 								</View>
-								<View style={styles.cardContent}>
-									<Text style={styles.cardDescription}>{post.text}</Text>
+								<View style={styles.tinderCardContent}>
+									<Text style={styles.tinderCardDescription}>{post.text}</Text>
 								</View>
 							</Pressable>
 						</TinderCard>
@@ -245,101 +239,3 @@ export default function Page() {
 		</View>
 	);
 }
-
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-		flex: 1,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 20,
-	},
-
-	// This part of the styleSheet is specific to this page
-	info: {
-		flex: 1,
-		justifyContent: "center",
-		alignSelf: "center",
-	},
-	infoText: {
-		fontSize: 20,
-	},
-	cardContainer: {
-		flex: 1,
-		borderWidth: 0,
-		justifyContent: "flex-start",
-		//backgroundColor: "red",
-	},
-	card: {
-		flex: 1,
-		position: "absolute",
-		backgroundColor: Colors.tertiary,
-		width: "95%",
-		height: 0.7 * height,
-		alignSelf: "center",
-		justifyContent: "space-around",
-		borderWidth: 2,
-		borderRadius: 20,
-	},
-	cardImage: {},
-	cardContent: {
-		width: "90%",
-		alignSelf: "center",
-	},
-	cardTitle: {
-		fontSize: 30,
-		color: Colors.textPrimary,
-		textAlign: "center",
-	},
-	cardDescription: {
-		fontSize: 24,
-		color: Colors.textPrimary,
-		textAlign: "left",
-	},
-	buttonsContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		width: "95%",
-		alignSelf: "center",
-	},
-	buttons: {
-		backgroundColor: Colors.primary,
-		width: "49%",
-		paddingVertical: 15,
-	},
-	buttonsText: {
-		color: "white",
-		fontSize: 30,
-		textAlign: "center",
-	},
-	skillDeck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginTop: 10,
-		gap: 10,
-		marginBottom: 10,
-	},
-	skillCard: {
-		alignSelf: "center",
-		backgroundColor: Colors.secondary,
-		paddingHorizontal: 15,
-		paddingVertical: 5,
-		borderRadius: 20,
-		fontSize: 24,
-		color: Colors.tertiary,
-	},
-});

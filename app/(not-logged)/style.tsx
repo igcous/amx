@@ -17,12 +17,6 @@ const styles = StyleSheet.create({
 		justifyContent: "space-between",
 		alignItems: "center",
 	},
-	scrollContent: {
-		backgroundColor: Colors.background,
-		justifyContent: "space-between",
-		alignItems: "center",
-		borderWidth: 1,
-	},
 	top: {
 		width: "100%",
 		marginTop: 20,
@@ -44,6 +38,24 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "bold",
 		textAlign: "center",
+	},
+
+	// Start page
+	logo: {
+		marginTop: 40,
+		width: "50%",
+		height: 100,
+		alignSelf: "center",
+	},
+	middle: {
+		width: "100%",
+		padding: 10,
+		backgroundColor: Colors.tertiary,
+	},
+	middleText: {
+		fontSize: 30,
+		alignSelf: "center",
+		fontStyle: "italic",
 	},
 
 	// Signup 1
@@ -85,6 +97,12 @@ const styles = StyleSheet.create({
 	},
 
 	// Signup 3
+	scrollContent: {
+		backgroundColor: Colors.background,
+		justifyContent: "space-between",
+		alignItems: "center",
+		borderWidth: 1,
+	},
 	descriptionText: {
 		width: "90%",
 		fontSize: 20,

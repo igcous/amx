@@ -1,6 +1,5 @@
 import {
 	ActivityIndicator,
-	Button,
 	Dimensions,
 	Pressable,
 	StyleSheet,
@@ -21,7 +20,6 @@ import {
 	query,
 	limit,
 	updateDoc,
-	orderBy,
 	documentId,
 	arrayUnion,
 	getDoc,
@@ -31,6 +29,7 @@ import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
 import React from "react";
 import { Searcher } from "../../../constants/dataTypes";
+import styles from "./style";
 
 export default function Page() {
 	const router = useRouter();
@@ -51,15 +50,9 @@ export default function Page() {
 
 	const getApplication = async (n: number) => {
 		try {
-			// notes
-			// 1. have to get applications in an orderly way (skill matching)
-			// 2. applicantsIds with all the user ids for the job is available
-			// 3. check for applicantIds string or string[]
-
 			setLoading(true);
 
 			// Filter out seen applicants
-
 			const validApplicants = currentPost.seenApplicants
 				? currentPost.applicants.filter(
 						(id: string) => !currentPost.seenApplicants.includes(id)
@@ -217,18 +210,16 @@ export default function Page() {
 		/>
 	) : deck === null || deck?.length === 0 ? (
 		<View style={styles.container}>
-			<View style={styles.top}>
-				<View style={styles.info}>
-					<Text style={styles.infoText}>
-						No more applicants for this job post
-					</Text>
-				</View>
+			<View style={styles.info}>
+				<Text style={styles.infoText}>
+					No more applicants for this job post
+				</Text>
 			</View>
 		</View>
 	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				<View style={styles.cardContainer}>
+				<View style={styles.tinderCardContainer}>
 					{deck?.map((applicant, index) => (
 						<TinderCard
 							ref={childRefs[index]}
@@ -242,7 +233,7 @@ export default function Page() {
 							}}
 							preventSwipe={["up", "down"]}>
 							<Pressable
-								style={styles.card}
+								style={styles.tinderCard}
 								onPress={() => {
 									router.navigate({
 										pathname: `/post/seepost`,
@@ -251,13 +242,13 @@ export default function Page() {
 										},
 									});
 								}}>
-								<View style={styles.cardContent}>
-									<Text style={styles.cardTitle}>
+								<View style={styles.tinderCardContent}>
+									<Text style={styles.tinderCardText}>
 										{applicant.firstname + " " + applicant.lastname}
 									</Text>
 								</View>
 
-								<View style={styles.cardContent}>
+								<View style={styles.tinderCardContent}>
 									<View style={styles.skillDeck}>
 										{applicant.skills.map((skill: string, index: number) => (
 											<Text key={index} style={styles.skillCard}>
@@ -267,11 +258,11 @@ export default function Page() {
 									</View>
 								</View>
 
-								<View style={styles.cardContent}>
+								<View style={styles.tinderCardContent}>
 									<Pressable
 										onPress={() => downloadCV(applicant.id)}
-										style={styles.link}>
-										<Text style={styles.linkText}>Download CV</Text>
+										style={styles.downloadLink}>
+										<Text style={styles.downloadLinkText}>Download CV</Text>
 									</Pressable>
 									{/*<Pressable onPress={() => {}} style={styles.link}>
 										<Text style={styles.linkText}>See job post</Text>
@@ -283,12 +274,12 @@ export default function Page() {
 				</View>
 			</View>
 			<View style={styles.bottom}>
-				<View style={styles.buttonsContainer}>
-					<Pressable style={styles.buttons} onPress={() => swipe("left")}>
-						<Text style={styles.buttonsText}>NO</Text>
+				<View style={styles.buttonsYesNoContainer}>
+					<Pressable style={styles.buttonsYesNo} onPress={() => swipe("left")}>
+						<Text style={styles.buttonsYesNoText}>NO</Text>
 					</Pressable>
-					<Pressable style={styles.buttons} onPress={() => swipe("right")}>
-						<Text style={styles.buttonsText}>YES</Text>
+					<Pressable style={styles.buttonsYesNo} onPress={() => swipe("right")}>
+						<Text style={styles.buttonsYesNoText}>YES</Text>
 					</Pressable>
 				</View>
 			</View>
@@ -296,6 +287,7 @@ export default function Page() {
 	);
 }
 
+/*
 const { width, height } = Dimensions.get("window");
 
 const styles = StyleSheet.create({
@@ -408,3 +400,4 @@ const styles = StyleSheet.create({
 		textAlign: "center",
 	},
 });
+*/

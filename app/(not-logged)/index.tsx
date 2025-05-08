@@ -9,6 +9,7 @@ import { View, Text, StyleSheet, Pressable, Dimensions } from "react-native";
 import { Colors } from "../../constants/colorPalette";
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
+import styles from "./style";
 
 export default function Index() {
 	const router = useRouter();
@@ -19,18 +20,18 @@ export default function Index() {
 				<Image source={require("../../assets/logo.png")} style={styles.logo} />
 			</View>
 			<View style={styles.middle}>
-				<Text style={styles.descriptionText}>Swipe. Apply. Hired.</Text>
+				<Text style={styles.middleText}>Swipe. Apply. Hired.</Text>
 			</View>
 			<View style={styles.bottom}>
 				<Pressable
 					style={[styles.bottomButton, { backgroundColor: Colors.primary }]}
 					onPress={() => router.push("/login")}>
-					<Text style={styles.buttonText}>LOGIN</Text>
+					<Text style={styles.bottomButtonText}>LOGIN</Text>
 				</Pressable>
 				<Pressable
 					style={[styles.bottomButton, { backgroundColor: Colors.secondary }]}
 					onPress={() => router.push({ pathname: "/signup/signup1" })}>
-					<Text style={styles.buttonText}>SIGNUP WITH EMAIL</Text>
+					<Text style={styles.bottomButtonText}>SIGNUP WITH EMAIL</Text>
 				</Pressable>
 			</View>
 		</View>
@@ -39,6 +40,7 @@ export default function Index() {
 
 const { width, height } = Dimensions.get("window");
 
+/*
 const styles = StyleSheet.create({
 	// This part of the styleSheet is repeatable, do not change
 	container: {
@@ -92,3 +94,4 @@ const styles = StyleSheet.create({
 		backgroundColor: Colors.tertiary,
 	},
 });
+*/

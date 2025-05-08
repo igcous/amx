@@ -5,15 +5,7 @@ Description:
     
 */
 
-import {
-	View,
-	Text,
-	TextInput,
-	Button,
-	StyleSheet,
-	ScrollView,
-	Pressable,
-} from "react-native";
+import { View, Text, TextInput, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { useState, useEffect } from "react";
@@ -25,8 +17,9 @@ import {
 	Timestamp,
 	updateDoc,
 } from "firebase/firestore";
-import { auth, db } from "../../../config/firebaseConfig";
+import { db } from "../../../config/firebaseConfig";
 import { useAuth } from "../../../context/AuthContext";
+import styles from "./style";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
@@ -116,91 +109,94 @@ export default function Page() {
 
 	return (
 		<View style={styles.container}>
-			<ScrollView contentContainerStyle={styles.scrollContent}>
-				<View style={styles.top}>
-					<Text style={styles.titleText}>Tell us about the job</Text>
-					<View style={styles.inputSmall}>
-						<Text style={styles.inputLabel}>Job Title</Text>
-						<TextInput
-							style={styles.inputLine}
-							placeholder="What is the job title?"
-							value={form.title}
-							onChangeText={(text) => handleChange("title", text)}
-							autoCapitalize="none"></TextInput>
-					</View>
-					<View style={styles.inputBig}>
-						<Text style={styles.inputLabel}>Description </Text>
-						<TextInput
-							multiline
-							editable
-							numberOfLines={10}
-							style={styles.inputBox}
-							placeholder=""
-							value={form.description}
-							onChangeText={(text) => handleChange("description", text)}
-							autoCapitalize="none"
-							textAlignVertical="top"></TextInput>
-					</View>
-					<View style={styles.inputSmall}>
-						<Text style={styles.inputLabel}>Required skills</Text>
+			<View style={styles.top}>
+				<Text style={styles.title}>Tell us about the job</Text>
+				<View style={styles.input}>
+					<Text style={styles.inputLabel}>Job Title</Text>
+					<TextInput
+						style={styles.inputBoxLine}
+						placeholder="What is the job title?"
+						value={form.title}
+						onChangeText={(text) => handleChange("title", text)}
+						autoCapitalize="none"></TextInput>
+				</View>
+				<View style={styles.input}>
+					<Text style={styles.inputLabel}>Description </Text>
+					<TextInput
+						multiline
+						editable
+						numberOfLines={10}
+						style={styles.inputBoxArea}
+						placeholder=""
+						value={form.description}
+						onChangeText={(text) => handleChange("description", text)}
+						autoCapitalize="none"
+						textAlignVertical="top"></TextInput>
+				</View>
+				<View style={styles.input}>
+					<Text style={[styles.inputLabel, { marginBottom: 10 }]}>
+						Required skills
+					</Text>
 
-						{skillSelection ? (
-							<View style={styles.deck}>
-								{skillSelection
-									.split(",")
-									.map((skill: string, index: number) => (
-										<Pressable
-											onPress={() => {
-												router.push({
-													pathname: "/post/editskills",
-													params: {
-														title: form.title,
-														description: form.description,
-													},
-												});
-											}}
-											key={index}
-											style={styles.card}>
-											<Text style={styles.cardText}>{skill}</Text>
-										</Pressable>
-									))}
-							</View>
-						) : (
-							<Pressable
-								style={styles.choose}
-								onPress={() => {
-									router.push({
-										pathname: "/post/editskills",
-										params: {
-											title: form.title,
-											description: form.description,
-										},
-									});
-								}}>
-								<Text style={styles.chooseText}>Choose</Text>
-							</Pressable>
-						)}
-					</View>
-				</View>
-				<View style={styles.bottom}>
-					<View style={styles.bottomButton}>
-						<Button
-							title="CREATE POST"
-							color={Colors.primary}
-							disabled={buttonDisabled}
+					{skillSelection ? (
+						<View style={styles.deck}>
+							{skillSelection.split(",").map((skill: string, index: number) => (
+								<Pressable
+									onPress={() => {
+										router.push({
+											pathname: "/post/editskills",
+											params: {
+												title: form.title,
+												description: form.description,
+											},
+										});
+									}}
+									key={index}
+									style={styles.card}>
+									<Text style={styles.cardText}>{skill}</Text>
+								</Pressable>
+							))}
+						</View>
+					) : (
+						<Pressable
+							style={styles.choose}
 							onPress={() => {
-								createPost();
-								router.replace({
-									pathname: "/post",
+								router.push({
+									pathname: "/post/editskills",
+									params: {
+										title: form.title,
+										description: form.description,
+									},
 								});
-							}}></Button>
-					</View>
+							}}>
+							<Text style={styles.chooseText}>Choose</Text>
+						</Pressable>
+					)}
 				</View>
-			</ScrollView>
+			</View>
+			<View style={styles.bottom}>
+				<Pressable
+					style={[
+						styles.bottomButton,
+						{
+							backgroundColor: buttonDisabled ? "gray" : Colors.secondary,
+						},
+					]}
+					disabled={buttonDisabled}
+					onPress={() => {
+						createPost();
+						router.replace({
+							pathname: "/post",
+						});
+					}}>
+					<Text style={styles.bottomButtonText}>CREATE POST</Text>
+				</Pressable>
+			</View>
 		</View>
 	);
 }
 
+/*
 const styles = StyleSheet.create({
 	// This part of the styleSheet is repeatable, do not change
 	container: {
@@ -302,3 +298,4 @@ const styles = StyleSheet.create({
 		color: Colors.tertiary,
 	},
 });
+*/

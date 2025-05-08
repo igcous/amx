@@ -19,11 +19,13 @@ export const SelectSkillsPage = ({
 	textHeader,
 	textDescription,
 	saveToUserDoc,
+	color,
 }: {
 	goBackTo: string;
 	textHeader: string;
 	textDescription: string;
 	saveToUserDoc: boolean;
+	color: string;
 }) => {
 	const router = useRouter();
 	const [skillSelection, setSkillSelection] = useState<string[]>([]);
@@ -155,21 +157,6 @@ const styles = StyleSheet.create({
 		alignSelf: "center",
 		marginBottom: 10,
 	},
-	/* unused
-    card: {
-        alignSelf: "center",
-        marginBottom: 10,
-        backgroundColor: Colors.tertiary,
-        paddingHorizontal: 10,
-        marginHorizontal: 5,
-        paddingVertical: 5,
-        borderRadius: 30,
-        borderWidth: 3,
-    },
-    cardText: {
-        fontSize: 20,
-    },
-    */
 	deck: {
 		flexGrow: 1,
 		justifyContent: "center",
