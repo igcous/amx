@@ -21,11 +21,40 @@ export const UserProvider = ({ children }: PropsWithChildren) => {
 	const { userAuth } = useAuth();
 	const [userDoc, setUserDoc] = useState<DocumentData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	/*
+
 	useEffect(() => {
-		const unsubscribe = onSnapshot(doc(db, "users", userAuth?.uid), (snapshot) => {});
+		let unsubscribe: (() => void) | undefined;
+
+		if (userAuth) {
+			// Set up Firestore listener for the user's document
+			unsubscribe = onSnapshot(
+				doc(db, "users", userAuth.uid),
+				(docSnap) => {
+					if (docSnap.exists()) {
+						setUserDoc(docSnap.data());
+						console.log("User doc updated:", docSnap.data());
+					} else {
+						// Should never get here, there is always a doc for every user
+						console.error("User document does not exist");
+					}
+				},
+				(error) => {
+					console.error("Error listening to user document:", error);
+				}
+			);
+		} else {
+			// If no user is authenticated, clear the userDoc
+			setUserDoc(null);
+		}
+
+		// Cleanup Firestore listener when the component unmounts or userAuth changes
+		return () => {
+			if (unsubscribe) {
+				unsubscribe();
+			}
+		};
 	}, [userAuth]);
-    */
+
 	return (
 		<UserContext.Provider value={{ userDoc, setUserDoc, loading }}>
 			{children}

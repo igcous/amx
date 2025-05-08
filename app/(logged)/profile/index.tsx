@@ -39,11 +39,16 @@ import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
 import styles from "./style";
 
+import { useUserDoc } from "../../../context/UserContext";
+
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [displayPick, setDisplayPick] = useState<boolean>(false);
-	const { userAuth, userDoc, setUserDoc, loading: loadingData } = useAuth();
 	const router = useRouter();
+
+	//const { userAuth, userDoc, setUserDoc, loading: loadingData } = useAuth();
+	const { userAuth } = useAuth();
+	const { userDoc, setUserDoc } = useUserDoc();
 
 	// useImage Hook does not work for fallback, use this instead
 	const [imageSource, setImageSource] = useState(

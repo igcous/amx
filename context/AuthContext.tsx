@@ -16,7 +16,7 @@ import React, {
 } from "react";
 import { auth, db } from "../config/firebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc, DocumentData } from "firebase/firestore";
+import { getDoc, doc, DocumentData, onSnapshot } from "firebase/firestore";
 
 type AuthContextType = {
 	userAuth: User | null;
@@ -62,7 +62,6 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			unsubscribe();
 		};
 	}, []);
-
 	return (
 		<AuthContext.Provider
 			value={{ userAuth, userDoc, setUserAuth, setUserDoc, loading }}>
@@ -78,3 +77,36 @@ export const useAuth = (): AuthContextType => {
 	}
 	return context;
 };
+
+// V1
+/*
+useEffect(() => {
+	const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+		setLoading(true);
+		setUserAuth(currentUser);
+		console.log("User state changed:", currentUser?.uid);
+
+		if (currentUser !== null) {
+			try {
+				const docSnap = await getDoc(doc(db, "users", currentUser.uid));
+				if (docSnap.exists()) {
+					setUserDoc(docSnap.data());
+					console.log("User doc:", docSnap.data());
+				} else {
+					// Should never get here, there is always a doc for every user
+					throw new Error("User document does not exist");
+				}
+			} catch (e) {
+				console.log(e);
+				alert(e);
+			}
+		} else {
+			setUserDoc(null);
+		}
+		setLoading(false);
+	});
+	return () => {
+		unsubscribe();
+	};
+}, []);
+*/
