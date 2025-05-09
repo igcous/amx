@@ -54,6 +54,7 @@ export default function Page() {
 			const skills = as.split(",");
 
 			await setDoc(doc(db, "users", userCredential.user.uid), {
+				email,
 				skills,
 				...filteredParams,
 			});

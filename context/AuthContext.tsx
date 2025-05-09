@@ -33,35 +33,54 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 	const [userDoc, setUserDoc] = useState<DocumentData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 
+	// This useEffect handles userAuth
 	useEffect(() => {
 		const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
 			setLoading(true);
 			setUserAuth(currentUser);
 			console.log("User state changed:", currentUser?.uid);
-
-			if (currentUser !== null) {
-				try {
-					const docSnap = await getDoc(doc(db, "users", currentUser.uid));
-					if (docSnap.exists()) {
-						setUserDoc(docSnap.data());
-						console.log("User doc:", docSnap.data());
-					} else {
-						// Should never get here, there is always a doc for every user
-						throw new Error("User document does not exist");
-					}
-				} catch (e) {
-					console.log(e);
-					alert(e);
-				}
-			} else {
-				setUserDoc(null);
-			}
 			setLoading(false);
 		});
 		return () => {
 			unsubscribe();
 		};
 	}, []);
+
+	// This useEffect handles userDoc
+	useEffect(() => {
+		setLoading(true);
+		let unsubscribe: (() => void) | undefined;
+
+		if (userAuth) {
+			// Set up Firestore listener for the user's document
+			unsubscribe = onSnapshot(
+				doc(db, "users", userAuth.uid),
+				(docSnap) => {
+					if (docSnap.exists()) {
+						setUserDoc(docSnap.data());
+						console.log("User doc updated:", docSnap.data());
+					} else {
+						// Should never get here, there is always a doc for every user
+						console.error("User document does not exist");
+					}
+				},
+				(error) => {
+					console.error("Error listening to user document:", error);
+				}
+			);
+		} else {
+			// If no user is authenticated, clear the userDoc
+			setUserDoc(null);
+		}
+		setLoading(false);
+
+		// Cleanup Firestore listener when the component unmounts or userAuth changes
+		return () => {
+			if (unsubscribe) {
+				unsubscribe();
+			}
+		};
+	}, [userAuth]);
 	return (
 		<AuthContext.Provider
 			value={{ userAuth, userDoc, setUserAuth, setUserDoc, loading }}>
@@ -77,36 +96,3 @@ export const useAuth = (): AuthContextType => {
 	}
 	return context;
 };
-
-// V1
-/*
-useEffect(() => {
-	const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-		setLoading(true);
-		setUserAuth(currentUser);
-		console.log("User state changed:", currentUser?.uid);
-
-		if (currentUser !== null) {
-			try {
-				const docSnap = await getDoc(doc(db, "users", currentUser.uid));
-				if (docSnap.exists()) {
-					setUserDoc(docSnap.data());
-					console.log("User doc:", docSnap.data());
-				} else {
-					// Should never get here, there is always a doc for every user
-					throw new Error("User document does not exist");
-				}
-			} catch (e) {
-				console.log(e);
-				alert(e);
-			}
-		} else {
-			setUserDoc(null);
-		}
-		setLoading(false);
-	});
-	return () => {
-		unsubscribe();
-	};
-}, []);
-*/
