@@ -100,16 +100,15 @@ const styles = StyleSheet.create({
 	},
 	choose: {
 		alignSelf: "center",
-		marginBottom: 10,
 		backgroundColor: Colors.secondary,
-		paddingHorizontal: 10,
+		paddingHorizontal: 20,
 		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
+		paddingVertical: 10,
+		borderRadius: 20,
 	},
 	chooseText: {
-		fontSize: 20,
-		color: Colors.tertiary,
+		fontSize: 24,
+		color: "white",
 	},
 
 	// [postId]

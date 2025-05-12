@@ -1,0 +1,50 @@
+[
+  {
+    "email": "test0@mail.com",
+    "firstname": "John",
+    "lastname": "Doe",
+    "role": "searcher",
+    "skills": [
+      "Java",
+      "Python"
+    ]
+  },
+  {
+    "email": "test1@mail.com",
+    "firstname": "Jane",
+    "lastname": "Doe",
+    "role": "searcher",
+    "skills": [
+      "C++",
+      "React",
+      "Back-end"
+    ]
+  },
+  {
+    "email": "test2@mail.com",
+    "firstname": "Jack",
+    "lastname": "Smith",
+    "role": "recruiter",
+    "companyname": "Test Company Name"
+  },
+  {
+    "role": "searcher",
+    "email": "test3@mail.com",
+    "firstname": "Catherine",
+    "lastname": "Vargas",
+    "skills": [
+      "Data Science",
+      "JavaScript",
+      "Linux"
+    ]
+  },
+  {
+    "role": "searcher",
+    "email": "test4@mail.com",
+    "firstname": "Samuel",
+    "lastname": "Stevens",
+    "skills": [
+      "JavaScript"
+    ]
+  }
+]

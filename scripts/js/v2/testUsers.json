@@ -1,6 +1,6 @@
 [
     {
-        "email": "test@mail.com",
+        "email": "test0@mail.com",
         "firstname": "John",
         "lastname": "Doe",
         "role": "searcher",
@@ -10,7 +10,7 @@
         ]
     },
     {
-        "email": "test2@mail.com",
+        "email": "test1@mail.com",
         "firstname": "Jane",
         "lastname": "Doe",
         "role": "searcher",
@@ -21,10 +21,10 @@
         ]
     },
     {
-        "email": "test3@mail.com",
+        "email": "test2@mail.com",
         "firstname": "Jack",
         "lastname": "Smith",
         "role": "recruiter",
-        "companyname": "Company X"
+        "companyname": "Test Company Name"
     }
 ]

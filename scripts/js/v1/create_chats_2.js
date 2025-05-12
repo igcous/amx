@@ -1,4 +1,4 @@
-import { auth } from "./config/adminConfig.js";
+import { auth } from "../config/adminConfig.js";
 import { readFile } from "fs/promises";
 import {
 	doc,
@@ -8,7 +8,7 @@ import {
 	updateDoc,
 	collection,
 } from "firebase/firestore";
-import { db } from "./config/firebaseConfig.js";
+import { db } from "../config/firebaseConfig.js";
 
 export const addAllChats = async () => {
 	const dummyUsers = await readFile("./dummy/users.json", "utf-8");

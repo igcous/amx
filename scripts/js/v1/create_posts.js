@@ -1,4 +1,4 @@
-import { auth, db } from "./config/firebaseConfig.js";
+import { auth, db } from "../config/firebaseConfig.js";
 import { readFile } from "fs/promises";
 import {
 	doc,
@@ -12,7 +12,7 @@ import {
 	deleteDoc,
 } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth as admin } from "./config/adminConfig.js";
+import { auth as admin } from "../config/adminConfig.js";
 
 const login = async (email, password) => {
 	try {
