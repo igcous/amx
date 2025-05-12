@@ -36,10 +36,11 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Post[] | null>(null);
 	const router = useRouter();
+	const n = 3;
 
 	useEffect(() => {
 		// Get batches of n posts
-		getPost(3);
+		getPost(n);
 	}, [deck === null || deck.length === 0]);
 	// note: if dependancy is deck, goes on infinite loop
 
@@ -171,6 +172,19 @@ export default function Page() {
 		<View style={styles.container}>
 			<View style={styles.info}>
 				<Text style={styles.infoText}>No more job posts to display</Text>
+				<Pressable
+					style={[
+						styles.reload,
+						{
+							backgroundColor:
+								userDoc?.role === "recruiter"
+									? Colors.secondary
+									: Colors.primary,
+						},
+					]}
+					onPress={() => getPost(n)}>
+					<Text style={styles.reloadText}>Reload</Text>
+				</Pressable>
 			</View>
 		</View>
 	) : (

@@ -151,9 +151,9 @@ export default function Page() {
 
 					<View style={styles.skillDeck}>
 						{item.postSkills.map((skill: string, index: number) => (
-							<View key={index} style={styles.skillCard}>
-								<Text style={styles.skillCardText}>{skill.trim()}</Text>
-							</View>
+							<Text key={index} style={styles.skillCard}>
+								{skill.trim()}
+							</Text>
 						))}
 					</View>
 				</View>
@@ -180,7 +180,7 @@ export default function Page() {
 						);
 					}}>
 					<Text
-						style={[styles.itemText, { fontWeight: "bold", color: "white" }]}>
+						style={[styles.itemText, { fontWeight: "bold", color: "black" }]}>
 						X
 					</Text>
 				</Pressable>

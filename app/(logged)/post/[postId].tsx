@@ -23,6 +23,7 @@ import TinderCard from "react-tinder-card";
 import React from "react";
 import { Searcher } from "../../../constants/dataTypes";
 import styles from "./style";
+import { Post } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const router = useRouter();
@@ -31,6 +32,7 @@ export default function Page() {
 	const [deck, setDeck] = useState<Searcher[] | null>(null);
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
+	const n = 3;
 
 	useEffect(() => {
 		console.log(userDoc);
@@ -38,21 +40,40 @@ export default function Page() {
 
 	useEffect(() => {
 		// Get batches of n applicants
-		getApplication(3);
-	}, [currentPost]);
+		getApplication(n);
+	}, [deck === null || deck.length === 0]);
 
 	const getApplication = async (n: number) => {
 		try {
 			setLoading(true);
 
-			// Filter out seen applicants
-			const validApplicants = currentPost.seenApplicants
-				? currentPost.applicants.filter(
-						(id: string) => !currentPost.seenApplicants.includes(id)
-				  )
-				: currentPost.applicants;
+			// Get post again, in case applicants has updated
+			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
+			if (!docSnap.exists() || !docSnap.data()) {
+				// ignore
+				//console.error(`Post with ID ${postId} does not exist`);
+				throw Error;
+			}
+			const updatedPost: Post = {
+				id: docSnap.id,
+				title: docSnap.data().title,
+				text: docSnap.data().text,
+				employer: docSnap.data().employer,
+				postedAt: docSnap.data().postedAt,
+				postSkills: docSnap.data().jobSkills,
+				applicants: docSnap.data().applicants,
+				seenApplicants: docSnap.data().seenApplicants,
+			};
+			setCurrentPost(updatedPost);
 
-			if (currentPost.applicants && validApplicants.length !== 0) {
+			// Filter out seen applicants
+			const validApplicants = updatedPost.seenApplicants
+				? updatedPost.applicants.filter(
+						(id: string) => !updatedPost.seenApplicants.includes(id)
+				  )
+				: updatedPost.applicants;
+
+			if (updatedPost.applicants && validApplicants.length !== 0) {
 				const querySnapshot = await getDocs(
 					query(
 						collection(db, "users"),
@@ -99,9 +120,7 @@ export default function Page() {
 
 		// Firebase update
 		await updateDoc(doc(db, "posts", currentPost.id), {
-			seenApplicants: currentPost.seenApplicants
-				? [...currentPost.seenApplicants, applicant.id]
-				: [applicant.id],
+			seenApplicants: arrayUnion(applicant.id),
 		});
 
 		// Context update
@@ -207,6 +226,19 @@ export default function Page() {
 				<Text style={styles.infoText}>
 					No more applicants for this job post
 				</Text>
+				<Pressable
+					style={[
+						styles.reload,
+						{
+							backgroundColor:
+								userDoc?.role === "recruiter"
+									? Colors.secondary
+									: Colors.primary,
+						},
+					]}
+					onPress={() => getApplication(n)}>
+					<Text style={styles.reloadText}>Reload</Text>
+				</Pressable>
 			</View>
 		</View>
 	) : (
@@ -257,9 +289,6 @@ export default function Page() {
 										style={styles.downloadLink}>
 										<Text style={styles.downloadLinkText}>Download CV</Text>
 									</Pressable>
-									{/*<Pressable onPress={() => {}} style={styles.link}>
-										<Text style={styles.linkText}>See job post</Text>
-									</Pressable>*/}
 								</View>
 							</Pressable>
 						</TinderCard>
@@ -279,118 +308,3 @@ export default function Page() {
 		</View>
 	);
 }
-
-/*
-const { width, height } = Dimensions.get("window");
-
-const styles = StyleSheet.create({
-	// This part of the styleSheet is repeatable, do not change
-	container: {
-		flex: 1,
-		backgroundColor: Colors.background,
-	},
-	top: {
-		width: "100%",
-		marginTop: 40,
-		gap: 20,
-		flex: 1,
-	},
-	bottom: {
-		width: "100%",
-		marginBottom: 40,
-	},
-	bottomButton: {
-		alignSelf: "center",
-		width: "90%",
-		gap: 20,
-	},
-
-	// This part of the styleSheet is specific to this page
-	info: {
-		flex: 1,
-		justifyContent: "center",
-		alignSelf: "center",
-	},
-	infoText: {
-		fontSize: 20,
-	},
-	cardContainer: {
-		flex: 1,
-		borderWidth: 0,
-		justifyContent: "flex-start",
-		//backgroundColor: "red",
-	},
-	card: {
-		flex: 1,
-		position: "absolute",
-		backgroundColor: Colors.tertiary,
-		width: "95%",
-		height: 0.7 * height,
-		alignSelf: "center",
-		justifyContent: "space-around",
-		borderWidth: 2,
-		borderRadius: 20,
-	},
-	cardImage: {},
-	cardContent: {
-		width: "90%",
-		alignSelf: "center",
-	},
-	cardTitle: {
-		fontSize: 30,
-		color: Colors.textPrimary,
-		textAlign: "center",
-	},
-	cardDescription: {
-		fontSize: 24,
-		color: Colors.textPrimary,
-		textAlign: "left",
-	},
-	buttonsContainer: {
-		flexDirection: "row",
-		justifyContent: "space-between",
-		width: "95%",
-		alignSelf: "center",
-	},
-	buttons: {
-		backgroundColor: Colors.secondary,
-		width: "49%",
-		paddingVertical: 15,
-	},
-	buttonsText: {
-		color: "white",
-		fontSize: 30,
-		textAlign: "center",
-	},
-	skillDeck: {
-		flexGrow: 1,
-		justifyContent: "center",
-		flexDirection: "row",
-		flexWrap: "wrap",
-		width: "90%",
-		alignSelf: "center",
-		marginTop: 10,
-		gap: 10,
-		marginBottom: 10,
-	},
-	skillCard: {
-		alignSelf: "center",
-		backgroundColor: Colors.secondary,
-		paddingHorizontal: 15,
-		paddingVertical: 5,
-		borderRadius: 20,
-		fontSize: 24,
-		color: Colors.tertiary,
-	},
-	link: {
-		backgroundColor: Colors.secondary,
-		padding: 5,
-		marginBottom: 20,
-	},
-	linkText: {
-		fontSize: 30,
-		color: "white",
-		textAlign: "center",
-	},
-});
-*/

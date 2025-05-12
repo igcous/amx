@@ -83,9 +83,9 @@ const styles = StyleSheet.create({
 	},
 	itemSide: {
 		padding: 10,
-		backgroundColor: Colors.primary,
+		//backgroundColor: Colors.primary,
 		borderRadius: 20,
-		alignSelf: "center",
+		alignSelf: "flex-start",
 		zIndex: 1,
 	},
 	profilePic: {

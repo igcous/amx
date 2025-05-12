@@ -77,20 +77,7 @@ const styles = StyleSheet.create({
 		marginBottom: 40,
 	},
 
-	// Same as in Profile
-	skillCard: {
-		alignSelf: "center",
-		marginBottom: 10,
-		backgroundColor: Colors.secondary,
-		paddingHorizontal: 10,
-		marginHorizontal: 5,
-		paddingVertical: 5,
-		borderRadius: 30,
-	},
-	skillCardText: {
-		fontSize: 20,
-		color: Colors.tertiary,
-	},
+	// Same as in Profile and Apply
 	skillDeck: {
 		flexGrow: 1,
 		justifyContent: "center",
@@ -98,7 +85,18 @@ const styles = StyleSheet.create({
 		flexWrap: "wrap",
 		width: "90%",
 		alignSelf: "center",
-		marginBottom: 20,
+		marginTop: 10,
+		gap: 10,
+		marginBottom: 10,
+	},
+	skillCard: {
+		alignSelf: "center",
+		backgroundColor: Colors.secondary,
+		paddingHorizontal: 20,
+		paddingVertical: 10,
+		borderRadius: 20,
+		fontSize: 24,
+		color: Colors.tertiary,
 	},
 	choose: {
 		alignSelf: "center",
@@ -120,9 +118,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignSelf: "center",
+		gap: 20,
 	},
 	infoText: {
 		fontSize: 20,
+	},
+	reload: {
+		padding: 5,
+		borderRadius: 20,
+	},
+	reloadText: {
+		color: "white",
+		textAlign: "center",
+		fontSize: 30,
 	},
 	tinderCardContainer: {
 		flex: 1,
@@ -223,9 +231,9 @@ const styles = StyleSheet.create({
 	},
 	itemSide: {
 		padding: 10,
-		backgroundColor: Colors.primary,
+		//backgroundColor: Colors.primary,
 		borderRadius: 20,
-		alignSelf: "center",
+		alignSelf: "flex-start",
 		zIndex: 1,
 	},
 });

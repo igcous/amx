@@ -157,7 +157,7 @@ export default function Page() {
 						);
 					}}>
 					<Text
-						style={[styles.itemText, { fontWeight: "bold", color: "white" }]}>
+						style={[styles.itemText, { fontWeight: "bold", color: "black" }]}>
 						X
 					</Text>
 				</Pressable>

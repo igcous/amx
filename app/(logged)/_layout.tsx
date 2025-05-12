@@ -9,9 +9,9 @@ Description:
 		If Recruiter, tabs are Post, Profile, Chats
 */
 
-import { Stack, Redirect, Tabs, useFocusEffect } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
-import { ActivityIndicator, BackHandler } from "react-native";
+import { ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/colorPalette";
 
 export default function LoggedLayout() {
@@ -59,6 +59,8 @@ export default function LoggedLayout() {
 				tabBarLabelStyle: {
 					fontSize: 20,
 				},
+				tabBarActiveTintColor:
+					userDoc?.role === "searcher" ? Colors.primary : Colors.secondary,
 			}}>
 			<Tabs.Screen
 				name={userDoc?.role === "searcher" ? "apply" : "post"}

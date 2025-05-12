@@ -36,9 +36,19 @@ const styles = StyleSheet.create({
 		flex: 1,
 		justifyContent: "center",
 		alignSelf: "center",
+		gap: 20,
 	},
 	infoText: {
 		fontSize: 20,
+	},
+	reload: {
+		padding: 5,
+		borderRadius: 20,
+	},
+	reloadText: {
+		color: "white",
+		textAlign: "center",
+		fontSize: 30,
 	},
 	tinderCardContainer: {
 		flex: 1,

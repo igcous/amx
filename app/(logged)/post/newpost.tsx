@@ -153,7 +153,7 @@ export default function Page() {
 									}}
 									key={index}
 									style={styles.skillCard}>
-									<Text style={styles.skillCardText}>{skill}</Text>
+									<Text style={{ color: "white", fontSize: 20 }}>{skill}</Text>
 								</Pressable>
 							))}
 						</View>
