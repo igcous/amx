@@ -31,7 +31,7 @@ export type Searcher = {
 	email: string;
 };
 
-// Chat Partner
+// Chat Partner, or the other user in a Chat
 export type ChatUser = {
 	id: string;
 	chatId: string;

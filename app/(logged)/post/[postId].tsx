@@ -40,13 +40,12 @@ export default function Page() {
 
 	useEffect(() => {
 		// Get batches of n applicants
-		getApplication(n);
+		getApplications();
 	}, [deck === null || deck.length === 0]);
 
-	const getApplication = async (n: number) => {
+	const getApplications = async () => {
 		try {
 			setLoading(true);
-
 			// Get post again, in case applicants has updated
 			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
 			if (!docSnap.exists() || !docSnap.data()) {
@@ -74,37 +73,34 @@ export default function Page() {
 				: updatedPost.applicants;
 
 			if (updatedPost.applicants && validApplicants.length !== 0) {
-				const querySnapshot = await getDocs(
-					query(
-						collection(db, "users"),
-						where(documentId(), "in", validApplicants),
-						limit(n)
-					)
-				);
-
-				const applicants: Searcher[] = querySnapshot.docs.map((doc) => ({
-					id: doc.id,
-					firstname: doc.data().firstname,
-					lastname: doc.data().lastname,
-					skills: doc.data().skills,
-					email: doc.data().email,
-				}));
-
-				setDeck(applicants);
-			}
-
-			/* TO TEST
-			const data = querySnapshot.docs.map((doc) => doc.data());
-			data.sort((a, b) => {
-				let aCount = 0;
-				let bCount = 0;
-				for (let i = 0; i < postSkills.length; i++) {
-					aCount += a.skills.includes(postSkills[i]) ? 1 : 0;
-					bCount += b.skills.includes(postSkills[i]) ? 1 : 0;
+				let applicants: Searcher[] = [];
+				for (const appId of validApplicants) {
+					const appSnap = await getDoc(doc(db, "users", appId));
+					if (!appSnap.exists() || !appSnap.data()) {
+						continue;
+					}
+					applicants.push({
+						id: appSnap.id,
+						firstname: appSnap.data().firstname,
+						lastname: appSnap.data().lastname,
+						skills: appSnap.data().skills,
+						email: appSnap.data().email,
+					});
 				}
-				return aCount > bCount ? 1 : aCount === bCount ? 0 : -1;
-			});
-			*/
+
+				// Calculate matching index and sort posts in ascending order
+				const sortedApplicants = applicants
+					.map((applicant) => ({
+						...applicant,
+						matchingIndex: matchingIndex(
+							currentPost.postSkills,
+							applicant.skills
+						),
+					}))
+					.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
+
+				setDeck(sortedApplicants);
+			}
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -208,6 +204,13 @@ export default function Page() {
 		}
 	};
 
+	const matchingIndex = (jobskills: string[], userskills: string[]) => {
+		return Math.round(
+			(100 * jobskills.filter((skill) => userskills.includes(skill)).length) /
+				jobskills.length
+		);
+	};
+
 	return loading ? (
 		<ActivityIndicator
 			size="large"
@@ -236,7 +239,7 @@ export default function Page() {
 									: Colors.primary,
 						},
 					]}
-					onPress={() => getApplication(n)}>
+					onPress={() => getApplications()}>
 					<Text style={styles.reloadText}>Reload</Text>
 				</Pressable>
 			</View>
@@ -281,6 +284,14 @@ export default function Page() {
 											</Text>
 										))}
 									</View>
+								</View>
+
+								<View style={styles.tinderCardContent}>
+									<Text style={styles.tinderCardText}>
+										{"Matching: " +
+											matchingIndex(currentPost.postSkills, applicant.skills) +
+											"%"}
+									</Text>
 								</View>
 
 								<View style={styles.tinderCardContent}>

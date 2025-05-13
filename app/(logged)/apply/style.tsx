@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
 	tinderCardDescription: {
 		fontSize: 24,
 		color: Colors.textPrimary,
-		textAlign: "left",
+		textAlign: "justify",
 	},
 	buttonsContainer: {
 		flexDirection: "row",

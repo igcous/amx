@@ -8,7 +8,7 @@ export const saveUsers = async (n) => {
 		let users = JSON.parse(data);
 
 		// Concat randomly generated user to fixed users
-		const newUsers = generateUser(5, users.length);
+		const newUsers = generateUser(20, users.length);
 
 		await writeFile(
 			"./v2/users.json",

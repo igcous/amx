@@ -16,12 +16,12 @@ import {
 	getDocs,
 	collection,
 	query,
-	where,
 	limit,
-	documentId,
 	updateDoc,
 	arrayUnion,
 	doc,
+	startAfter,
+	DocumentData,
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
@@ -36,11 +36,12 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Post[] | null>(null);
 	const router = useRouter();
-	const n = 3;
+	const n = 100;
+	const [lastVisible, setLastVisible] = useState<null | DocumentData>(null);
 
 	useEffect(() => {
 		// Get batches of n posts
-		getPost(n);
+		getPosts();
 	}, [deck === null || deck.length === 0]);
 	// note: if dependancy is deck, goes on infinite loop
 
@@ -50,7 +51,7 @@ export default function Page() {
 	}, [deck]);
 	*/
 
-	const getPost = async (n: number) => {
+	const getPosts = async () => {
 		try {
 			setLoading(true);
 			if (!userAuth?.uid || !userDoc) {
@@ -58,18 +59,17 @@ export default function Page() {
 				throw new Error();
 			}
 
-			const querySnapshot = userDoc.seenPosts
-				? await getDocs(
-						query(
-							collection(db, "posts"),
-							where(documentId(), "not-in", userDoc.seenPosts),
-							limit(n)
-						)
-				  )
-				: await getDocs(query(collection(db, "posts"), limit(n)));
+			const querySnapshot = await getDocs(
+				query(collection(db, "posts"), limit(100))
+			);
+
+			// Filter out posts that are in userDoc.seenPosts
+			const filteredDocs = querySnapshot.docs.filter(
+				(doc) => !userDoc.seenPosts?.includes(doc.id)
+			);
 
 			// Map over querySnapshot.docs to create an array of Post objects
-			const posts: Post[] = querySnapshot.docs.map((doc) => ({
+			const posts: Post[] = filteredDocs.map((doc) => ({
 				id: doc.id,
 				title: doc.data().title,
 				employer: doc.data().employer,
@@ -80,8 +80,16 @@ export default function Page() {
 				seenApplicants: [],
 			}));
 
+			// Calculate matching index and sort posts in ascending order
+			const sortedPosts = posts
+				.map((post) => ({
+					...post,
+					matchingIndex: matchingIndex(post.postSkills, userDoc?.skills),
+				}))
+				.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
+
 			// Set the deck state with the array of Post objects
-			setDeck(posts);
+			setDeck(sortedPosts);
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -156,6 +164,13 @@ export default function Page() {
 		}
 	};
 
+	const matchingIndex = (jobskills: string[], userskills: string[]) => {
+		return Math.round(
+			(100 * jobskills.filter((skill) => userskills.includes(skill)).length) /
+				jobskills.length
+		);
+	};
+
 	return loading ? (
 		<ActivityIndicator
 			size="large"
@@ -182,7 +197,7 @@ export default function Page() {
 									: Colors.primary,
 						},
 					]}
-					onPress={() => getPost(n)}>
+					onPress={() => getPosts()}>
 					<Text style={styles.reloadText}>Reload</Text>
 				</Pressable>
 			</View>
@@ -233,7 +248,20 @@ export default function Page() {
 									</View>
 								</View>
 								<View style={styles.tinderCardContent}>
-									<Text style={styles.tinderCardDescription}>{post.text}</Text>
+									<Text style={styles.tinderCardText}>
+										{"Matching: " +
+											matchingIndex(post.postSkills, userDoc?.skills) +
+											"%"}
+									</Text>
+								</View>
+
+								<View style={styles.tinderCardContent}>
+									<Text
+										style={styles.tinderCardDescription}
+										numberOfLines={6}
+										ellipsizeMode="tail">
+										{post.text}
+									</Text>
 								</View>
 							</Pressable>
 						</TinderCard>

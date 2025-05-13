@@ -13,7 +13,7 @@ import { Colors } from "../../constants/colorPalette";
 import styles from "./style";
 
 export default function Page() {
-	const [email, setEmail] = useState<string>("test@mail.com");
+	const [email, setEmail] = useState<string>("test0@mail.com");
 	const [password, setPassword] = useState<string>("123456");
 	const [loading, setLoading] = useState<boolean>(true);
 

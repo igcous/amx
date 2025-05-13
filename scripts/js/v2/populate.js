@@ -19,7 +19,7 @@ import { jobposts } from "./constants.js";
 // Create users from dummy file
 export const signUsers = async () => {
 	try {
-		const data = await readFile("./v2/testUsers.json", "utf-8");
+		const data = await readFile("./v2/users.json", "utf-8");
 		const users = JSON.parse(data);
 		for (const user of users) {
 			const newUser = await auth.createUser({ ...user, password: "123456" });
@@ -52,8 +52,7 @@ export const createPosts = async () => {
 			if (recruiter.role === "recruiter") {
 				console.log("Recruiter:", recruiter.id);
 
-				//const n = rPostsNumber();
-				const n = 1;
+				const n = rPostsNumber();
 				console.log("Adding " + n + " posts");
 				for (let i = 0; i < n; i++) {
 					const r = rPost();
@@ -87,9 +86,9 @@ export const createPosts = async () => {
 						if (searcher.role === "searcher") {
 							console.log("Applicant:", searcher.id);
 							// Seen or not
-							if (true) {
+							if (rBool()) {
 								// Apply or not
-								if (true) {
+								if (rBool()) {
 									await db
 										.collection("users")
 										.doc(searcher.id)
@@ -122,7 +121,7 @@ export const createPosts = async () => {
 					// Swipe randomly on applicants
 					for (const applicantId of postSnap.data().applicants) {
 						// Seen or not
-						if (true) {
+						if (rBool()) {
 							await db
 								.collection("posts")
 								.doc(postId)
@@ -131,7 +130,7 @@ export const createPosts = async () => {
 								});
 
 							// Liked or not
-							if (true) {
+							if (rBool()) {
 								// Create chat
 								const chat = {
 									users: [recruiter.id, applicantId].sort(),

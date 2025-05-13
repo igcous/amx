@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
 	cardDescription: {
 		fontSize: 24,
 		color: Colors.textPrimary,
-		textAlign: "left",
+		textAlign: "justify",
 	},
 	skillDeck: {
 		flexGrow: 1,
