@@ -28,6 +28,8 @@ export const generateUser = (total, index) => {
 	const randomSkill = () => Math.floor(Math.random() * skills.length);
 	const random = () => Math.floor(Math.random() * firstnames.length); // same length as lastnames and companies
 
+	// TODO: Add profile pic link
+
 	let users = [];
 
 	for (let i = 0; i < total - index; i++) {
