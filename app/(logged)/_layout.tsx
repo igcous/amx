@@ -36,9 +36,9 @@ export default function LoggedLayout() {
 	});
 	*/
 
-	return userAuth === null ? (
+	return !userAuth ? (
 		<Redirect href="/(not-logged)"></Redirect>
-	) : loading ? (
+	) : !userDoc ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}
@@ -60,16 +60,17 @@ export default function LoggedLayout() {
 					fontSize: 20,
 				},
 				tabBarActiveTintColor:
-					userDoc?.role === "searcher" ? Colors.primary : Colors.secondary,
+					userDoc.role === "searcher" ? Colors.primary : Colors.secondary,
+				lazy: true,
 			}}>
 			<Tabs.Screen
-				name={userDoc?.role === "searcher" ? "apply" : "post"}
+				name={userDoc.role === "searcher" ? "apply" : "post"}
 				options={{
 					title: userDoc?.role === "searcher" ? "Apply" : "Post",
 					headerShown: false,
 				}}></Tabs.Screen>
 			<Tabs.Screen
-				name={userDoc?.role === "searcher" ? "post" : "apply"}
+				name={userDoc.role === "searcher" ? "post" : "apply"}
 				options={{ href: null }}></Tabs.Screen>
 			<Tabs.Screen
 				name="profile"

@@ -36,8 +36,6 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Post[] | null>(null);
 	const router = useRouter();
-	const n = 100;
-	const [lastVisible, setLastVisible] = useState<null | DocumentData>(null);
 
 	useEffect(() => {
 		// Get batches of n posts
@@ -54,7 +52,7 @@ export default function Page() {
 	const getPosts = async () => {
 		try {
 			setLoading(true);
-			if (!userAuth?.uid || !userDoc) {
+			if (!userAuth || !userDoc) {
 				console.log("User Auth error, this should never happen");
 				throw new Error();
 			}
@@ -64,9 +62,11 @@ export default function Page() {
 			);
 
 			// Filter out posts that are in userDoc.seenPosts
-			const filteredDocs = querySnapshot.docs.filter(
-				(doc) => !userDoc.seenPosts?.includes(doc.id)
-			);
+			const filteredDocs = userDoc.seenPosts
+				? querySnapshot.docs.filter(
+						(doc) => !userDoc.seenPosts.includes(doc.id)
+				  )
+				: querySnapshot.docs;
 
 			// Map over querySnapshot.docs to create an array of Post objects
 			const posts: Post[] = filteredDocs.map((doc) => ({
@@ -171,7 +171,7 @@ export default function Page() {
 		);
 	};
 
-	return loading ? (
+	return !userDoc || loading ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}

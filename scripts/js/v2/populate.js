@@ -19,7 +19,7 @@ import { jobposts } from "./constants.js";
 // Create users from dummy file
 export const signUsers = async () => {
 	try {
-		const data = await readFile("./v2/users.json", "utf-8");
+		const data = await readFile("./v2/testUsers.json", "utf-8");
 		const users = JSON.parse(data);
 		for (const user of users) {
 			const newUser = await auth.createUser({ ...user, password: "123456" });
@@ -119,40 +119,44 @@ export const createPosts = async () => {
 					console.log("Post after applications:", postSnap.data());
 
 					// Swipe randomly on applicants
-					for (const applicantId of postSnap.data().applicants) {
-						// Seen or not
-						if (rBool()) {
-							await db
-								.collection("posts")
-								.doc(postId)
-								.update({
-									seenApplicants: FieldValue.arrayUnion(applicantId),
-								});
+					const applicants = postSnap.data().applicants;
 
-							// Liked or not
+					if (applicants) {
+						for (const applicantId of applicants) {
+							// Seen or not
 							if (rBool()) {
-								// Create chat
-								const chat = {
-									users: [recruiter.id, applicantId].sort(),
-									postId: postId,
-								};
-
-								const chatRef = await db.collection("chats").add(chat);
-								const chatId = chatRef.id;
-
 								await db
-									.collection("users")
-									.doc(recruiter.id)
+									.collection("posts")
+									.doc(postId)
 									.update({
-										chatIds: FieldValue.arrayUnion(chatId),
+										seenApplicants: FieldValue.arrayUnion(applicantId),
 									});
-								await db
-									.collection("users")
-									.doc(applicantId)
-									.update({
-										chatIds: FieldValue.arrayUnion(chatId),
-									});
-								console.log("Added chat Id:", chatId);
+
+								// Liked or not
+								if (rBool()) {
+									// Create chat
+									const chat = {
+										users: [recruiter.id, applicantId].sort(),
+										postId: postId,
+									};
+
+									const chatRef = await db.collection("chats").add(chat);
+									const chatId = chatRef.id;
+
+									await db
+										.collection("users")
+										.doc(recruiter.id)
+										.update({
+											chatIds: FieldValue.arrayUnion(chatId),
+										});
+									await db
+										.collection("users")
+										.doc(applicantId)
+										.update({
+											chatIds: FieldValue.arrayUnion(chatId),
+										});
+									console.log("Added chat Id:", chatId);
+								}
 							}
 						}
 					}

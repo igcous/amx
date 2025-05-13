@@ -7,7 +7,9 @@
     "skills": [
       "Java",
       "Python"
-    ]
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
   },
   {
     "email": "test1@mail.com",
@@ -18,164 +20,190 @@
       "C++",
       "React",
       "Back-end"
-    ]
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
   },
   {
     "email": "test2@mail.com",
     "firstname": "Jack",
     "lastname": "Smith",
     "role": "recruiter",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
     "companyname": "Test Company Name"
   },
   {
-    "role": "searcher",
+    "role": "recruiter",
     "email": "test3@mail.com",
-    "firstname": "Ethan",
-    "lastname": "Davis",
-    "skills": [
-      "Python"
-    ]
+    "firstname": "Melissa",
+    "lastname": "Stone",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "companyname": "Palantir"
   },
   {
     "role": "recruiter",
     "email": "test4@mail.com",
-    "firstname": "Wayne",
-    "lastname": "Dunn",
-    "companyname": "Sentry"
+    "firstname": "Jeremy",
+    "lastname": "Mills",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "companyname": "Arch Linux"
   },
   {
-    "role": "searcher",
+    "role": "recruiter",
     "email": "test5@mail.com",
-    "firstname": "Logan",
-    "lastname": "Edwards",
-    "skills": [
-      "Elixir",
-      "Linux",
-      "MySQL",
-      "Bash",
-      "Ruby"
-    ],
-    "companyname": "Check Point"
+    "firstname": "Daniel",
+    "lastname": "Diaz",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "companyname": "F5 Networks"
   },
   {
     "role": "searcher",
     "email": "test6@mail.com",
-    "firstname": "Catherine",
-    "lastname": "Howard",
+    "firstname": "Logan",
+    "lastname": "Adams",
     "skills": [
+      "Firebase",
+      "Python",
+      "JavaScript",
+      "Cybersecurity",
       "UI/UX Design"
     ],
-    "companyname": "Nvidia"
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
   },
   {
-    "role": "recruiter",
+    "role": "searcher",
     "email": "test7@mail.com",
-    "firstname": "Charles",
-    "lastname": "Allen",
-    "companyname": "Parallels"
-  },
-  {
-    "role": "recruiter",
-    "email": "test8@mail.com",
-    "firstname": "Sarah",
-    "lastname": "Ortiz",
-    "companyname": "R"
-  },
-  {
-    "role": "recruiter",
-    "email": "test9@mail.com",
-    "firstname": "Henry",
+    "firstname": "Gabriel",
     "lastname": "James",
-    "companyname": "DigitalOcean"
+    "skills": [
+      "Ruby",
+      "Firebase"
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+    "companyname": "Sophos"
+  },
+  {
+    "role": "searcher",
+    "email": "test8@mail.com",
+    "firstname": "Denise",
+    "lastname": "Gibson",
+    "skills": [
+      "Linux",
+      "SQL",
+      "SAP"
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+    "companyname": "Phoenix"
+  },
+  {
+    "role": "searcher",
+    "email": "test9@mail.com",
+    "firstname": "Anthony",
+    "lastname": "Russell",
+    "skills": [
+      "Linux",
+      "MongoDB",
+      "Bash",
+      "React Native"
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+    "companyname": "Segment"
   },
   {
     "role": "searcher",
     "email": "test10@mail.com",
-    "firstname": "Teresa",
-    "lastname": "Guzman",
+    "firstname": "Margaret",
+    "lastname": "White",
     "skills": [
-      "Ruby",
-      "Swift",
-      "SQL"
-    ]
+      "MySQL"
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+    "companyname": "Jira"
   },
   {
     "role": "recruiter",
     "email": "test11@mail.com",
-    "firstname": "Carol",
-    "lastname": "Adams",
-    "companyname": "iOS"
+    "firstname": "Virginia",
+    "lastname": "Reynolds",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "companyname": "Laravel"
   },
   {
-    "role": "searcher",
+    "role": "recruiter",
     "email": "test12@mail.com",
-    "firstname": "Jerry",
-    "lastname": "Reynolds",
-    "skills": [
-      "Elixir",
-      "Machine Learning",
-      "TypeScript",
-      "Express.js"
-    ],
-    "companyname": "Palo Alto Networks"
+    "firstname": "Diana",
+    "lastname": "Phillips",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "companyname": "Lyft"
   },
   {
     "role": "recruiter",
     "email": "test13@mail.com",
-    "firstname": "Anna",
-    "lastname": "Rice",
-    "companyname": "Java"
+    "firstname": "Barbara",
+    "lastname": "Shaw",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+    "companyname": "Spring"
   },
   {
-    "role": "recruiter",
+    "role": "searcher",
     "email": "test14@mail.com",
-    "firstname": "Logan",
-    "lastname": "Gordon",
-    "companyname": "Rubrik"
+    "firstname": "Anna",
+    "lastname": "Nelson",
+    "skills": [
+      "MongoDB"
+    ],
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+    "companyname": "GlassFish"
   },
   {
     "role": "searcher",
     "email": "test15@mail.com",
-    "firstname": "Jacqueline",
-    "lastname": "Wagner",
+    "firstname": "Brandon",
+    "lastname": "Morales",
     "skills": [
-      "Data Science",
-      "PHP",
-      "Agile",
-      "UI/UX Design"
+      "C#",
+      "React Native",
+      "Ruby"
     ],
-    "companyname": "Ember.js"
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
   },
   {
     "role": "recruiter",
     "email": "test16@mail.com",
-    "firstname": "Jeremy",
-    "lastname": "Bryant",
-    "companyname": "Fortinet"
+    "firstname": "Raymond",
+    "lastname": "Sanchez",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+    "companyname": "Alteryx"
   },
   {
     "role": "recruiter",
     "email": "test17@mail.com",
-    "firstname": "Henry",
-    "lastname": "Stone",
-    "companyname": "Rubrik"
+    "firstname": "Sara",
+    "lastname": "Black",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic3.jpeg?alt=media&token=46346010-d50f-482e-bea5-f450404b202c",
+    "companyname": "Square"
   },
   {
-    "role": "searcher",
+    "role": "recruiter",
     "email": "test18@mail.com",
-    "firstname": "Natalie",
-    "lastname": "Parker",
-    "skills": [
-      "Backend",
-      "C#",
-      "Go"
-    ]
+    "firstname": "Daniel",
+    "lastname": "Harris",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+    "companyname": "Cloudflare"
   },
   {
     "role": "recruiter",
     "email": "test19@mail.com",
-    "firstname": "Zachary",
-    "lastname": "Kim",
-    "companyname": "Citrix"
+    "firstname": "Danielle",
+    "lastname": "Simpson",
+    "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+    "companyname": "CrowdStrike"
   }
 ]

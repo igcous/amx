@@ -35,7 +35,7 @@ import styles from "./style";
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
-	const [postList, setPostList] = useState<Post[]>([]);
+	const [postList, setPostList] = useState<null | Post[]>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -188,7 +188,7 @@ export default function Page() {
 		);
 	};
 
-	return loading ? (
+	return !postList || loading ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}

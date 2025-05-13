@@ -1,5 +1,12 @@
 import { readFile, writeFile } from "fs/promises";
-import { skills, firstnames, lastnames, companies } from "./constants.js";
+import {
+	skills,
+	firstnames,
+	lastnames,
+	companies,
+	cvURLS,
+	profilePicURLS,
+} from "./constants.js";
 
 // Create users from dummy file
 export const saveUsers = async (n) => {
@@ -26,6 +33,7 @@ export const generateUser = (total, index) => {
 	const randomBool = () => Math.random() < 0.5;
 	const randomSkillLength = () => Math.floor(Math.random() * 5) + 1;
 	const randomSkill = () => Math.floor(Math.random() * skills.length);
+	const randomPic = () => Math.floor(Math.random() * profilePicURLS.length);
 	const random = () => Math.floor(Math.random() * firstnames.length); // same length as lastnames and companies
 
 	// TODO: Add profile pic link
@@ -50,6 +58,8 @@ export const generateUser = (total, index) => {
 				firstname: firstnames[random()],
 				lastname: lastnames[random()],
 				skills: userSkills,
+				profilePicURL: profilePicURLS[randomPic()],
+				resumeURL: cvURLS[0],
 				...(randomBool() && { companyname: companies[random()] }), // may have companyname
 			};
 		} else {
@@ -58,6 +68,7 @@ export const generateUser = (total, index) => {
 				email: "test" + (index + i) + "@mail.com",
 				firstname: firstnames[random()],
 				lastname: lastnames[random()],
+				profilePicURL: profilePicURLS[randomPic()],
 				companyname: companies[random()],
 			};
 		}

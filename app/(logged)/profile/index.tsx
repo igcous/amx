@@ -22,7 +22,7 @@ Description:
 
 // React - React Native
 import { useEffect, useState } from "react";
-import { Text, View, Pressable } from "react-native";
+import { Text, View, Pressable, ActivityIndicator } from "react-native";
 // Expo utilities
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
@@ -43,16 +43,18 @@ export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
 	const [displayPick, setDisplayPick] = useState<boolean>(false);
 	const router = useRouter();
-
-	//const { userAuth, userDoc, setUserDoc, loading: loadingData } = useAuth();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 
+	/*
 	// useImage Hook does not work for fallback, use this instead
 	const [imageSource, setImageSource] = useState(
 		userDoc?.profilePicURL
 			? { uri: userDoc.profilePicURL }
 			: require("../../../assets/profile_icon.svg")
 	);
+
+	useEffect(() => console.log(imageSource), [imageSource]);
+	*/
 
 	const pickImage = async (useCamera: boolean) => {
 		try {
@@ -97,7 +99,7 @@ export default function Page() {
 
 				// Update image source
 				setDisplayPick(false);
-				setImageSource({ uri: downloadURL });
+				//setImageSource({ uri: downloadURL });
 			} else {
 				console.log("Image picker canceled");
 			}
@@ -174,12 +176,24 @@ export default function Page() {
 		}
 	};
 
-	return (
+	return !userDoc || loading ? (
+		<ActivityIndicator
+			size="large"
+			color={Colors.primary}
+			style={{
+				flex: 1,
+				backgroundColor: Colors.background,
+				justifyContent: "center",
+				alignItems: "center",
+				transform: [{ scale: 2 }],
+			}}
+		/>
+	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<Text style={styles.title}>
 					{`${userDoc?.firstname} ${userDoc?.lastname}${
-						userDoc?.role === "recruiter" ? `, ${userDoc?.companyname}` : ""
+						userDoc?.role === "recruiter" ? userDoc?.companyname : ""
 					}`}
 				</Text>
 
@@ -189,11 +203,12 @@ export default function Page() {
 					onPress={() => setDisplayPick(!displayPick)}>
 					<Image
 						contentFit="cover"
-						source={imageSource}
-						style={{ flex: 1 }}
-						onError={() =>
-							setImageSource(require("../../../assets/profile_icon.svg"))
+						source={
+							userDoc?.profilePicURL
+								? { uri: userDoc?.profilePicURL }
+								: require("../../../assets/profile_icon.svg")
 						}
+						style={{ flex: 1 }}
 					/>
 					{displayPick ? (
 						<View style={styles.pickImage}>

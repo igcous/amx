@@ -829,3 +829,12 @@ export const jobposts = [
 		employer: "Cisco",
 	},
 ];
+
+export const cvURLS = [
+	"https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05",
+];
+
+export const profilePicURLS = [
+	"https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
+	"https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+];

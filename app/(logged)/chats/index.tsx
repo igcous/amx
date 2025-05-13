@@ -20,7 +20,7 @@ import styles from "./style";
 export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
-	const [chatList, setChatList] = useState<ChatUser[]>([]);
+	const [chatList, setChatList] = useState<null | ChatUser[]>(null);
 	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -192,7 +192,7 @@ export default function Page() {
 		}
 	};
 
-	return loading ? (
+	return !chatList || loading ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}
