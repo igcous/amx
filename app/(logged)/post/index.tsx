@@ -216,7 +216,7 @@ export default function Page() {
 					</Text>
 				</Pressable>
 
-				{postList.length === 0 ? (
+				{!postList ? (
 					<View style={styles.info}>
 						<Text style={styles.infoText}>Let's make some posts!</Text>
 					</View>

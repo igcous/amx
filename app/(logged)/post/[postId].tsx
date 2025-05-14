@@ -1,4 +1,4 @@
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import * as WebBrowser from "expo-web-browser";
 import { db } from "../../../config/firebaseConfig";
@@ -21,7 +21,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
 import React from "react";
-import { Searcher } from "../../../constants/dataTypes";
+import { ChatUser, Searcher } from "../../../constants/dataTypes";
 import styles from "./style";
 import { Post } from "../../../constants/dataTypes";
 
@@ -131,23 +131,22 @@ export default function Page() {
 		);
 
 		if (liked) {
-			alert("Matched!");
-			await createChat([userAuth.uid, applicant.id]);
+			await createChat(userAuth.uid, applicant.id);
 		}
 	};
 
-	const createChat = async (userIds: string[]) => {
+	const createChat = async (recruiter: string, applicant: string) => {
 		// create chat room
 		try {
 			setLoading(true);
 			const docRef = await addDoc(collection(db, "chats"), {
-				users: userIds.sort(),
+				users: [recruiter, applicant].sort(),
 				postId: currentPost.id,
 			});
 			const newChatId = docRef.id;
 
 			// add chat id to users
-			userIds.forEach(async (user) => {
+			[recruiter, applicant].forEach(async (user) => {
 				await updateDoc(doc(db, "users", user), {
 					chatIds: arrayUnion(newChatId),
 				});
@@ -160,8 +159,61 @@ export default function Page() {
 					? [...prevUserDoc.chatIds, newChatId]
 					: [newChatId],
 			}));
+
+			Alert.alert(
+				"Matched!",
+				"",
+				[
+					{
+						text: "Go to chat",
+						onPress: () => goToChat(applicant, newChatId),
+						style: "default",
+					},
+					{
+						text: "Keep swiping",
+						style: "cancel",
+					},
+				],
+				{
+					cancelable: true,
+				}
+			);
 		} catch (e) {
 			console.log(e);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const goToChat = async (userToFetch: string, chatId: string) => {
+		try {
+			setLoading(true);
+
+			// get other user info
+			const userDocSnap = await getDoc(doc(db, "users", userToFetch));
+			if (!userDocSnap.exists()) {
+				// ignore
+				throw Error;
+			}
+			const chatUser: ChatUser = {
+				id: userToFetch,
+				chatId: chatId,
+				postId: currentPost.id,
+				firstname: userDocSnap.data().firstname,
+				lastname: userDocSnap.data().lastname,
+				companyname: userDocSnap.data().companyname,
+				jobtitle: currentPost.title,
+				picURL: userDocSnap.data().profilePicURL,
+			};
+			router.push({
+				pathname: `/chats/${chatId}`,
+				params: {
+					chatUser: JSON.stringify(chatUser),
+					postId: currentPost.id,
+				},
+			});
+		} catch (e) {
+			console.log("Error when redirecteing", e);
 		} finally {
 			setLoading(false);
 		}

@@ -192,9 +192,8 @@ export default function Page() {
 		<View style={styles.container}>
 			<View style={styles.top}>
 				<Text style={styles.title}>
-					{`${userDoc?.firstname} ${userDoc?.lastname}${
-						userDoc?.role === "recruiter" ? userDoc?.companyname : ""
-					}`}
+					{userDoc?.firstname + " " + userDoc?.lastname}
+					{userDoc?.role === "recruiter" ? ", " + userDoc?.companyname : ""}
 				</Text>
 
 				{/* Add/Change user profile picture */}

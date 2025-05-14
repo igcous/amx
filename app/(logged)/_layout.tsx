@@ -9,13 +9,15 @@ Description:
 		If Recruiter, tabs are Post, Profile, Chats
 */
 
-import { Redirect, Tabs } from "expo-router";
+import { Redirect, Tabs, UnknownInputParams } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { ActivityIndicator } from "react-native";
 import { Colors } from "../../constants/colorPalette";
+import { useRouter } from "expo-router";
 
 export default function LoggedLayout() {
 	const { userAuth, userDoc, loading } = useAuth();
+	const router = useRouter();
 
 	/* keep this just in case, works
 	// Custom back button behavior
@@ -62,6 +64,26 @@ export default function LoggedLayout() {
 				tabBarActiveTintColor:
 					userDoc.role === "searcher" ? Colors.primary : Colors.secondary,
 				lazy: true,
+			}}
+			/* 
+			Usage cases (i.e. why is screenListeners here?):
+				When redirecting to a specific chat, chats/index is never pushed onto the stack
+					Back button does not work
+				Must have a way to go to chats/index regardless
+				*/
+			screenListeners={{
+				tabPress: (e) => {
+					const result = e.target?.split("-")[0];
+					if (result === "apply") {
+						router.replace("/apply");
+					} else if (result === "post") {
+						router.replace("/post");
+					} else if (result === "profile") {
+						router.replace("/profile");
+					} else if (result === "chats") {
+						router.replace("/chats");
+					}
+				},
 			}}>
 			<Tabs.Screen
 				name={userDoc.role === "searcher" ? "apply" : "post"}

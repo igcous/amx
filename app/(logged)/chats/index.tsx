@@ -207,7 +207,7 @@ export default function Page() {
 	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				{chatList.length === 0 ? (
+				{!chatList ? (
 					<View style={styles.info}>
 						<Text style={styles.infoText}>Let's make some connections!</Text>
 					</View>
