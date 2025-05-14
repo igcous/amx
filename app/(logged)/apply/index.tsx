@@ -9,8 +9,8 @@ Description:
 	TODO: Make the suggestions skill-based
 */
 
-import { Text, View, Pressable, ActivityIndicator } from "react-native";
-import { useState, useEffect, useMemo } from "react";
+import { Text, View, Pressable, ActivityIndicator, Alert } from "react-native";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import {
 	getDocs,
@@ -35,19 +35,12 @@ export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<Post[] | null>(null);
+	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const router = useRouter();
 
 	useEffect(() => {
-		// Get batches of n posts
 		getPosts();
-	}, [deck === null || deck.length === 0]);
-	// note: if dependancy is deck, goes on infinite loop
-
-	/*
-	useEffect(() => {
-		console.log("Current Deck", deck);
-	}, [deck]);
-	*/
+	}, [currentIndex < 0]);
 
 	const getPosts = async () => {
 		try {
@@ -60,6 +53,8 @@ export default function Page() {
 			const querySnapshot = await getDocs(
 				query(collection(db, "posts"), limit(100))
 			);
+
+			// TODO: Set a query startAfter, to paginate doc retrieval
 
 			// Filter out posts that are in userDoc.seenPosts
 			const filteredDocs = userDoc.seenPosts
@@ -90,6 +85,7 @@ export default function Page() {
 
 			// Set the deck state with the array of Post objects
 			setDeck(sortedPosts);
+			setCurrentIndex(sortedPosts.length - 1);
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -138,10 +134,12 @@ export default function Page() {
 				: prevUserDoc?.likedPosts,
 		}));
 
+		/*
 		// Update the deck
 		setDeck(
 			(prevDeck) => prevDeck?.filter((item) => item.id !== post.id) || null
 		);
+		*/
 	};
 
 	// From react-tinder-card Advanced Example
@@ -154,15 +152,36 @@ export default function Page() {
 				.map(() => React.createRef<any>()),
 		[deck]
 	);
-	const swipe = (dir: string) => {
+
+	const swipe = async (dir: string) => {
 		if (deck) {
+			if (currentIndex < deck.length) {
+				await childRefs[currentIndex].current.swipe(dir);
+			}
+		}
+	};
+
+	// WORKING BUT KINDA BUGGY
+	/*
+	const swipe = async (dir: string) => {
+		if (deck) {
+			console.log(deck.length);
 			if (childRefs[deck.length - 1]?.current) {
-				childRefs[deck.length - 1].current.swipe(dir);
+				await childRefs[deck.length - 1].current.swipe(dir);
 			} else {
 				console.error("Reference for card is undefined");
 			}
 		}
 	};
+	
+
+	const goBack = async () => {
+		if (deck) {
+			const newIndex = deck.length - 1;
+			await childRefs[newIndex].current.restoreCard();
+		}
+	};
+	*/
 
 	const matchingIndex = (jobskills: string[], userskills: string[]) => {
 		return Math.round(
@@ -211,7 +230,30 @@ export default function Page() {
 							ref={childRefs[index]}
 							key={post.id}
 							onSwipe={(dir) => {
-								handleSubmit(post, dir === "right" ? true : false);
+								if (dir === "right") {
+									Alert.alert("Confirm job application?", "", [
+										{
+											text: "Confirm",
+											onPress: () => {
+												setCurrentIndex(index - 1);
+												handleSubmit(post, true);
+											},
+											style: "default",
+										},
+										{
+											text: "Cancel",
+											onPress: async () => {
+												console.log("undo!");
+												setCurrentIndex(index);
+												await childRefs[index].current.restoreCard();
+											},
+											style: "cancel",
+										},
+									]);
+								} else {
+									setCurrentIndex(index - 1);
+									handleSubmit(post, false);
+								}
 							}}
 							onCardLeftScreen={(dir) => {
 								//console.log("onCardLeftScreen:", dir);

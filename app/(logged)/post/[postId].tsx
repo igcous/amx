@@ -32,16 +32,18 @@ export default function Page() {
 	const [deck, setDeck] = useState<Searcher[] | null>(null);
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
-	const n = 3;
+	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
+	/*
 	useEffect(() => {
 		console.log(userDoc);
 	}, []);
+	*/
 
 	useEffect(() => {
 		// Get batches of n applicants
 		getApplications();
-	}, [deck === null || deck.length === 0]);
+	}, [currentIndex < 0]);
 
 	const getApplications = async () => {
 		try {
@@ -74,6 +76,8 @@ export default function Page() {
 
 			if (updatedPost.applicants && validApplicants.length !== 0) {
 				let applicants: Searcher[] = [];
+				// TODO: limit number of valid applicants fetched
+
 				for (const appId of validApplicants) {
 					const appSnap = await getDoc(doc(db, "users", appId));
 					if (!appSnap.exists() || !appSnap.data()) {
@@ -100,6 +104,7 @@ export default function Page() {
 					.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
 
 				setDeck(sortedApplicants);
+				setCurrentIndex(sortedApplicants.length - 1);
 			}
 		} catch (e) {
 			console.error(e);
@@ -126,9 +131,11 @@ export default function Page() {
 				? [...currentPost.seenApplicants, applicant.id]
 				: [applicant.id],
 		});
+		/*
 		setDeck(
 			(prevDeck) => prevDeck?.filter((item) => item.id !== applicant.id) || null
 		);
+		*/
 
 		if (liked) {
 			await createChat(userAuth.uid, applicant.id);
@@ -229,16 +236,14 @@ export default function Page() {
 				.map(() => React.createRef<any>()),
 		[deck]
 	);
-	const swipe = (dir: string) => {
+
+	const swipe = async (dir: string) => {
 		if (deck) {
-			if (childRefs[deck.length - 1]?.current) {
-				childRefs[deck.length - 1].current.swipe(dir);
-			} else {
-				console.error("Reference for card is undefined");
+			if (currentIndex < deck.length) {
+				await childRefs[currentIndex].current.swipe(dir);
 			}
 		}
 	};
-
 	const downloadCV = async (applicantId: string) => {
 		try {
 			const docSnap = await getDoc(doc(db, "users", applicantId));
@@ -305,8 +310,33 @@ export default function Page() {
 							ref={childRefs[index]}
 							key={applicant.id}
 							onSwipe={(dir) => {
-								handleSubmit(applicant, dir === "right" ? true : false);
-								//console.log("Index:", index);
+								if (dir === "right") {
+									Alert.alert(
+										`Connect with ${applicant.firstname} ${applicant.lastname}?`,
+										"",
+										[
+											{
+												text: "Confirm",
+												onPress: () => {
+													setCurrentIndex(index - 1);
+													handleSubmit(applicant, true);
+												},
+												style: "default",
+											},
+											{
+												text: "Cancel",
+												onPress: async () => {
+													setCurrentIndex(index);
+													await childRefs[index].current.restoreCard();
+												},
+												style: "cancel",
+											},
+										]
+									);
+								} else {
+									setCurrentIndex(index - 1);
+									handleSubmit(applicant, false);
+								}
 							}}
 							onCardLeftScreen={(dir) => {
 								//console.log("onCardLeftScreen:", dir);
