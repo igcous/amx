@@ -21,11 +21,11 @@ const firebaseConfig = {
 	measurementId: "G-WYKPG6FB8S",
 };
 export const firebaseApp = initializeApp(firebaseConfig);
-export const auth = getAuth(firebaseApp);
+//export const auth = getAuth(firebaseApp);
 export const db = getFirestore(firebaseApp);
 export const storage = getStorage(firebaseApp);
 
 // Replace auth with this to avoid the asyncStorage warning
-/*export const auth = initializeAuth(firebaseApp, {
+export const auth = initializeAuth(firebaseApp, {
 	persistence: getReactNativePersistence(AsyncStorage),
-})*/
+})
