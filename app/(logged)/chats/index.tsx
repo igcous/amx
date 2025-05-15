@@ -20,7 +20,7 @@ import styles from "./style";
 export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
-	const [chatList, setChatList] = useState<null | ChatUser[]>(null);
+	const [chatList, setChatList] = useState<ChatUser[]>();
 	const [loading, setLoading] = useState<boolean>(true);
 
 	useEffect(() => {
@@ -81,6 +81,8 @@ export default function Page() {
 					}
 				}
 				setChatList(chatUsers);
+			} else {
+				setChatList([]);
 			}
 		};
 		fetchChatList();
@@ -207,7 +209,7 @@ export default function Page() {
 	) : (
 		<View style={styles.container}>
 			<View style={styles.top}>
-				{!chatList ? (
+				{chatList.length === 0 ? (
 					<View style={styles.info}>
 						<Text style={styles.infoText}>Let's make some connections!</Text>
 					</View>

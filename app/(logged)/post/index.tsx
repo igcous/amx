@@ -35,7 +35,7 @@ import styles from "./style";
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
-	const [postList, setPostList] = useState<null | Post[]>(null);
+	const [postList, setPostList] = useState<Post[]>();
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -74,6 +74,8 @@ export default function Page() {
 					}
 				}
 				setPostList(posts);
+			} else {
+				setPostList([]);
 			}
 		};
 
@@ -216,7 +218,7 @@ export default function Page() {
 					</Text>
 				</Pressable>
 
-				{!postList ? (
+				{postList.length === 0 ? (
 					<View style={styles.info}>
 						<Text style={styles.infoText}>Let's make some posts!</Text>
 					</View>
