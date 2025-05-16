@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
 	},
 	itemBody: {
 		flex: 1,
+		zIndex: 0,
 	},
 	itemHeader: {
 		flex: 1,
@@ -234,6 +235,34 @@ const styles = StyleSheet.create({
 		borderRadius: 20,
 		alignSelf: "flex-start",
 		zIndex: 1,
+	},
+
+	// pick
+	pickOptions: {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		right: 0,
+		bottom: 0,
+		//height: "100%",
+		gap: 20,
+		flexDirection: "column",
+		alignSelf: "center",
+		alignItems: "flex-start",
+		marginLeft: 20,
+		justifyContent: "space-evenly",
+		zIndex: 1,
+	},
+	pickOption: {
+		padding: 20,
+		borderRadius: 20,
+		backgroundColor: "black",
+	},
+	pickOptionText: {
+		color: "white",
+		fontSize: 24,
+		fontWeight: "bold",
+		textAlign: "center",
 	},
 });
 

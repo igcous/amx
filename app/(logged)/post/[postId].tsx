@@ -64,6 +64,7 @@ export default function Page() {
 				postSkills: docSnap.data().jobSkills,
 				applicants: docSnap.data().applicants,
 				seenApplicants: docSnap.data().seenApplicants,
+				likedApplicants: docSnap.data().seenApplicants,
 			};
 			setCurrentPost(updatedPost);
 
@@ -89,6 +90,7 @@ export default function Page() {
 						lastname: appSnap.data().lastname,
 						skills: appSnap.data().skills,
 						email: appSnap.data().email,
+						cv: appSnap.data().resumeURL,
 					});
 				}
 
@@ -122,6 +124,7 @@ export default function Page() {
 		// Firebase update
 		await updateDoc(doc(db, "posts", currentPost.id), {
 			seenApplicants: arrayUnion(applicant.id),
+			likedApplcants: arrayUnion(applicant.id),
 		});
 
 		// Context update
@@ -129,6 +132,9 @@ export default function Page() {
 			...currentPost,
 			seenApplicants: currentPost.seenApplicants
 				? [...currentPost.seenApplicants, applicant.id]
+				: [applicant.id],
+			likedApplicants: currentPost.likedApplicants
+				? [...currentPost.likedApplicants, applicant.id]
 				: [applicant.id],
 		});
 		/*

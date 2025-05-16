@@ -128,6 +128,52 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		textAlign: "center",
 	},
+
+	// history page
+	info: {
+		flex: 1,
+		justifyContent: "center",
+		alignSelf: "center",
+		gap: 20,
+	},
+	infoText: {
+		fontSize: 20,
+	},
+	list: {
+		flexGrow: 1,
+		width: "90%",
+		alignSelf: "center",
+		justifyContent: "flex-start",
+	},
+	// item
+	item: {
+		backgroundColor: Colors.tertiary,
+		padding: 16,
+		borderWidth: 2,
+		borderRadius: 20,
+		marginBottom: 10,
+		flexDirection: "row",
+		zIndex: 0,
+	},
+	itemBody: {
+		flex: 1,
+	},
+	itemHeader: {
+		flex: 1,
+		gap: 10,
+		marginBottom: 5,
+	},
+	itemText: {
+		fontSize: 24,
+		verticalAlign: "middle",
+	},
+	itemSide: {
+		padding: 10,
+		//backgroundColor: Colors.primary,
+		borderRadius: 20,
+		alignSelf: "flex-start",
+		zIndex: 1,
+	},
 });
 
 export default styles;

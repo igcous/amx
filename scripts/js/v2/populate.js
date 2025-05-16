@@ -134,6 +134,13 @@ export const createPosts = async () => {
 
 								// Liked or not
 								if (rBool()) {
+									await db
+										.collection("posts")
+										.doc(postId)
+										.update({
+											likedApplicants: FieldValue.arrayUnion(applicantId),
+										});
+
 									// Create chat
 									const chat = {
 										users: [recruiter.id, applicantId].sort(),

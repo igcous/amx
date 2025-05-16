@@ -37,6 +37,7 @@ export default function Page() {
 	const router = useRouter();
 	const [postList, setPostList] = useState<Post[]>();
 	const [loading, setLoading] = useState(true);
+	const [displayPick, setDisplayPick] = useState<string | null>(null);
 
 	useEffect(() => {
 		setLoading(true);
@@ -66,6 +67,7 @@ export default function Page() {
 							postSkills: docSnap.data().jobSkills,
 							applicants: docSnap.data().applicants,
 							seenApplicants: docSnap.data().seenApplicants,
+							likedApplicants: docSnap.data().likedApplicants,
 						};
 						posts.push(newPost);
 					} catch (e) {
@@ -115,11 +117,8 @@ export default function Page() {
 		}
 	};
 
-	const renderItem: ListRenderItem<Post> = ({ item }) => {
-		return (
-			<Pressable
-				style={styles.item}
-				onPress={() => {
+	/*
+					onPress={() => {
 					router.push({
 						pathname: `/post/${item.id}`,
 						params: {
@@ -138,8 +137,77 @@ export default function Page() {
 							),
 						},
 					});
+				}}
+				*/
+
+	const renderItem: ListRenderItem<Post> = ({ item }) => {
+		return (
+			<Pressable
+				style={styles.item}
+				onPress={() => {
+					if (displayPick === item.id) {
+						setDisplayPick(null);
+					} else {
+						setDisplayPick(item.id);
+					}
 				}}>
-				<View style={styles.itemBody}>
+				{displayPick === item.id ? (
+					<View style={styles.pickOptions}>
+						<Pressable
+							onPress={() => {
+								setDisplayPick(null);
+								router.push({
+									pathname: `/post/${item.id}`,
+									params: {
+										post: JSON.stringify(
+											postList?.find((post) => post.id === item.id)
+										),
+									},
+								});
+							}}
+							style={[styles.pickOption]}>
+							<Text style={styles.pickOptionText}>Review applications</Text>
+						</Pressable>
+						<Pressable
+							onPress={() => {
+								setDisplayPick(null);
+								router.push({
+									pathname: "/post/seepost",
+									params: {
+										post: JSON.stringify(
+											postList?.find((post) => post.id === item.id)
+										),
+									},
+								});
+							}}
+							style={styles.pickOption}>
+							<Text style={styles.pickOptionText}>See post</Text>
+						</Pressable>
+						<Pressable
+							onPress={() => {
+								setDisplayPick(null);
+								router.push({
+									pathname: "/post/posthistory",
+									params: {
+										post: JSON.stringify(
+											postList?.find((post) => post.id === item.id)
+										),
+									},
+								});
+							}}
+							style={styles.pickOption}>
+							<Text style={styles.pickOptionText}>Applications history</Text>
+						</Pressable>
+					</View>
+				) : (
+					<></>
+				)}
+
+				<View
+					style={[
+						styles.itemBody,
+						{ opacity: displayPick === item.id ? 0 : 100 },
+					]}>
 					<View style={styles.itemHeader}>
 						<Text style={styles.itemText}>{item.title}</Text>
 						<Text style={styles.itemText}>

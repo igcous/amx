@@ -125,7 +125,8 @@ export default function Page() {
 					</View>
 					{userDoc?.role === "searcher" ? (
 						<Text style={styles.itemText}>
-							{item.jobtitle} position{"\n"}
+							{item.jobtitle}
+							{"\n"}
 							{item.companyname}
 						</Text>
 					) : (

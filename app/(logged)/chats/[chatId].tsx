@@ -60,6 +60,7 @@ export default function Page() {
 					postSkills: postSnap.data().jobSkills,
 					applicants: [],
 					seenApplicants: [],
+					likedApplicants: [],
 				};
 				//console.log(post);
 				setCurrentPost(post);

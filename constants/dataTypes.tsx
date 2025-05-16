@@ -20,6 +20,7 @@ export type Post = {
 	postSkills: string[];
 	applicants: string[]; // applicant ids
 	seenApplicants: string[]; // already swiped applicants id
+	likedApplicants: string[]; //
 };
 
 // Searcher/Applicant seen from Recruiter side
@@ -29,6 +30,7 @@ export type Searcher = {
 	lastname: string;
 	skills: string[];
 	email: string;
+	cv: string;
 };
 
 // Chat Partner, or the other user in a Chat

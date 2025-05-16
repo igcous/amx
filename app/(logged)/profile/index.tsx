@@ -264,6 +264,24 @@ export default function Page() {
 				) : (
 					<></>
 				)}
+				{userDoc?.role === "searcher" ? (
+					<Pressable
+						style={[
+							styles.bottomButton,
+							{
+								backgroundColor: Colors.primary,
+							},
+						]}
+						onPress={() => {
+							router.push({
+								pathname: "/profile/apphistory",
+							});
+						}}>
+						<Text style={styles.bottomButtonText}>SEE APPLICATIONS</Text>
+					</Pressable>
+				) : (
+					<></>
+				)}
 				<Pressable
 					style={[
 						styles.bottomButton,

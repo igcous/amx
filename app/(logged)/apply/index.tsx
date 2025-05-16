@@ -34,7 +34,7 @@ import styles from "./style";
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const [deck, setDeck] = useState<Post[] | null>(null);
+	const [deck, setDeck] = useState<Post[]>();
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const router = useRouter();
 
@@ -73,6 +73,7 @@ export default function Page() {
 				postSkills: doc.data().jobSkills,
 				applicants: [],
 				seenApplicants: [],
+				likedApplicants: [],
 			}));
 
 			// Calculate matching index and sort posts in ascending order
@@ -202,7 +203,7 @@ export default function Page() {
 				transform: [{ scale: 2 }],
 			}}
 		/>
-	) : deck === null || deck?.length === 0 ? (
+	) : !deck || deck?.length === 0 ? (
 		<View style={styles.container}>
 			<View style={styles.info}>
 				<Text style={styles.infoText}>No more job posts to display</Text>
