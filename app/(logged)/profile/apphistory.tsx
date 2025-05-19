@@ -78,6 +78,7 @@ export default function Page() {
 			});
 
 			await updateDoc(doc(db, "users", userAuth.uid), {
+				seenPosts: arrayRemove(postId),
 				likedPosts: arrayRemove(postId),
 			});
 		} catch (e) {

@@ -13,25 +13,29 @@ import {
 	Text,
 } from "react-native";
 import { Colors } from "../../../constants/colorPalette";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { doc, getDoc } from "firebase/firestore";
+import { useLocalSearchParams } from "expo-router";
+import {
+	arrayRemove,
+	doc,
+	getDoc,
+	onSnapshot,
+	updateDoc,
+} from "firebase/firestore";
 import * as WebBrowser from "expo-web-browser";
+import { unsubscribe } from "diagnostics_channel";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
 	const { userAuth, userDoc } = useAuth();
-	const router = useRouter();
 	const [applicantsList, setApplicantsList] = useState<Searcher[]>();
 
+	// Must subscribe to post
 	useEffect(() => {
-		getHistory();
-	}, []);
-
-	const getHistory = async () => {
 		setLoading(true);
-		try {
+
+		const fetchPost = async () => {
 			// Get post again, in case applicants has updated
 			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
 			if (!docSnap.exists() || !docSnap.data()) {
@@ -49,13 +53,58 @@ export default function Page() {
 				postSkills: docSnap.data().jobSkills,
 				applicants: docSnap.data().applicants,
 				seenApplicants: docSnap.data().seenApplicants,
-				likedApplicants: docSnap.data().seenApplicants,
+				likedApplicants: docSnap.data().likedApplicants,
 			};
+			console.log("updated post");
 			setCurrentPost(updatedPost);
+		};
+		fetchPost();
+		/*
+		const unsubscribe = onSnapshot(
+			doc(db, "posts", currentPost.id),
+			(docSnap) => {
+				if (docSnap.exists()) {
+					const updatedPost: Post = {
+						id: docSnap.id,
+						title: docSnap.data().title,
+						text: docSnap.data().text,
+						employer: docSnap.data().employer,
+						postedAt: docSnap.data().postedAt,
+						postSkills: docSnap.data().jobSkills,
+						applicants: docSnap.data().applicants,
+						seenApplicants: docSnap.data().seenApplicants,
+						likedApplicants: docSnap.data().likedApplicants,
+					};
+					setCurrentPost(updatedPost);
+					console.log("current post updated", updatedPost);
+				} else {
+					console.error("Post document does not exist");
+				}
+			},
+			(error) => {
+				console.error("Error listening to user document:", error);
+			}
+		);
 
+		setLoading(false);
+
+		return () => {
+			unsubscribe();
+		};
+		*/
+	}, []);
+
+	useEffect(() => {
+		getHistory();
+		console.log("updated history");
+	}, [currentPost]);
+
+	const getHistory = async () => {
+		setLoading(true);
+		try {
 			let applicants: Searcher[] = [];
-			if (updatedPost.seenApplicants) {
-				for (const appId of updatedPost.seenApplicants) {
+			if (currentPost.seenApplicants) {
+				for (const appId of currentPost.seenApplicants) {
 					const appSnap = await getDoc(doc(db, "users", appId));
 					if (!appSnap.exists() || !appSnap.data()) {
 						continue;
@@ -89,9 +138,23 @@ export default function Page() {
 		}
 	};
 
-	const removeApplicant = () => {
+	const removeApplicant = async (applicantId: string) => {
 		try {
 			setLoading(true);
+			if (!userDoc || !userAuth?.uid) {
+				console.error("user error is undefined");
+				return;
+			}
+			await updateDoc(doc(db, "posts", currentPost.id), {
+				applicants: arrayRemove(applicantId),
+				seenApplicants: arrayRemove(applicantId),
+				likedApplicants: arrayRemove(applicantId),
+			});
+
+			await updateDoc(doc(db, "users", applicantId), {
+				seenPosts: arrayRemove(currentPost.id),
+				likedPosts: arrayRemove(currentPost.id),
+			});
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -133,6 +196,33 @@ export default function Page() {
 						<Text style={styles.itemText}>Status: {status(item)}</Text>
 					</View>
 				</View>
+				<Pressable
+					style={styles.itemSide}
+					onPress={() => {
+						Alert.alert(
+							"Remove applicant?",
+							"",
+							[
+								{
+									text: "Confirm",
+									onPress: () => removeApplicant(item.id),
+									style: "default",
+								},
+								{
+									text: "Cancel",
+									style: "cancel",
+								},
+							],
+							{
+								cancelable: true,
+							}
+						);
+					}}>
+					<Text
+						style={[styles.itemText, { fontWeight: "bold", color: "black" }]}>
+						X
+					</Text>
+				</Pressable>
 			</Pressable>
 		);
 	};

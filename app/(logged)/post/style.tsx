@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
 		right: 0,
 		bottom: 0,
 		//height: "100%",
-		gap: 20,
+		gap: 0,
 		flexDirection: "column",
 		alignSelf: "center",
 		alignItems: "flex-start",

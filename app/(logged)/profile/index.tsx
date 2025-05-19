@@ -144,6 +144,8 @@ export default function Page() {
 			} else {
 				console.log("Document picker canceled");
 			}
+
+			alert("CV uploaded!");
 		} catch (error) {
 			console.log("Error picking or uploading document:", error);
 			alert("Failed to upload document. Please try again.");

@@ -52,7 +52,8 @@ export const createPosts = async () => {
 			if (recruiter.role === "recruiter") {
 				console.log("Recruiter:", recruiter.id);
 
-				const n = rPostsNumber();
+				//const n = rPostsNumber();
+				const n = 3;
 				console.log("Adding " + n + " posts");
 				for (let i = 0; i < n; i++) {
 					const r = rPost();
@@ -86,9 +87,9 @@ export const createPosts = async () => {
 						if (searcher.role === "searcher") {
 							console.log("Applicant:", searcher.id);
 							// Seen or not
-							if (rBool()) {
+							if (true) {
 								// Apply or not
-								if (rBool()) {
+								if (true) {
 									await db
 										.collection("users")
 										.doc(searcher.id)
