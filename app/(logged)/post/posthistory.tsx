@@ -26,8 +26,8 @@ import { unsubscribe } from "diagnostics_channel";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
-	const { post } = useLocalSearchParams<{ post: string }>();
-	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
+	const { postId } = useLocalSearchParams<{ postId: string }>();
+	const [currentPost, setCurrentPost] = useState<Post>();
 	const { userAuth, userDoc } = useAuth();
 	const [applicantsList, setApplicantsList] = useState<Searcher[]>();
 
@@ -35,6 +35,7 @@ export default function Page() {
 	useEffect(() => {
 		setLoading(true);
 
+		/*
 		const fetchPost = async () => {
 			// Get post again, in case applicants has updated
 			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
@@ -55,13 +56,15 @@ export default function Page() {
 				seenApplicants: docSnap.data().seenApplicants,
 				likedApplicants: docSnap.data().likedApplicants,
 			};
-			console.log("updated post");
+			console.log("Updated post", updatedPost);
 			setCurrentPost(updatedPost);
 		};
 		fetchPost();
-		/*
+		*/
+
+		// Because of 'removeApplicant' button, must subscribe to see changes
 		const unsubscribe = onSnapshot(
-			doc(db, "posts", currentPost.id),
+			doc(db, "posts", postId),
 			(docSnap) => {
 				if (docSnap.exists()) {
 					const updatedPost: Post = {
@@ -91,7 +94,6 @@ export default function Page() {
 		return () => {
 			unsubscribe();
 		};
-		*/
 	}, []);
 
 	useEffect(() => {
@@ -103,7 +105,7 @@ export default function Page() {
 		setLoading(true);
 		try {
 			let applicants: Searcher[] = [];
-			if (currentPost.seenApplicants) {
+			if (currentPost && currentPost.seenApplicants) {
 				for (const appId of currentPost.seenApplicants) {
 					const appSnap = await getDoc(doc(db, "users", appId));
 					if (!appSnap.exists() || !appSnap.data()) {
@@ -129,6 +131,7 @@ export default function Page() {
 
 	const status = (applicant: Searcher) => {
 		if (
+			currentPost &&
 			currentPost.likedApplicants &&
 			currentPost.likedApplicants.includes(applicant.id)
 		) {
@@ -145,15 +148,15 @@ export default function Page() {
 				console.error("user error is undefined");
 				return;
 			}
-			await updateDoc(doc(db, "posts", currentPost.id), {
+			await updateDoc(doc(db, "posts", postId), {
 				applicants: arrayRemove(applicantId),
 				seenApplicants: arrayRemove(applicantId),
 				likedApplicants: arrayRemove(applicantId),
 			});
 
 			await updateDoc(doc(db, "users", applicantId), {
-				seenPosts: arrayRemove(currentPost.id),
-				likedPosts: arrayRemove(currentPost.id),
+				seenPosts: arrayRemove(postId),
+				likedPosts: arrayRemove(postId),
 			});
 		} catch (e) {
 			console.log(e);

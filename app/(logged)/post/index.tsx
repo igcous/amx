@@ -76,6 +76,7 @@ export default function Page() {
 					}
 				}
 				setPostList(posts);
+				console.log("Posts in index page", posts);
 			} else {
 				setPostList([]);
 			}
@@ -189,9 +190,7 @@ export default function Page() {
 								router.push({
 									pathname: "/post/posthistory",
 									params: {
-										post: JSON.stringify(
-											postList?.find((post) => post.id === item.id)
-										),
+										postId: item.id,
 									},
 								});
 							}}

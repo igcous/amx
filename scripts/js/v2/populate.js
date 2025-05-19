@@ -19,7 +19,7 @@ import { jobposts } from "./constants.js";
 // Create users from dummy file
 export const signUsers = async () => {
 	try {
-		const data = await readFile("./v2/testUsers.json", "utf-8");
+		const data = await readFile("./v2/users.json", "utf-8");
 		const users = JSON.parse(data);
 		for (const user of users) {
 			const newUser = await auth.createUser({ ...user, password: "123456" });
