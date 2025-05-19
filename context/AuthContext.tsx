@@ -16,7 +16,15 @@ import React, {
 } from "react";
 import { auth, db } from "../config/firebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { getDoc, doc, DocumentData, onSnapshot } from "firebase/firestore";
+import { doc, DocumentData, onSnapshot } from "firebase/firestore";
+
+// Notifications
+import {
+	getMessaging,
+	getToken,
+	onMessage,
+} from "@react-native-firebase/messaging";
+import { Alert, PermissionsAndroid } from "react-native";
 
 type AuthContextType = {
 	userAuth: User | null;
@@ -81,6 +89,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			}
 		};
 	}, [userAuth]);
+
 	return (
 		<AuthContext.Provider
 			value={{ userAuth, userDoc, setUserAuth, setUserDoc, loading }}>
