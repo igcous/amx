@@ -21,13 +21,15 @@
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.igcous.amx"
+      "package": "com.igcous.amx",
+      "googleServicesFile": "./config/google-services.json"
     },
     "web": {
       "favicon": "./assets/logo.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "@react-native-firebase/app"
     ],
     "scheme": "my-app-scheme"
   }
