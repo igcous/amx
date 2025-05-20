@@ -1,4 +1,4 @@
-import { auth, db } from "./adminConfig.js";
+import { auth, db } from "../config/adminConfig.js";
 
 const deleteAuth = async () => {
 	try {

@@ -1,4 +1,5 @@
-import { auth, db, messaging } from "./adminConfig.js";
+import { FieldValue } from "firebase-admin/firestore";
+import { auth, db, messaging } from "../config/adminConfig.js";
 
 const sendForegroundMessage = async () => {
 	const user = await auth.getUserByEmail("test0@mail.com");
@@ -74,4 +75,33 @@ const sendNotifeeMessage = async () => {
 	console.log("Sent!");
 };
 
-sendForegroundMessage(); // works for both foreground and background
+// Just to tell triggering the function in Cloud Functions
+const createChat = async () => {
+	const user1 = await auth.getUserByEmail("test0@mail.com");
+	const user2 = await auth.getUserByEmail("test2@mail.com");
+
+	const chat = {
+		users: [user2.uid, user1.uid], // Put recruiter always first
+		postId: "3aOaS6dO4kWhqHjeymJO", // If not set, does not display on chats page
+	};
+
+	const chatRef = await db.collection("chats").add(chat);
+	console.log("New chat added", chatRef.id);
+
+	await db
+		.collection("users")
+		.doc(user1.uid)
+		.update({
+			chatIds: FieldValue.arrayUnion(chatRef.id),
+		});
+
+	await db
+		.collection("users")
+		.doc(user2.uid)
+		.update({
+			chatIds: FieldValue.arrayUnion(chatRef.id),
+		});
+};
+
+//sendForegroundMessage(); // works for both foreground and background
+createChat();

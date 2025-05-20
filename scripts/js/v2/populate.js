@@ -11,7 +11,7 @@
 
 */
 
-import { auth, db } from "./adminConfig.js";
+import { auth, db } from "../config/adminConfig.js";
 import { readFile } from "fs/promises";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { jobposts } from "./constants.js";
@@ -125,7 +125,7 @@ export const createPosts = async () => {
 					if (applicants) {
 						for (const applicantId of applicants) {
 							// Seen or not
-							if (false) {
+							if (true) {
 								await db
 									.collection("posts")
 									.doc(postId)
@@ -134,7 +134,7 @@ export const createPosts = async () => {
 									});
 
 								// Liked or not
-								if (rBool()) {
+								if (true) {
 									await db
 										.collection("posts")
 										.doc(postId)
