@@ -36,9 +36,8 @@ yarn-error.*
 *.tsbuildinfo
 
 # added
-*./old
+**/old
+**/config/
 android/
 ios/
-config/
 test/
-*./config
