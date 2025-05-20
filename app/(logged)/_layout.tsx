@@ -9,34 +9,33 @@ Description:
 		If Recruiter, tabs are Post, Profile, Chats
 */
 
-import { Redirect, Tabs, UnknownInputParams } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
-import { ActivityIndicator } from "react-native";
+import { ActivityIndicator, Alert } from "react-native";
 import { Colors } from "../../constants/colorPalette";
 import { useRouter } from "expo-router";
+import {
+	getMessaging,
+	setBackgroundMessageHandler,
+} from "@react-native-firebase/messaging";
+import { useEffect } from "react";
 
 export default function LoggedLayout() {
-	const { userAuth, userDoc, loading } = useAuth();
+	const { userAuth, userDoc, setUserDoc, loading } = useAuth();
 	const router = useRouter();
 
-	/* keep this just in case, works
-	// Custom back button behavior
-	useFocusEffect(() => {
-		const onBackPress = () => {
-			// Customize behavior here
-			if (userDoc?.role === "searcher") {
-				// Example: Prevent going back to "apply" tab
-				return true; // Returning true disables the back button
+	// Notifications listener
+	const messaging = getMessaging();
+	useEffect(() => {
+		const unsubscribe = setBackgroundMessageHandler(
+			messaging,
+			async (remoteMessage) => {
+				Alert.alert("A new notification!", JSON.stringify(remoteMessage));
 			}
-			return false; // Default behavior
-		};
+		);
 
-		BackHandler.addEventListener("hardwareBackPress", onBackPress);
-
-		return () =>
-			BackHandler.removeEventListener("hardwareBackPress", onBackPress);
-	});
-	*/
+		return unsubscribe;
+	}, []);
 
 	return !userAuth ? (
 		<Redirect href="/(not-logged)"></Redirect>

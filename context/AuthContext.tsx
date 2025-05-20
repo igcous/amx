@@ -16,14 +16,10 @@ import React, {
 } from "react";
 import { auth, db } from "../config/firebaseConfig";
 import { User, onAuthStateChanged } from "firebase/auth";
-import { doc, DocumentData, onSnapshot } from "firebase/firestore";
+import { doc, DocumentData, onSnapshot, updateDoc } from "firebase/firestore";
 
 // Notifications
-import {
-	getMessaging,
-	getToken,
-	onMessage,
-} from "@react-native-firebase/messaging";
+import { getMessaging, getToken } from "@react-native-firebase/messaging";
 import { Alert, PermissionsAndroid } from "react-native";
 
 type AuthContextType = {
@@ -89,6 +85,33 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 			}
 		};
 	}, [userAuth]);
+
+	// Additional
+	// Setting token for Push-Up Notifications
+	const messaging = getMessaging();
+
+	useEffect(() => {
+		const getUserToken = async () => {
+			if (userAuth && userDoc && !userDoc.token) {
+				try {
+					const token = await getToken(messaging);
+					console.log("FCM Token:", token);
+					setUserDoc((prevUserDoc) => ({
+						...prevUserDoc,
+						token: token,
+					}));
+					await updateDoc(doc(db, "users", userAuth.uid), {
+						token: token,
+					});
+
+					// You can send this token to your backend if needed
+				} catch (error) {
+					console.error("Error getting FCM token:", error);
+				}
+			}
+		};
+		getUserToken();
+	}, [userDoc]);
 
 	return (
 		<AuthContext.Provider
