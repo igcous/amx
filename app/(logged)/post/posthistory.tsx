@@ -1,7 +1,7 @@
 import { db } from "../../../config/firebaseConfig";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import { Post, Searcher } from "../../../constants/dataTypes";
+import { PostType, UserType } from "../../../constants/dataTypes";
 import styles from "./style";
 import {
 	ActivityIndicator,
@@ -27,53 +27,26 @@ import { unsubscribe } from "diagnostics_channel";
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const { postId } = useLocalSearchParams<{ postId: string }>();
-	const [currentPost, setCurrentPost] = useState<Post>();
+	const [currentPost, setCurrentPost] = useState<PostType>();
 	const { userAuth, userDoc } = useAuth();
-	const [applicantsList, setApplicantsList] = useState<Searcher[]>();
+	const [applicantsList, setApplicantsList] = useState<UserType[]>();
 
 	// Must subscribe to post
 	useEffect(() => {
 		setLoading(true);
-
-		/*
-		const fetchPost = async () => {
-			// Get post again, in case applicants has updated
-			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
-			if (!docSnap.exists() || !docSnap.data()) {
-				// ignore
-				//console.error(`Post with ID ${postId} does not exist`);
-				throw Error;
-			}
-
-			const updatedPost: Post = {
-				id: docSnap.id,
-				title: docSnap.data().title,
-				text: docSnap.data().text,
-				employer: docSnap.data().employer,
-				postedAt: docSnap.data().postedAt,
-				postSkills: docSnap.data().jobSkills,
-				applicants: docSnap.data().applicants,
-				seenApplicants: docSnap.data().seenApplicants,
-				likedApplicants: docSnap.data().likedApplicants,
-			};
-			console.log("Updated post", updatedPost);
-			setCurrentPost(updatedPost);
-		};
-		fetchPost();
-		*/
 
 		// Because of 'removeApplicant' button, must subscribe to see changes
 		const unsubscribe = onSnapshot(
 			doc(db, "posts", postId),
 			(docSnap) => {
 				if (docSnap.exists()) {
-					const updatedPost: Post = {
+					const updatedPost: PostType = {
 						id: docSnap.id,
 						title: docSnap.data().title,
 						text: docSnap.data().text,
 						employer: docSnap.data().employer,
 						postedAt: docSnap.data().postedAt,
-						postSkills: docSnap.data().jobSkills,
+						skills: docSnap.data().jobSkills,
 						applicants: docSnap.data().applicants,
 						seenApplicants: docSnap.data().seenApplicants,
 						likedApplicants: docSnap.data().likedApplicants,
@@ -104,7 +77,7 @@ export default function Page() {
 	const getHistory = async () => {
 		setLoading(true);
 		try {
-			let applicants: Searcher[] = [];
+			let applicants: UserType[] = [];
 			if (currentPost && currentPost.seenApplicants) {
 				for (const appId of currentPost.seenApplicants) {
 					const appSnap = await getDoc(doc(db, "users", appId));
@@ -129,7 +102,7 @@ export default function Page() {
 		}
 	};
 
-	const status = (applicant: Searcher) => {
+	const status = (applicant: UserType) => {
 		if (
 			currentPost &&
 			currentPost.likedApplicants &&
@@ -183,7 +156,7 @@ export default function Page() {
 		}
 	};
 
-	const renderItem: ListRenderItem<Searcher> = ({ item }) => {
+	const renderItem: ListRenderItem<UserType> = ({ item }) => {
 		return (
 			<Pressable
 				style={styles.item}
@@ -247,7 +220,7 @@ export default function Page() {
 			<View style={styles.top}>
 				{applicantsList.length === 0 ? (
 					<View style={styles.info}>
-						<Text style={styles.infoText}>Let's review some posts!</Text>
+						<Text style={styles.infoText}>Let's review some applications!</Text>
 					</View>
 				) : (
 					<FlatList

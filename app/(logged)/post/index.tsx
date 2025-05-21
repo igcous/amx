@@ -29,13 +29,13 @@ import {
 	arrayRemove,
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
-import { Post } from "../../../constants/dataTypes";
+import { PostType } from "../../../constants/dataTypes";
 import styles from "./style";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
-	const [postList, setPostList] = useState<Post[]>();
+	const [postList, setPostList] = useState<PostType[]>();
 	const [loading, setLoading] = useState(true);
 	const [displayPick, setDisplayPick] = useState<string | null>(null);
 
@@ -48,7 +48,7 @@ export default function Page() {
 			}
 
 			if (userDoc.publishedPosts) {
-				const posts: Post[] | null = [];
+				const posts: PostType[] = [];
 
 				for (const postId of userDoc.publishedPosts) {
 					try {
@@ -58,13 +58,13 @@ export default function Page() {
 							//console.error(`Post with ID ${postId} does not exist`);
 							continue;
 						}
-						const newPost: Post = {
+						const newPost: PostType = {
 							id: docSnap.id,
 							title: docSnap.data().title,
 							text: docSnap.data().text,
 							employer: docSnap.data().employer,
 							postedAt: docSnap.data().postedAt,
-							postSkills: docSnap.data().jobSkills,
+							skills: docSnap.data().jobSkills,
 							applicants: docSnap.data().applicants,
 							seenApplicants: docSnap.data().seenApplicants,
 							likedApplicants: docSnap.data().likedApplicants,
@@ -104,6 +104,7 @@ export default function Page() {
 
 			console.log("Deleted post", postId);
 
+			/*
 			// Update the local userDoc context
 			setUserDoc({
 				...userDoc,
@@ -111,6 +112,7 @@ export default function Page() {
 					(id: string) => id !== postId
 				),
 			});
+			*/
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -118,30 +120,7 @@ export default function Page() {
 		}
 	};
 
-	/*
-					onPress={() => {
-					router.push({
-						pathname: `/post/${item.id}`,
-						params: {
-							post: JSON.stringify(
-								postList?.find((post) => post.id === item.id)
-							),
-						},
-					});
-				}}
-				onLongPress={() => {
-					router.push({
-						pathname: `/post/seepost`,
-						params: {
-							post: JSON.stringify(
-								postList?.find((post) => post.id === item.id)
-							),
-						},
-					});
-				}}
-				*/
-
-	const renderItem: ListRenderItem<Post> = ({ item }) => {
+	const renderItem: ListRenderItem<PostType> = ({ item }) => {
 		return (
 			<Pressable
 				style={styles.item}
@@ -175,9 +154,7 @@ export default function Page() {
 								router.push({
 									pathname: "/post/seepost",
 									params: {
-										post: JSON.stringify(
-											postList?.find((post) => post.id === item.id)
-										),
+										postId: item.id,
 									},
 								});
 							}}
@@ -219,7 +196,7 @@ export default function Page() {
 					</View>
 
 					<View style={styles.skillDeck}>
-						{item.postSkills.map((skill: string, index: number) => (
+						{item.skills.map((skill: string, index: number) => (
 							<Text key={index} style={styles.skillCard}>
 								{skill.trim()}
 							</Text>

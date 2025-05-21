@@ -28,13 +28,13 @@ import { Colors } from "../../../constants/colorPalette";
 import TinderCard from "react-tinder-card";
 import React from "react";
 import { useRouter } from "expo-router";
-import { Post } from "../../../constants/dataTypes";
+import { PostType } from "../../../constants/dataTypes";
 import styles from "./style";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const [deck, setDeck] = useState<Post[]>();
+	const [deck, setDeck] = useState<PostType[]>();
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 	const router = useRouter();
 
@@ -64,23 +64,20 @@ export default function Page() {
 				: querySnapshot.docs;
 
 			// Map over querySnapshot.docs to create an array of Post objects
-			const posts: Post[] = filteredDocs.map((doc) => ({
+			const posts: PostType[] = filteredDocs.map((doc) => ({
 				id: doc.id,
 				title: doc.data().title,
 				employer: doc.data().employer,
 				text: doc.data().text,
 				postedAt: doc.data().postedAt,
-				postSkills: doc.data().jobSkills,
-				applicants: [],
-				seenApplicants: [],
-				likedApplicants: [],
+				skills: doc.data().jobSkills,
 			}));
 
 			// Calculate matching index and sort posts in ascending order
 			const sortedPosts = posts
 				.map((post) => ({
 					...post,
-					matchingIndex: matchingIndex(post.postSkills, userDoc?.skills),
+					matchingIndex: matchingIndex(post.skills, userDoc?.skills),
 				}))
 				.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
 
@@ -94,7 +91,7 @@ export default function Page() {
 		}
 	};
 
-	const handleSubmit = async (post: Post, liked: boolean) => {
+	const handleSubmit = async (post: PostType, liked: boolean) => {
 		// update context
 		if (!userAuth?.uid || !userDoc) {
 			console.log("User Auth error, this should never happen");
@@ -283,7 +280,7 @@ export default function Page() {
 								</View>
 								<View style={styles.tinderCardContent}>
 									<View style={styles.skillDeck}>
-										{post.postSkills.map((skill: string, index: number) => (
+										{post.skills.map((skill: string, index: number) => (
 											<Text key={index} style={styles.skillCard}>
 												{skill.trim()}
 											</Text>
@@ -293,7 +290,7 @@ export default function Page() {
 								<View style={styles.tinderCardContent}>
 									<Text style={styles.tinderCardText}>
 										{"Matching: " +
-											matchingIndex(post.postSkills, userDoc?.skills) +
+											matchingIndex(post.skills, userDoc?.skills) +
 											"%"}
 									</Text>
 								</View>

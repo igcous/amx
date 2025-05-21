@@ -21,15 +21,14 @@ import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import TinderCard from "react-tinder-card";
 import React from "react";
-import { ChatUser, Searcher } from "../../../constants/dataTypes";
+import { UserType, PostType } from "../../../constants/dataTypes";
 import styles from "./style";
-import { Post } from "../../../constants/dataTypes";
 
 export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const [deck, setDeck] = useState<Searcher[] | null>(null);
+	const [deck, setDeck] = useState<UserType[] | null>(null);
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
@@ -55,30 +54,35 @@ export default function Page() {
 				//console.error(`Post with ID ${postId} does not exist`);
 				throw Error;
 			}
-			const updatedPost: Post = {
+			const updatedPost: PostType = {
 				id: docSnap.id,
 				title: docSnap.data().title,
 				text: docSnap.data().text,
 				employer: docSnap.data().employer,
 				postedAt: docSnap.data().postedAt,
-				postSkills: docSnap.data().jobSkills,
+				skills: docSnap.data().jobSkills,
 				applicants: docSnap.data().applicants,
 				seenApplicants: docSnap.data().seenApplicants,
 				likedApplicants: docSnap.data().seenApplicants,
 			};
 			setCurrentPost(updatedPost);
+			console.log("Updated post", updatedPost);
 
 			// Filter out seen applicants
-			const validApplicants = updatedPost.seenApplicants
-				? updatedPost.applicants.filter(
-						(id: string) => !updatedPost.seenApplicants.includes(id)
-				  )
-				: updatedPost.applicants;
+			const validApplicants =
+				updatedPost.seenApplicants && updatedPost.applicants
+					? updatedPost.applicants.filter(
+							(id: string) => !updatedPost.seenApplicants?.includes(id)
+					  )
+					: updatedPost.applicants;
 
-			if (updatedPost.applicants && validApplicants.length !== 0) {
-				let applicants: Searcher[] = [];
+			if (
+				updatedPost.applicants &&
+				validApplicants &&
+				validApplicants.length !== 0
+			) {
+				let applicants: UserType[] = [];
 				// TODO: limit number of valid applicants fetched
-
 				for (const appId of validApplicants) {
 					const appSnap = await getDoc(doc(db, "users", appId));
 					if (!appSnap.exists() || !appSnap.data()) {
@@ -98,10 +102,7 @@ export default function Page() {
 				const sortedApplicants = applicants
 					.map((applicant) => ({
 						...applicant,
-						matchingIndex: matchingIndex(
-							currentPost.postSkills,
-							applicant.skills
-						),
+						matchingIndex: matchingIndex(currentPost.skills, applicant.skills),
 					}))
 					.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
 
@@ -115,7 +116,7 @@ export default function Page() {
 		}
 	};
 
-	const handleSubmit = async (applicant: Searcher, liked: boolean) => {
+	const handleSubmit = async (applicant: UserType, liked: boolean) => {
 		if (!userAuth?.uid || !userDoc) {
 			console.log("User Auth error, this should never happen");
 			throw new Error();
@@ -153,7 +154,7 @@ export default function Page() {
 		try {
 			setLoading(true);
 			const docRef = await addDoc(collection(db, "chats"), {
-				users: [recruiter, applicant].sort(),
+				users: [recruiter, applicant],
 				postId: currentPost.id,
 			});
 			const newChatId = docRef.id;
@@ -165,6 +166,7 @@ export default function Page() {
 				});
 			});
 
+			/*
 			// Update Context
 			setUserDoc((prevUserDoc) => ({
 				...prevUserDoc,
@@ -172,14 +174,19 @@ export default function Page() {
 					? [...prevUserDoc.chatIds, newChatId]
 					: [newChatId],
 			}));
-
+			*/
 			Alert.alert(
 				"Matched!",
 				"",
 				[
 					{
 						text: "Go to chat",
-						onPress: () => goToChat(applicant, newChatId),
+						onPress: () => {
+							router.push({
+								pathname: `/chats/${newChatId}`,
+								params: {},
+							});
+						},
 						style: "default",
 					},
 					{
@@ -198,6 +205,7 @@ export default function Page() {
 		}
 	};
 
+	/*
 	const goToChat = async (userToFetch: string, chatId: string) => {
 		try {
 			setLoading(true);
@@ -208,7 +216,7 @@ export default function Page() {
 				// ignore
 				throw Error;
 			}
-			const chatUser: ChatUser = {
+			const chatUser: UserType = {
 				id: userToFetch,
 				chatId: chatId,
 				postId: currentPost.id,
@@ -230,8 +238,10 @@ export default function Page() {
 		} finally {
 			setLoading(false);
 		}
+		
 	};
 
+	*/
 	// From react-tinder-card Advanced Example
 	// https://github.com/3DJakob/react-native-tinder-card-demo/blob/master/src/examples/Advanced.js
 	// This is used only to swipe programmatically
@@ -376,9 +386,9 @@ export default function Page() {
 
 								<View style={styles.tinderCardContent}>
 									<Text style={styles.tinderCardText}>
-										{"Matching: " +
-											matchingIndex(currentPost.postSkills, applicant.skills) +
-											"%"}
+										{/*"Matching: " +
+											matchingIndex(currentPost.skills, applicant.skills) +
+											"%"*/}
 									</Text>
 								</View>
 

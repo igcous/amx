@@ -9,6 +9,7 @@ Description:
 
 import { Timestamp } from "firebase/firestore";
 
+/*
 // Post data
 // note: hide applicants for Searchers
 export type Post = {
@@ -43,4 +44,36 @@ export type ChatUser = {
 	companyname: string;
 	jobtitle: string;
 	picURL: string;
+};
+*/
+
+// New types
+
+export type ChatType = {
+	id: string;
+	user: UserType;
+	post: PostType;
+};
+
+export type UserType = {
+	id: string;
+	firstname: string;
+	lastname: string;
+	email: string;
+	skills: string[];
+	companyname?: string;
+	cv?: string;
+	picURL?: string;
+};
+
+export type PostType = {
+	id: string;
+	title: string;
+	employer: string;
+	text: string; // description, content
+	postedAt: Timestamp; // Timestamp is Firebase's type for datetimes
+	skills: string[];
+	applicants?: string[]; // applicant ids
+	seenApplicants?: string[]; // already swiped applicants id
+	likedApplicants?: string[]; //
 };

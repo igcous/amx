@@ -144,7 +144,7 @@ export const createPosts = async () => {
 
 									// Create chat
 									const chat = {
-										users: [recruiter.id, applicantId].sort(),
+										users: [recruiter.id, applicantId],
 										postId: postId,
 									};
 

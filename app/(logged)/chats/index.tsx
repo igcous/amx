@@ -14,15 +14,16 @@ import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
-import { ChatUser } from "../../../constants/dataTypes";
+import { ChatType } from "../../../constants/dataTypes";
 import styles from "./style";
 
 export default function Page() {
 	const router = useRouter();
-	const { userAuth, userDoc, setUserDoc } = useAuth();
-	const [chatList, setChatList] = useState<ChatUser[]>();
-	const [loading, setLoading] = useState<boolean>(true);
+	const { userAuth, userDoc, chatList, loading: loadingAuth } = useAuth();
+	//const [chatList, setChatList] = useState<ChatUser[]>();
+	const [loading, setLoading] = useState<boolean>(false); // Local
 
+	/*
 	useEffect(() => {
 		setLoading(true);
 		const fetchChatList = async () => {
@@ -88,27 +89,25 @@ export default function Page() {
 		fetchChatList();
 		setLoading(false);
 	}, [userDoc]);
+	*/
 
-	const renderItem: ListRenderItem<ChatUser> = ({ item }) => {
+	const renderItem: ListRenderItem<ChatType> = ({ item }) => {
 		return (
 			<Pressable
 				style={styles.item}
 				onPress={() => {
 					//console.log(item.chatId);
 					router.push({
-						pathname: `/chats/${item.chatId}`,
-						params: {
-							chatUser: JSON.stringify(item),
-							postId: item.postId,
-						},
+						pathname: `/chats/${item.id}`,
+						params: {},
 					});
 				}}>
 				<View style={styles.itemBody}>
 					<View style={styles.itemHeader}>
-						{item.picURL ? (
+						{item.user.picURL ? (
 							<Image
 								contentFit="cover"
-								source={{ uri: item.picURL }}
+								source={{ uri: item.user.picURL }}
 								style={styles.profilePic}
 							/>
 						) : (
@@ -120,19 +119,19 @@ export default function Page() {
 							/>
 						)}
 						<Text style={styles.itemText}>
-							{item.firstname} {item.lastname}
+							{item.user.firstname} {item.user.lastname}
 						</Text>
 					</View>
 					{userDoc?.role === "searcher" ? (
 						<Text style={styles.itemText}>
-							{item.jobtitle}
+							{item.post.title}
 							{"\n"}
-							{item.companyname}
+							{item.post.employer}
 						</Text>
 					) : (
 						<Text style={styles.itemText}>
 							Applied as{"\n"}
-							{item.jobtitle}
+							{item.post.title}
 						</Text>
 					)}
 				</View>
@@ -146,7 +145,7 @@ export default function Page() {
 							[
 								{
 									text: "Confirm",
-									onPress: () => deleteChat(item.chatId),
+									onPress: () => deleteChat(item.id),
 									style: "default",
 								},
 								{
@@ -183,11 +182,13 @@ export default function Page() {
 
 			console.log("Deleted chat", chatId);
 
-			// Update the local userDoc context
+			/*
+			// Update the local userDoc context, needed?
 			setUserDoc({
 				...userDoc,
 				chatIds: userDoc.chatIds.filter((id: string) => id !== chatId),
 			});
+			*/
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -195,7 +196,7 @@ export default function Page() {
 		}
 	};
 
-	return !chatList || loading ? (
+	return !chatList || loading || loadingAuth ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}
@@ -218,7 +219,7 @@ export default function Page() {
 					<FlatList
 						data={chatList}
 						renderItem={renderItem}
-						keyExtractor={(item) => item.chatId}
+						keyExtractor={(item) => item.id}
 						contentContainerStyle={styles.list}></FlatList>
 				)}
 			</View>

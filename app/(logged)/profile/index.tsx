@@ -141,11 +141,11 @@ export default function Page() {
 					console.error("User ID is undefined");
 				}
 				setUserDoc({ ...userDoc, resumeURL: downloadURL });
+				alert("CV uploaded successfully!");
 			} else {
 				console.log("Document picker canceled");
+				alert("CV not uploadead!");
 			}
-
-			alert("CV uploaded!");
 		} catch (error) {
 			console.log("Error picking or uploading document:", error);
 			alert("Failed to upload document. Please try again.");

@@ -15,37 +15,35 @@ import {
 import { useAuth } from "../../../context/AuthContext";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Image } from "expo-image";
-import { Post } from "../../../constants/dataTypes";
 import * as WebBrowser from "expo-web-browser";
 import styles from "./style";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
 	const [messages, setMessages] = useState<IMessage[]>([]);
-	const { userAuth, userDoc } = useAuth();
-	const { chatUser, postId } = useLocalSearchParams<{
-		chatUser: string;
-		postId: string;
-	}>();
-	const [currentChatUser, setCurrentChatUser] = useState(JSON.parse(chatUser));
+	const { userAuth, userDoc, chatList } = useAuth();
+	const { chatId } = useLocalSearchParams<{ chatId: string }>();
+	const currentChat = chatList.find((chat) => chat.id === chatId);
 	const router = useRouter();
 	const [imageSource, setImageSource] = useState(
-		currentChatUser.picURL
+		currentChat?.user.picURL
 			? {
-					uri: currentChatUser.picURL.replace(
+					uri: currentChat?.user.picURL.replace(
 						`images/profile/`,
 						`images%2Fprofile%2F`
 					),
 			  }
 			: require("../../../assets/profile_icon.svg")
 	);
+	/*
 	const [currentPost, setCurrentPost] = useState<Post | null>(null);
 
 	useEffect(() => {
 		//console.log(postId);
 		getPost();
 	}, []);
-
+	*/
+	/*
 	const getPost = async () => {
 		try {
 			setLoading(true);
@@ -71,10 +69,10 @@ export default function Page() {
 			setLoading(false);
 		}
 	};
-
+	*/
 	useLayoutEffect(() => {
 		const q = query(
-			collection(db, `chats/${currentChatUser.chatId}/messages`),
+			collection(db, `chats/${chatId}/messages`),
 			orderBy("createdAt", "desc")
 		);
 
@@ -100,7 +98,7 @@ export default function Page() {
 		);
 
 		const { _id, createdAt, text, user } = messages[0];
-		addDoc(collection(db, `chats/${currentChatUser.chatId}/messages`), {
+		addDoc(collection(db, `chats/${chatId}/messages`), {
 			_id,
 			createdAt,
 			text,
@@ -137,8 +135,8 @@ export default function Page() {
 					<Pressable
 						style={styles.chatBar}
 						onPress={() => {
-							if (userDoc?.role === "recruiter") {
-								downloadCV(currentChatUser.id);
+							if (userDoc?.role === "recruiter" && currentChat) {
+								downloadCV(currentChat.user.id);
 							}
 						}}>
 						<Image
@@ -150,7 +148,7 @@ export default function Page() {
 							}}
 						/>
 						<Text style={[styles.chatBarText, { color: "white" }]}>
-							{currentChatUser.firstname} {currentChatUser.lastname}
+							{currentChat?.user.firstname} {currentChat?.user.lastname}
 						</Text>
 					</Pressable>
 				</View>
@@ -161,19 +159,20 @@ export default function Page() {
 							router.navigate({
 								pathname: "/chats/seepost",
 								params: {
-									post: JSON.stringify(currentPost),
+									chatId: chatId,
+									postId: currentChat?.post.id,
 								},
 							});
 						}}>
 						{userDoc?.role === "searcher" ? (
 							<Text style={styles.chatBarText}>
-								{currentChatUser.jobtitle} job post{"\n"}
-								{currentChatUser.companyname}
+								{currentChat?.post.title} job post{"\n"}
+								{currentChat?.user.companyname}
 							</Text>
 						) : (
 							<Text style={styles.chatBarText}>
 								Applied as{"\n"}
-								{currentChatUser.jobtitle}
+								{currentChat?.post.title}
 							</Text>
 						)}
 					</Pressable>
