@@ -42,7 +42,7 @@ export default function Page() {
 	useEffect(() => {
 		// Get batches of n applicants
 		getApplications();
-	}, [currentIndex < 0]);
+	}, []);
 
 	const getApplications = async () => {
 		try {
@@ -195,7 +195,7 @@ export default function Page() {
 					},
 				],
 				{
-					cancelable: true,
+					cancelable: false,
 				}
 			);
 		} catch (e) {
@@ -296,7 +296,7 @@ export default function Page() {
 				transform: [{ scale: 2 }],
 			}}
 		/>
-	) : deck === null || deck?.length === 0 ? (
+	) : currentIndex == -1 ? (
 		<View style={styles.container}>
 			<View style={styles.info}>
 				<Text style={styles.infoText}>
@@ -347,7 +347,10 @@ export default function Page() {
 												},
 												style: "cancel",
 											},
-										]
+										],
+										{
+											cancelable: false,
+										}
 									);
 								} else {
 									setCurrentIndex(index - 1);

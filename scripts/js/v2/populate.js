@@ -34,7 +34,7 @@ export const signUsers = async () => {
 
 // Create posts and assign randomly
 export const createPosts = async () => {
-	const rPostsNumber = () => Math.floor(Math.random() * 5);
+	const rPostsNumber = () => Math.floor(Math.random() * 10);
 	const rBool = () => Math.floor(Math.random() < 0.5);
 	const rPost = () => Math.floor(Math.random() * jobposts.length);
 
@@ -52,8 +52,8 @@ export const createPosts = async () => {
 			if (recruiter.role === "recruiter") {
 				console.log("Recruiter:", recruiter.id);
 
-				//const n = rPostsNumber();
-				const n = 3;
+				const n = rPostsNumber();
+				//const n = 3;
 				console.log("Adding " + n + " posts");
 				for (let i = 0; i < n; i++) {
 					const r = rPost();
@@ -125,7 +125,7 @@ export const createPosts = async () => {
 					if (applicants) {
 						for (const applicantId of applicants) {
 							// Seen or not
-							if (true) {
+							if (false) {
 								await db
 									.collection("posts")
 									.doc(postId)
@@ -134,7 +134,7 @@ export const createPosts = async () => {
 									});
 
 								// Liked or not
-								if (true) {
+								if (rBool()) {
 									await db
 										.collection("posts")
 										.doc(postId)
