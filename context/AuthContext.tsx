@@ -23,7 +23,7 @@ import {
 	onSnapshot,
 	updateDoc,
 } from "firebase/firestore";
-import { UserType, ChatType, PostType } from "../constants/dataTypes";
+import { ChatType } from "../constants/dataTypes";
 
 // Notifications
 import { getMessaging, getToken } from "@react-native-firebase/messaging";
@@ -33,7 +33,7 @@ type AuthContextType = {
 	setUserAuth: React.Dispatch<React.SetStateAction<User | null>>;
 	userDoc: DocumentData | null;
 	setUserDoc: React.Dispatch<React.SetStateAction<DocumentData | null>>;
-	chatList: ChatType[];
+	chatList: ChatType[] | null; // null for initial state/not set
 	loading: boolean;
 };
 
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 	const [userAuth, setUserAuth] = useState<User | null>(null);
 	const [userDoc, setUserDoc] = useState<DocumentData | null>(null);
 	const [loading, setLoading] = useState<boolean>(true);
-	const [chatList, setChatList] = useState<ChatType[]>([]);
+	const [chatList, setChatList] = useState<ChatType[] | null>(null);
 	const messaging = getMessaging();
 
 	// This useEffect handles userAuth

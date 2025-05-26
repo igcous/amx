@@ -38,12 +38,13 @@ import { auth, db, storage } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
 import styles from "./style";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Page() {
+	const { userAuth, userDoc, setUserDoc } = useAuth();
 	const router = useRouter();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [displayPick, setDisplayPick] = useState<boolean>(false);
-	const { userAuth, userDoc, setUserDoc } = useAuth();
 
 	const pickImage = async (useCamera: boolean) => {
 		try {
@@ -71,7 +72,7 @@ export default function Page() {
 				const snapshot = await uploadBytes(imageRef, imageBlob, {
 					contentType: "image/jpeg", // jpeg for smaller size, lossy
 				});
-				console.log("Image uploaded successfully:", snapshot.metadata);
+				//console.log("Image uploaded successfully:", snapshot.metadata);
 
 				// Add the image download URL to the user document and context
 				const downloadURL = await getDownloadURL(imageRef);
@@ -89,9 +90,10 @@ export default function Page() {
 				// Update image source
 				setDisplayPick(false);
 				//setImageSource({ uri: downloadURL });
-			} else {
-				console.log("Image picker canceled");
 			}
+			/*else {
+				console.log("Image picker canceled");
+			}*/
 		} catch (error) {
 			console.error("Error picking or uploading image:", error);
 			alert("Failed to upload image. Please try again.");
@@ -119,7 +121,7 @@ export default function Page() {
 					contentType: "application/pdf",
 				});
 				// for contentType see "Common examples" in https://en.wikipedia.org/wiki/Media_type
-				console.log("Document uploaded successfully:", snapshot.metadata);
+				//console.log("Document uploaded successfully:", snapshot.metadata);
 
 				const downloadURL = await getDownloadURL(docuRef);
 				if (userAuth?.uid) {
@@ -132,11 +134,11 @@ export default function Page() {
 				setUserDoc({ ...userDoc, resumeURL: downloadURL });
 				alert("CV uploaded successfully!");
 			} else {
-				console.log("Document picker canceled");
+				//console.log("Document picker canceled");
 				alert("CV not uploadead!");
 			}
 		} catch (error) {
-			console.log("Error picking or uploading document:", error);
+			console.error("Error picking or uploading document:", error);
 			alert("Failed to upload document. Please try again.");
 		}
 	};
@@ -148,7 +150,7 @@ export default function Page() {
 				return;
 			}
 			const result = await WebBrowser.openBrowserAsync(userDoc.resumeURL);
-			console.log("Browser result:", result);
+			//console.log("Browser result:", result);
 		} catch (error) {
 			console.error("Error downloading file:", error);
 			alert("Failed to download the file. Please try again.");
@@ -159,8 +161,8 @@ export default function Page() {
 		try {
 			setLoading(true);
 			await signOut(auth);
-		} catch (e: any) {
-			console.log("Logout failed:", e);
+		} catch (e) {
+			console.error("Logout failed:", e);
 			alert(e);
 		} finally {
 			setLoading(false);

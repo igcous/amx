@@ -29,7 +29,7 @@ export const SeePostPage = ({
 
 	useEffect(() => {
 		if (chatId) {
-			const post = chatList.find((chat) => chat.id === chatId)!.post;
+			const post = chatList?.find((chat) => chat.id === chatId)!.post;
 			console.log(post);
 			setCurrentPost(post);
 		} else {

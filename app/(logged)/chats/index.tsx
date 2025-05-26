@@ -8,11 +8,11 @@ import {
 	Alert,
 } from "react-native";
 import { Image } from "expo-image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { db } from "../../../config/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
+import { arrayRemove, doc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../../context/AuthContext";
 import { ChatType } from "../../../constants/dataTypes";
 import styles from "./style";
@@ -20,76 +20,7 @@ import styles from "./style";
 export default function Page() {
 	const router = useRouter();
 	const { userAuth, userDoc, chatList, loading: loadingAuth } = useAuth();
-	//const [chatList, setChatList] = useState<ChatUser[]>();
 	const [loading, setLoading] = useState<boolean>(false); // Local
-
-	/*
-	useEffect(() => {
-		setLoading(true);
-		const fetchChatList = async () => {
-			if (!userDoc) {
-				console.error("userDoc is undefined");
-				return;
-			}
-
-			if (userDoc.chatIds) {
-				const chatUsers: ChatUser[] = [];
-
-				for (const chatId of userDoc.chatIds) {
-					try {
-						const chatSnap = await getDoc(doc(db, "chats", chatId));
-						if (!chatSnap.exists()) {
-							// ignore
-							continue;
-						}
-
-						// assume 1-on-1 chats
-						const userToFetch =
-							chatSnap.data()?.users[0] === userAuth?.uid
-								? chatSnap.data()?.users[1]
-								: chatSnap.data()?.users[0];
-
-						// get other user info
-						const userDocSnap = await getDoc(doc(db, "users", userToFetch));
-						if (!userDocSnap.exists()) {
-							// ignore
-							continue;
-						}
-
-						// fetch post info
-						const postId = chatSnap.data().postId;
-						const postSnap = await getDoc(doc(db, "posts", postId));
-						if (!postSnap.exists()) {
-							// ignore
-							continue;
-						}
-
-						const chatUser: ChatUser = {
-							id: userToFetch,
-							chatId: chatId,
-							postId: postId,
-							firstname: userDocSnap.data().firstname,
-							lastname: userDocSnap.data().lastname,
-							companyname: userDocSnap.data().companyname,
-							jobtitle: postSnap.data().title,
-							picURL: userDocSnap.data().profilePicURL,
-						};
-						//console.log(chatUser.picURL);
-						chatUsers.push(chatUser);
-					} catch (e) {
-						console.error("Error fetching user data:", e);
-						alert(e);
-					}
-				}
-				setChatList(chatUsers);
-			} else {
-				setChatList([]);
-			}
-		};
-		fetchChatList();
-		setLoading(false);
-	}, [userDoc]);
-	*/
 
 	const renderItem: ListRenderItem<ChatType> = ({ item }) => {
 		return (
@@ -171,24 +102,13 @@ export default function Page() {
 		try {
 			setLoading(true);
 			if (!userDoc || !userAuth?.uid) {
-				console.error("user error is undefined");
-				return;
+				throw Error("User or Auth is undefined");
 			}
 
 			// Delete chatId in User chatIds
 			await updateDoc(doc(db, "users", userAuth.uid), {
 				chatIds: arrayRemove(chatId),
 			});
-
-			console.log("Deleted chat", chatId);
-
-			/*
-			// Update the local userDoc context, needed?
-			setUserDoc({
-				...userDoc,
-				chatIds: userDoc.chatIds.filter((id: string) => id !== chatId),
-			});
-			*/
 		} catch (e) {
 			console.log(e);
 		} finally {

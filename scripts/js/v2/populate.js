@@ -34,7 +34,7 @@ export const signUsers = async () => {
 
 // Create posts and assign randomly
 export const createPosts = async () => {
-	const rPostsNumber = () => Math.floor(Math.random() * 10);
+	const rPostsNumber = () => Math.floor(Math.random() * 5);
 	const rBool = () => Math.floor(Math.random() < 0.5);
 	const rPost = () => Math.floor(Math.random() * jobposts.length);
 
@@ -87,9 +87,9 @@ export const createPosts = async () => {
 						if (searcher.role === "searcher") {
 							console.log("Applicant:", searcher.id);
 							// Seen or not
-							if (true) {
+							if (rBool()) {
 								// Apply or not
-								if (true) {
+								if (rBool()) {
 									await db
 										.collection("users")
 										.doc(searcher.id)
@@ -125,7 +125,7 @@ export const createPosts = async () => {
 					if (applicants) {
 						for (const applicantId of applicants) {
 							// Seen or not
-							if (false) {
+							if (rBool()) {
 								await db
 									.collection("posts")
 									.doc(postId)

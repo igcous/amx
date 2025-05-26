@@ -20,9 +20,8 @@ import {
 	getInitialNotification,
 	getMessaging,
 	onMessage,
-	onNotificationOpenedApp,
 } from "@react-native-firebase/messaging";
-import notifee, { EventType } from "@notifee/react-native";
+import notifee, { AndroidImportance, EventType } from "@notifee/react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RootLayout() {
@@ -46,7 +45,7 @@ export default function RootLayout() {
 			const status = await PermissionsAndroid.check(
 				PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
 			);
-			console.log("Notification permissions:", status);
+			//console.log("Notification permissions:", status);
 		};
 		checkAndRequestPermission();
 	}, []);
@@ -54,30 +53,14 @@ export default function RootLayout() {
 	useEffect(() => {
 		// Handle when app is opened from quit state (cold start)
 		// Works but its erratic
-		getInitialNotification(messaging).then((remoteMessage) => {
-			console.log(remoteMessage?.data?.chatId);
-			if (remoteMessage?.data?.chatId) {
-				router.push(`/chats/`);
+		getInitialNotification(messaging).then(async (remoteMessage) => {
+			const chatId = remoteMessage?.data?.chatId as string;
+			console.log("Opened app from killed state, with arg: ", chatId);
+			if (chatId) {
+				await AsyncStorage.setItem("pendingChatId", chatId);
 			}
 		});
-	}, [router]);
-
-	/*
-	useEffect(() => {
-		const checkPendingNavigation = async () => {
-			const chatId = await AsyncStorage.getItem("pendingRouting");
-			console.log("Pending Routing", chatId);
-			if (chatId) {
-				//router.push(`/chats/${chatId}`);
-				await AsyncStorage.removeItem("pendingRouting");
-				console.log("Router triggered");
-				router.push("/chats");
-			}
-		};
-		console.log("been here");
-		checkPendingNavigation();
 	}, []);
-	*/
 
 	useEffect(() => {
 		// Handles FCM messages when the application is alive/in the foreground
@@ -87,11 +70,12 @@ export default function RootLayout() {
 				console.log("Message: ", remoteMessage);
 				console.log("Received!");
 
-				// notifee handling
+				// Notifee handling
 				// Create a channel (required for Android)
 				const channelId = await notifee.createChannel({
 					id: "default",
 					name: "Default Channel",
+					importance: AndroidImportance.HIGH,
 				});
 
 				await notifee.displayNotification({
@@ -111,35 +95,13 @@ export default function RootLayout() {
 		return unsubscribe;
 	}, []);
 
-	/*
-	useEffect(() => {
-		// This runs when the app is opened from a notification (background state)
-		const unsubscribe = onNotificationOpenedApp(messaging, (remoteMessage) => {
-			router.push("/chats/");
-		});
-
-		// This runs when the app is launched from a quit state via a notification
-
-		getInitialNotification(messaging).then((remoteMessage) => {
-			if (remoteMessage?.data?.chatId) {
-				router.push(`/chats/${remoteMessage.data.chatId}`);
-			}
-		});
-
-		return unsubscribe;
-	}, []);
-	*/
-
 	useEffect(() => {
 		const unsubscribe = notifee.onForegroundEvent(({ type, detail }) => {
 			if (type === EventType.PRESS) {
 				// Handle notification press
 				console.log("Notification pressed!", detail);
 				const chatId = detail.notification?.data?.chatId as string;
-				// TODO: go to chat Id
-				console.log("Chat Id:", chatId);
-				//router.push(`/chats/${chatId}`);
-				router.push(`/chats/`);
+				router.push(`/chats/${chatId}`);
 			}
 		});
 		return unsubscribe;

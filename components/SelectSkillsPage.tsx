@@ -32,12 +32,6 @@ export const SelectSkillsPage = ({
 	const [loading, setLoading] = useState<boolean>(true);
 	const params = useLocalSearchParams();
 
-	useEffect(() => {
-		console.log("Current params", params);
-		console.log("Skill selection", skillSelection);
-		console.log(typeof skillSelection);
-	}, []);
-
 	const updateUserDoc = async () => {
 		setLoading(true);
 

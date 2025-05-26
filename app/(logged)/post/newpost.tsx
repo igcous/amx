@@ -23,7 +23,7 @@ import styles from "./style";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(false);
-	const { userDoc, setUserDoc, userAuth } = useAuth();
+	const { userDoc, userAuth } = useAuth();
 	const router = useRouter();
 
 	const { title, description, skillSelection } = useLocalSearchParams<{
@@ -40,14 +40,6 @@ export default function Page() {
 		description: description,
 		skillSelection: skillSelection,
 	});
-
-	// Only for debug
-	const params = useLocalSearchParams();
-	useEffect(() => {
-		console.log("Current params", params);
-		console.log("Skill selection", skillSelection);
-		console.log(typeof skillSelection);
-	}, []);
 
 	const validateForm = (updatedForm: typeof form) => {
 		const { title, description } = updatedForm;
@@ -68,9 +60,8 @@ export default function Page() {
 		try {
 			setLoading(true);
 
-			if (!userAuth) {
-				console.log("Error");
-				throw new Error();
+			if (!userDoc || !userAuth?.uid) {
+				throw Error("User or Auth is undefined");
 			}
 
 			const post = {
@@ -81,25 +72,12 @@ export default function Page() {
 				postedBy: userAuth?.uid,
 				postedAt: Timestamp.now(),
 			};
-			console.log("New post", post);
 
 			const docRef = await addDoc(collection(db, "posts"), post);
 			const postId = docRef.id;
 			await updateDoc(doc(db, "users", userAuth.uid), {
-				publishedPosts: arrayUnion(postId), // Add the document ID to the user's publishedPosts array
+				publishedPosts: arrayUnion(postId),
 			});
-
-			// Update the local userDoc context
-			const updatedPublishedPosts = userDoc?.publishedPosts
-				? [...userDoc.publishedPosts, docRef.id]
-				: [docRef.id];
-
-			setUserDoc({
-				...userDoc,
-				publishedPosts: updatedPublishedPosts, // Update the local context
-			});
-
-			console.log(docRef);
 		} catch (e) {
 			console.log(e);
 		} finally {

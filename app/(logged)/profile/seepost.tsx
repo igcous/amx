@@ -10,6 +10,6 @@ import { useLocalSearchParams } from "expo-router";
 import { SeePostPage } from "../../../components/SeePostPage";
 
 export default function Page() {
-	const { post } = useLocalSearchParams<{ post: string }>();
-	return <SeePostPage post={post}></SeePostPage>;
+	const { postId } = useLocalSearchParams<{ postId: string }>();
+	return <SeePostPage postId={postId}></SeePostPage>;
 }

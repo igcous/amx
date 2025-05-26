@@ -5,12 +5,10 @@ Description:
     Only for Searcher
 		Swipe on job post suggestions
 
-
-	TODO: Make the suggestions skill-based
 */
 
 import { Text, View, Pressable, ActivityIndicator, Alert } from "react-native";
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import {
 	getDocs,
@@ -20,8 +18,6 @@ import {
 	updateDoc,
 	arrayUnion,
 	doc,
-	startAfter,
-	DocumentData,
 } from "firebase/firestore";
 import { db } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
@@ -32,7 +28,7 @@ import { PostType } from "../../../constants/dataTypes";
 import styles from "./style";
 
 export default function Page() {
-	const { userAuth, userDoc, setUserDoc } = useAuth();
+	const { userAuth, userDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
 	const [deck, setDeck] = useState<PostType[]>();
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
@@ -46,44 +42,47 @@ export default function Page() {
 		try {
 			setLoading(true);
 			if (!userAuth || !userDoc) {
-				console.log("User Auth error, this should never happen");
-				throw new Error();
+				throw Error("User or Auth is undefined");
 			}
 
 			const querySnapshot = await getDocs(
 				query(collection(db, "posts"), limit(100))
 			);
 
-			// TODO: Set a query startAfter, to paginate doc retrieval
+			if (querySnapshot && querySnapshot.size > 0) {
+				// TODO: Set a query startAfter, to paginate doc retrieval
 
-			// Filter out posts that are in userDoc.seenPosts
-			const filteredDocs = userDoc.seenPosts
-				? querySnapshot.docs.filter(
-						(doc) => !userDoc.seenPosts.includes(doc.id)
-				  )
-				: querySnapshot.docs;
+				// Filter out posts that are in userDoc.seenPosts
+				const filteredDocs = userDoc.seenPosts
+					? querySnapshot.docs.filter(
+							(doc) => !userDoc.seenPosts.includes(doc.id)
+					  )
+					: querySnapshot.docs;
 
-			// Map over querySnapshot.docs to create an array of Post objects
-			const posts: PostType[] = filteredDocs.map((doc) => ({
-				id: doc.id,
-				title: doc.data().title,
-				employer: doc.data().employer,
-				text: doc.data().text,
-				postedAt: doc.data().postedAt,
-				skills: doc.data().jobSkills,
-			}));
+				// Map over querySnapshot.docs to create an array of Post objects
+				const posts: PostType[] = filteredDocs.map((doc) => ({
+					id: doc.id,
+					title: doc.data().title,
+					employer: doc.data().employer,
+					text: doc.data().text,
+					postedAt: doc.data().postedAt,
+					skills: doc.data().jobSkills,
+				}));
 
-			// Calculate matching index and sort posts in ascending order
-			const sortedPosts = posts
-				.map((post) => ({
-					...post,
-					matchingIndex: matchingIndex(post.skills, userDoc?.skills),
-				}))
-				.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
+				// Calculate matching index and sort posts in ascending order
+				const sortedPosts = posts
+					.map((post) => ({
+						...post,
+						matchingIndex: matchingIndex(post.skills, userDoc?.skills),
+					}))
+					.sort((a, b) => a.matchingIndex - b.matchingIndex); // Sort by matching index (ascending, deck is then reversed)
 
-			// Set the deck state with the array of Post objects
-			setDeck(sortedPosts);
-			setCurrentIndex(sortedPosts.length - 1);
+				setDeck(sortedPosts);
+				setCurrentIndex(sortedPosts.length - 1);
+			} else {
+				setDeck([]);
+				setCurrentIndex(0);
+			}
 		} catch (e) {
 			console.error(e);
 		} finally {
@@ -92,14 +91,9 @@ export default function Page() {
 	};
 
 	const handleSubmit = async (post: PostType, liked: boolean) => {
-		// update context
 		if (!userAuth?.uid || !userDoc) {
-			console.log("User Auth error, this should never happen");
-			throw new Error();
+			throw new Error("User or Auth error, this should never happen");
 		}
-
-		//console.log("Current Post ID ", post.id);
-		//liked ? console.log("yes") : console.log("no");
 
 		// Firebase update
 		if (liked) {
@@ -118,26 +112,6 @@ export default function Page() {
 				seenPosts: arrayUnion(post.id),
 			});
 		}
-
-		// Update Context
-		setUserDoc((prevUserDoc) => ({
-			...prevUserDoc,
-			seenPosts: prevUserDoc?.seenPosts
-				? [...prevUserDoc.seenPosts, post.id]
-				: [post.id],
-			likedPosts: liked
-				? prevUserDoc?.likedPosts
-					? [...prevUserDoc.likedPosts, post.id]
-					: [post.id]
-				: prevUserDoc?.likedPosts,
-		}));
-
-		/*
-		// Update the deck
-		setDeck(
-			(prevDeck) => prevDeck?.filter((item) => item.id !== post.id) || null
-		);
-		*/
 	};
 
 	// From react-tinder-card Advanced Example
@@ -158,28 +132,6 @@ export default function Page() {
 			}
 		}
 	};
-
-	// WORKING BUT KINDA BUGGY
-	/*
-	const swipe = async (dir: string) => {
-		if (deck) {
-			console.log(deck.length);
-			if (childRefs[deck.length - 1]?.current) {
-				await childRefs[deck.length - 1].current.swipe(dir);
-			} else {
-				console.error("Reference for card is undefined");
-			}
-		}
-	};
-	
-
-	const goBack = async () => {
-		if (deck) {
-			const newIndex = deck.length - 1;
-			await childRefs[newIndex].current.restoreCard();
-		}
-	};
-	*/
 
 	const matchingIndex = (jobskills: string[], userskills: string[]) => {
 		return Math.round(
@@ -229,25 +181,31 @@ export default function Page() {
 							key={post.id}
 							onSwipe={(dir) => {
 								if (dir === "right") {
-									Alert.alert("Confirm job application?", "", [
-										{
-											text: "Confirm",
-											onPress: () => {
-												setCurrentIndex(index - 1);
-												handleSubmit(post, true);
+									Alert.alert(
+										"Confirm job application?",
+										"",
+										[
+											{
+												text: "Confirm",
+												onPress: () => {
+													setCurrentIndex(index - 1);
+													handleSubmit(post, true);
+												},
+												style: "default",
 											},
-											style: "default",
-										},
-										{
-											text: "Cancel",
-											onPress: async () => {
-												console.log("undo!");
-												setCurrentIndex(index);
-												await childRefs[index].current.restoreCard();
+											{
+												text: "Cancel",
+												onPress: async () => {
+													setCurrentIndex(index);
+													await childRefs[index].current.restoreCard();
+												},
+												style: "cancel",
 											},
-											style: "cancel",
-										},
-									]);
+										],
+										{
+											cancelable: false,
+										}
+									);
 								} else {
 									setCurrentIndex(index - 1);
 									handleSubmit(post, false);
@@ -260,10 +218,11 @@ export default function Page() {
 							<Pressable
 								style={styles.tinderCard}
 								onPress={() => {
+									console.log(post.id);
 									router.navigate({
 										pathname: `/apply/seepost`,
 										params: {
-											post: JSON.stringify(post),
+											postId: post.id,
 										},
 									});
 								}}>

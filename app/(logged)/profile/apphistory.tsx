@@ -26,8 +26,7 @@ export default function Page() {
 		setLoading(true);
 		const fetchPosts = async () => {
 			if (!userDoc) {
-				console.error("userDoc is undefined");
-				return;
+				throw Error("userDoc not found");
 			}
 
 			if (userDoc.likedPosts) {
@@ -52,7 +51,7 @@ export default function Page() {
 						};
 						posts.push(post);
 					} catch (e) {
-						console.log("Error while fetching posts", e);
+						console.error("Error while fetching posts", e);
 					}
 				}
 				setPostList(posts);
@@ -68,8 +67,7 @@ export default function Page() {
 		try {
 			setLoading(true);
 			if (!userDoc || !userAuth?.uid) {
-				console.error("user error is undefined");
-				return;
+				throw Error("User or Auth is undefined");
 			}
 			await updateDoc(doc(db, "posts", postId), {
 				applicants: arrayRemove(userAuth.uid),
@@ -82,7 +80,7 @@ export default function Page() {
 				likedPosts: arrayRemove(postId),
 			});
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 		} finally {
 			setLoading(false);
 		}
@@ -114,9 +112,7 @@ export default function Page() {
 					router.push({
 						pathname: `/profile/seepost`,
 						params: {
-							post: JSON.stringify(
-								postList?.find((post) => post.id === item.id)
-							),
+							postId: item.id,
 						},
 					});
 				}}>
@@ -181,7 +177,7 @@ export default function Page() {
 			<View style={styles.top}>
 				{postList.length === 0 ? (
 					<View style={styles.info}>
-						<Text style={styles.infoText}>Let's make some posts!</Text>
+						<Text style={styles.infoText}>Let's make some applications!</Text>
 					</View>
 				) : (
 					<FlatList

@@ -33,7 +33,7 @@ import { PostType } from "../../../constants/dataTypes";
 import styles from "./style";
 
 export default function Page() {
-	const { userAuth, userDoc, setUserDoc } = useAuth();
+	const { userAuth, userDoc } = useAuth();
 	const router = useRouter();
 	const [postList, setPostList] = useState<PostType[]>();
 	const [loading, setLoading] = useState(true);
@@ -43,8 +43,7 @@ export default function Page() {
 		setLoading(true);
 		const fetchPostList = async () => {
 			if (!userDoc || !userAuth?.uid) {
-				console.error("user error");
-				return;
+				throw Error("User or Auth is undefined");
 			}
 
 			if (userDoc.publishedPosts) {
@@ -54,9 +53,7 @@ export default function Page() {
 					try {
 						const docSnap = await getDoc(doc(db, "posts", postId));
 						if (!docSnap.exists() || !docSnap.data()) {
-							// ignore
-							//console.error(`Post with ID ${postId} does not exist`);
-							continue;
+							continue; // ignore
 						}
 						const newPost: PostType = {
 							id: docSnap.id,
@@ -71,12 +68,11 @@ export default function Page() {
 						};
 						posts.push(newPost);
 					} catch (e) {
-						console.log("Error fetching user data: ", e);
+						console.error("Error fetching user data: ", e);
 						alert(e);
 					}
 				}
 				setPostList(posts);
-				console.log("Posts in index page", posts);
 			} else {
 				setPostList([]);
 			}
@@ -90,8 +86,7 @@ export default function Page() {
 		try {
 			setLoading(true);
 			if (!userDoc || !userAuth?.uid) {
-				console.error("user error is undefined");
-				return;
+				throw Error("User or Auth is undefined");
 			}
 
 			// Delete Post
@@ -101,20 +96,8 @@ export default function Page() {
 			await updateDoc(doc(db, "users", userAuth.uid), {
 				publishedPosts: arrayRemove(postId),
 			});
-
-			console.log("Deleted post", postId);
-
-			/*
-			// Update the local userDoc context
-			setUserDoc({
-				...userDoc,
-				publishedPosts: userDoc.publishedPosts.filter(
-					(id: string) => id !== postId
-				),
-			});
-			*/
 		} catch (e) {
-			console.log(e);
+			console.error(e);
 		} finally {
 			setLoading(false);
 		}

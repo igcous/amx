@@ -6,14 +6,9 @@ import { useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
 import {
 	doc,
-	getDocs,
 	collection,
-	where,
 	addDoc,
-	query,
-	limit,
 	updateDoc,
-	documentId,
 	arrayUnion,
 	getDoc,
 } from "firebase/firestore";
@@ -26,33 +21,25 @@ import styles from "./style";
 
 export default function Page() {
 	const router = useRouter();
-	const { userAuth, userDoc, setUserDoc } = useAuth();
+	const { userAuth, userDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
-	const [deck, setDeck] = useState<UserType[] | null>(null);
+	const [deck, setDeck] = useState<UserType[]>();
 	const { post } = useLocalSearchParams<{ post: string }>();
 	const [currentPost, setCurrentPost] = useState(JSON.parse(post));
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
 
-	/*
 	useEffect(() => {
-		console.log(userDoc);
-	}, []);
-	*/
-
-	useEffect(() => {
-		// Get batches of n applicants
 		getApplications();
-	}, []);
+	}, [currentIndex < 0]);
 
 	const getApplications = async () => {
 		try {
 			setLoading(true);
-			// Get post again, in case applicants has updated
+
+			// Get post again, in case applicants has changed
 			const docSnap = await getDoc(doc(db, "posts", currentPost.id));
 			if (!docSnap.exists() || !docSnap.data()) {
-				// ignore
-				//console.error(`Post with ID ${postId} does not exist`);
-				throw Error;
+				throw Error("Post does not exist or was deleted");
 			}
 			const updatedPost: PostType = {
 				id: docSnap.id,
@@ -63,10 +50,9 @@ export default function Page() {
 				skills: docSnap.data().jobSkills,
 				applicants: docSnap.data().applicants,
 				seenApplicants: docSnap.data().seenApplicants,
-				likedApplicants: docSnap.data().seenApplicants,
+				likedApplicants: docSnap.data().likedApplicants,
 			};
 			setCurrentPost(updatedPost);
-			console.log("Updated post", updatedPost);
 
 			// Filter out seen applicants
 			const validApplicants =
@@ -76,11 +62,7 @@ export default function Page() {
 					  )
 					: updatedPost.applicants;
 
-			if (
-				updatedPost.applicants &&
-				validApplicants &&
-				validApplicants.length !== 0
-			) {
+			if (validApplicants && validApplicants.length !== 0) {
 				let applicants: UserType[] = [];
 				// TODO: limit number of valid applicants fetched
 				for (const appId of validApplicants) {
@@ -108,6 +90,9 @@ export default function Page() {
 
 				setDeck(sortedApplicants);
 				setCurrentIndex(sortedApplicants.length - 1);
+			} else {
+				setDeck([]);
+				setCurrentIndex(0); // non-negative
 			}
 		} catch (e) {
 			console.error(e);
@@ -118,39 +103,25 @@ export default function Page() {
 
 	const handleSubmit = async (applicant: UserType, liked: boolean) => {
 		if (!userAuth?.uid || !userDoc) {
-			console.log("User Auth error, this should never happen");
-			throw new Error();
+			throw new Error("User or Auth error, this should never happen");
 		}
 
 		// Firebase update
-		await updateDoc(doc(db, "posts", currentPost.id), {
-			seenApplicants: arrayUnion(applicant.id),
-			likedApplcants: arrayUnion(applicant.id),
-		});
-
-		// Context update
-		setCurrentPost({
-			...currentPost,
-			seenApplicants: currentPost.seenApplicants
-				? [...currentPost.seenApplicants, applicant.id]
-				: [applicant.id],
-			likedApplicants: currentPost.likedApplicants
-				? [...currentPost.likedApplicants, applicant.id]
-				: [applicant.id],
-		});
-		/*
-		setDeck(
-			(prevDeck) => prevDeck?.filter((item) => item.id !== applicant.id) || null
-		);
-		*/
-
 		if (liked) {
+			await updateDoc(doc(db, "posts", currentPost.id), {
+				seenApplicants: arrayUnion(applicant.id),
+				likedApplcants: arrayUnion(applicant.id),
+			});
 			await createChat(userAuth.uid, applicant.id);
+		} else {
+			await updateDoc(doc(db, "posts", currentPost.id), {
+				seenApplicants: arrayUnion(applicant.id),
+			});
 		}
 	};
 
 	const createChat = async (recruiter: string, applicant: string) => {
-		// create chat room
+		// Create chat room
 		try {
 			setLoading(true);
 			const docRef = await addDoc(collection(db, "chats"), {
@@ -159,22 +130,13 @@ export default function Page() {
 			});
 			const newChatId = docRef.id;
 
-			// add chat id to users
+			// Add chat id to users
 			[recruiter, applicant].forEach(async (user) => {
 				await updateDoc(doc(db, "users", user), {
 					chatIds: arrayUnion(newChatId),
 				});
 			});
 
-			/*
-			// Update Context
-			setUserDoc((prevUserDoc) => ({
-				...prevUserDoc,
-				chatIds: prevUserDoc?.chatIds
-					? [...prevUserDoc.chatIds, newChatId]
-					: [newChatId],
-			}));
-			*/
 			Alert.alert(
 				"Matched!",
 				"",
@@ -182,7 +144,7 @@ export default function Page() {
 					{
 						text: "Go to chat",
 						onPress: () => {
-							router.push({
+							router.replace({
 								pathname: `/chats/${newChatId}`,
 								params: {},
 							});
@@ -205,43 +167,6 @@ export default function Page() {
 		}
 	};
 
-	/*
-	const goToChat = async (userToFetch: string, chatId: string) => {
-		try {
-			setLoading(true);
-
-			// get other user info
-			const userDocSnap = await getDoc(doc(db, "users", userToFetch));
-			if (!userDocSnap.exists()) {
-				// ignore
-				throw Error;
-			}
-			const chatUser: UserType = {
-				id: userToFetch,
-				chatId: chatId,
-				postId: currentPost.id,
-				firstname: userDocSnap.data().firstname,
-				lastname: userDocSnap.data().lastname,
-				companyname: userDocSnap.data().companyname,
-				jobtitle: currentPost.title,
-				picURL: userDocSnap.data().profilePicURL,
-			};
-			router.push({
-				pathname: `/chats/${chatId}`,
-				params: {
-					chatUser: JSON.stringify(chatUser),
-					postId: currentPost.id,
-				},
-			});
-		} catch (e) {
-			console.log("Error when redirecteing", e);
-		} finally {
-			setLoading(false);
-		}
-		
-	};
-
-	*/
 	// From react-tinder-card Advanced Example
 	// https://github.com/3DJakob/react-native-tinder-card-demo/blob/master/src/examples/Advanced.js
 	// This is used only to swipe programmatically
@@ -267,7 +192,7 @@ export default function Page() {
 			const resumeURL = docSnap.data()?.resumeURL;
 			if (resumeURL) {
 				const result = await WebBrowser.openBrowserAsync(resumeURL);
-				console.log("Browser result:", result);
+				//console.log("Browser result:", result);
 			} else {
 				alert("No uploaded CV found.");
 			}
@@ -296,7 +221,7 @@ export default function Page() {
 				transform: [{ scale: 2 }],
 			}}
 		/>
-	) : currentIndex == -1 ? (
+	) : !deck || deck?.length === 0 ? (
 		<View style={styles.container}>
 			<View style={styles.info}>
 				<Text style={styles.infoText}>
@@ -389,9 +314,9 @@ export default function Page() {
 
 								<View style={styles.tinderCardContent}>
 									<Text style={styles.tinderCardText}>
-										{/*"Matching: " +
+										{"Matching: " +
 											matchingIndex(currentPost.skills, applicant.skills) +
-											"%"*/}
+											"%"}
 									</Text>
 								</View>
 

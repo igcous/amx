@@ -22,7 +22,6 @@ import {
 	updateDoc,
 } from "firebase/firestore";
 import * as WebBrowser from "expo-web-browser";
-import { unsubscribe } from "diagnostics_channel";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
@@ -54,7 +53,7 @@ export default function Page() {
 					setCurrentPost(updatedPost);
 					console.log("current post updated", updatedPost);
 				} else {
-					console.error("Post document does not exist");
+					console.error("Post document does not exist or was deleted");
 				}
 			},
 			(error) => {
@@ -71,7 +70,6 @@ export default function Page() {
 
 	useEffect(() => {
 		getHistory();
-		console.log("updated history");
 	}, [currentPost]);
 
 	const getHistory = async () => {
@@ -96,7 +94,7 @@ export default function Page() {
 			}
 			setApplicantsList(applicants);
 		} catch (e) {
-			console.log("Error while getting Post History", e);
+			console.log("Error while getting post history", e);
 		} finally {
 			setLoading(false);
 		}
@@ -118,8 +116,7 @@ export default function Page() {
 		try {
 			setLoading(true);
 			if (!userDoc || !userAuth?.uid) {
-				console.error("user error is undefined");
-				return;
+				throw Error("User or Auth is undefined");
 			}
 			await updateDoc(doc(db, "posts", postId), {
 				applicants: arrayRemove(applicantId),
@@ -142,7 +139,7 @@ export default function Page() {
 		try {
 			const docSnap = await getDoc(doc(db, "users", applicantId));
 			if (!docSnap.exists()) {
-				throw new Error("User does not exist");
+				throw new Error("User does not exist or was deleted");
 			}
 			const resumeURL = docSnap.data()?.resumeURL;
 			if (resumeURL) {

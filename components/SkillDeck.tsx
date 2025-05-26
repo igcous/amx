@@ -10,7 +10,6 @@ Description:
 
 import { Text, Pressable, ViewStyle, TextStyle } from "react-native";
 import { Colors } from "../constants/colorPalette";
-import { useEffect } from "react";
 
 export const SkillDeck = ({
 	skillSelection = [],
@@ -34,13 +33,6 @@ export const SkillDeck = ({
 	cardStyle?: ViewStyle;
 	cardTextStyle?: TextStyle;
 }) => {
-	/*
-	// debug
-	useEffect(() => {
-		console.log("Selection length: ", skillSelection.length);
-	});
-	*/
-
 	//TODO Store this skills somewhere persistent (DB or localfile)
 	const skillList: string[] = [
 		"Frontend",

@@ -82,7 +82,7 @@ const createChat = async () => {
 
 	const chat = {
 		users: [user2.uid, user1.uid], // Put recruiter always first
-		postId: "3aOaS6dO4kWhqHjeymJO", // If not set, does not display on chats page
+		postId: "CMqdm31tPa4lH2wZCb2S", // If not set, does not display on chats page
 	};
 
 	const chatRef = await db.collection("chats").add(chat);

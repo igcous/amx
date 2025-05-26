@@ -23,7 +23,7 @@ export default function Page() {
 	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { userAuth, userDoc, chatList } = useAuth();
 	const { chatId } = useLocalSearchParams<{ chatId: string }>();
-	const currentChat = chatList.find((chat) => chat.id === chatId);
+	const currentChat = chatList?.find((chat) => chat.id === chatId);
 	const router = useRouter();
 	const [imageSource, setImageSource] = useState(
 		currentChat?.user.picURL
@@ -35,41 +35,7 @@ export default function Page() {
 			  }
 			: require("../../../assets/profile_icon.svg")
 	);
-	/*
-	const [currentPost, setCurrentPost] = useState<Post | null>(null);
 
-	useEffect(() => {
-		//console.log(postId);
-		getPost();
-	}, []);
-	*/
-	/*
-	const getPost = async () => {
-		try {
-			setLoading(true);
-			const postSnap = await getDoc(doc(db, "posts", postId));
-			if (postSnap.exists()) {
-				const post: Post = {
-					id: postSnap.id,
-					title: postSnap.data().title,
-					employer: postSnap.data().employer,
-					text: postSnap.data().text,
-					postedAt: postSnap.data().postedAt,
-					postSkills: postSnap.data().jobSkills,
-					applicants: [],
-					seenApplicants: [],
-					likedApplicants: [],
-				};
-				//console.log(post);
-				setCurrentPost(post);
-			}
-		} catch (e) {
-			console.log(e);
-		} finally {
-			setLoading(false);
-		}
-	};
-	*/
 	useLayoutEffect(() => {
 		const q = query(
 			collection(db, `chats/${chatId}/messages`),
@@ -77,7 +43,6 @@ export default function Page() {
 		);
 
 		const unsubscribe = onSnapshot(q, (snapshot) => {
-			//console.log("snapshot");
 			setMessages(
 				snapshot.docs.map((doc) => ({
 					// this is the format of IMessage
@@ -91,7 +56,7 @@ export default function Page() {
 		return () => unsubscribe();
 	}, []);
 
-	// this is on GiftedChat basic example
+	// This is on GiftedChat basic example
 	const handleSend = useCallback((messages: IMessage[]) => {
 		setMessages((previousMessages) =>
 			GiftedChat.append(previousMessages, messages)
@@ -115,7 +80,7 @@ export default function Page() {
 			const resumeURL = docSnap.data()?.resumeURL;
 			if (resumeURL) {
 				const result = await WebBrowser.openBrowserAsync(resumeURL);
-				console.log("Browser result:", result);
+				//console.log("Browser result:", result);
 			} else {
 				alert("No uploaded CV found.");
 			}

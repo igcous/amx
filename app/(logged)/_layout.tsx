@@ -18,11 +18,13 @@ import {
 	getMessaging,
 	setBackgroundMessageHandler,
 } from "@react-native-firebase/messaging";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function LoggedLayout() {
-	const { userAuth, userDoc, setUserDoc, loading } = useAuth();
+	const { userAuth, userDoc, chatList } = useAuth();
 	const router = useRouter();
+	const [pendingChatId, setPendingChatId] = useState<string | null>(null);
 
 	// Notifications listener
 	const messaging = getMessaging();
@@ -37,9 +39,21 @@ export default function LoggedLayout() {
 		return unsubscribe;
 	}, []);
 
+	useEffect(() => {
+		const getPendingChatId = async () => {
+			const chatId = await AsyncStorage.getItem("pendingChatId");
+			if (chatId) {
+				// Optionally remove it after reading
+				await AsyncStorage.removeItem("pendingChatId");
+				setPendingChatId(chatId);
+			}
+		};
+		getPendingChatId();
+	}, []);
+
 	return !userAuth ? (
 		<Redirect href="/(not-logged)"></Redirect>
-	) : !userDoc ? (
+	) : !userDoc || !chatList ? (
 		<ActivityIndicator
 			size="large"
 			color={Colors.primary}
@@ -51,6 +65,8 @@ export default function LoggedLayout() {
 				transform: [{ scale: 2 }],
 			}}
 		/>
+	) : pendingChatId ? (
+		<Redirect href={`/chats/${pendingChatId}`} />
 	) : (
 		<Tabs
 			screenOptions={{
@@ -66,10 +82,10 @@ export default function LoggedLayout() {
 			}}
 			/* 
 			Usage cases (i.e. why is screenListeners here?):
-				When redirecting to a specific chat, chats/index is never pushed onto the stack
-					Back button does not work
+				When redirecting to a specific chat, chats/index is never pushed onto the stack, which means Back button does not work
 				Must have a way to go to chats/index regardless
 				*/
+
 			screenListeners={{
 				tabPress: (e) => {
 					const result = e.target?.split("-")[0];
