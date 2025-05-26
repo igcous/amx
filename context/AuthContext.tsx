@@ -108,124 +108,97 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 		};
 	}, [userAuth]);
 
-	const fetchChatList = async () => {
-		if (!userDoc) {
-			console.error("userDoc is undefined");
-			return;
-		}
-
-		if (userDoc.chatIds) {
-			const chats: ChatType[] = [];
-
-			for (const chatId of userDoc.chatIds) {
-				try {
-					const chatSnap = await getDoc(doc(db, "chats", chatId));
-					if (!chatSnap.exists()) {
-						// ignore
-						continue;
-					}
-
-					// Get other user info, assuming 1-on-1 chats
-					const userToFetch =
-						chatSnap.data()?.users[0] === userAuth?.uid
-							? chatSnap.data()?.users[1]
-							: chatSnap.data()?.users[0];
-					const userDocSnap = await getDoc(doc(db, "users", userToFetch));
-					if (!userDocSnap.exists()) {
-						// ignore
-						continue;
-					}
-
-					// Get post info
-					const postId = chatSnap.data().postId;
-					const postSnap = await getDoc(doc(db, "posts", postId));
-
-					if (!postSnap.exists()) {
-						// ignore
-						continue;
-					}
-
-					const chat: ChatType = {
-						id: chatId,
-						user: {
-							id: userToFetch,
-							firstname: userDocSnap.data().firstname,
-							lastname: userDocSnap.data().lastname,
-							email: userDocSnap.data().email,
-							skills: userDocSnap.data().skills,
-							...(userDocSnap.data().companyname && {
-								skills: userDocSnap.data().companyname,
-							}),
-							...(userDocSnap.data().resumeURL && {
-								cv: userDocSnap.data().resumeURL,
-							}),
-							...(userDocSnap.data().profilePicURL && {
-								picURL: userDocSnap.data().profilePicURL,
-							}),
-						},
-						post: {
-							id: postId,
-							title: postSnap.data().title,
-							employer: postSnap.data().employer,
-							text: postSnap.data().text,
-							postedAt: postSnap.data().postedAt,
-							skills: postSnap.data().jobSkills,
-							...(userDoc.role === "recruiter" && {
-								applicants: postSnap.data().applicants,
-							}),
-							...(userDoc.role === "recruiter" && {
-								seenApplicants: postSnap.data().seenApplicants,
-							}),
-							...(userDoc.role === "recruiter" && {
-								likedApplicants: postSnap.data().likedApplicants,
-							}),
-						},
-					};
-
-					chats.push(chat);
-				} catch (e) {
-					console.error("Error fetching user data:", e);
-					alert(e);
-				}
-			}
-			setChatList(chats);
-		} else {
-			setChatList([]);
-		}
-	};
-
+	// fetch Chat List each time the userDoc changes (chatId is part of the userDoc)
 	useEffect(() => {
 		if (userDoc) {
+			const fetchChatList = async () => {
+				if (!userDoc) {
+					console.error("userDoc is undefined");
+					return;
+				}
+
+				if (userDoc.chatIds) {
+					const chats: ChatType[] = [];
+
+					for (const chatId of userDoc.chatIds) {
+						try {
+							const chatSnap = await getDoc(doc(db, "chats", chatId));
+							if (!chatSnap.exists()) {
+								// ignore
+								continue;
+							}
+
+							// Get other user info, assuming 1-on-1 chats
+							const userToFetch =
+								chatSnap.data()?.users[0] === userAuth?.uid
+									? chatSnap.data()?.users[1]
+									: chatSnap.data()?.users[0];
+							const userDocSnap = await getDoc(doc(db, "users", userToFetch));
+							if (!userDocSnap.exists()) {
+								// ignore
+								continue;
+							}
+
+							// Get post info
+							const postId = chatSnap.data().postId;
+							const postSnap = await getDoc(doc(db, "posts", postId));
+
+							if (!postSnap.exists()) {
+								// ignore
+								continue;
+							}
+
+							const chat: ChatType = {
+								id: chatId,
+								user: {
+									id: userToFetch,
+									firstname: userDocSnap.data().firstname,
+									lastname: userDocSnap.data().lastname,
+									email: userDocSnap.data().email,
+									skills: userDocSnap.data().skills,
+									...(userDocSnap.data().companyname && {
+										skills: userDocSnap.data().companyname,
+									}),
+									...(userDocSnap.data().resumeURL && {
+										cv: userDocSnap.data().resumeURL,
+									}),
+									...(userDocSnap.data().profilePicURL && {
+										picURL: userDocSnap.data().profilePicURL,
+									}),
+								},
+								post: {
+									id: postId,
+									title: postSnap.data().title,
+									employer: postSnap.data().employer,
+									text: postSnap.data().text,
+									postedAt: postSnap.data().postedAt,
+									skills: postSnap.data().jobSkills,
+									...(userDoc.role === "recruiter" && {
+										applicants: postSnap.data().applicants,
+									}),
+									...(userDoc.role === "recruiter" && {
+										seenApplicants: postSnap.data().seenApplicants,
+									}),
+									...(userDoc.role === "recruiter" && {
+										likedApplicants: postSnap.data().likedApplicants,
+									}),
+								},
+							};
+
+							chats.push(chat);
+						} catch (e) {
+							console.error("Error fetching user data:", e);
+							alert(e);
+						}
+					}
+					setChatList(chats);
+				} else {
+					setChatList([]);
+				}
+			};
 			fetchChatList();
 		}
 	}, [userDoc]);
-
-	/*
-	useEffect(() => {
-		const setUserToken = async () => {
-			if (userAuth && userDoc) {
-				try {
-					const token = await getToken(messaging);
-					console.log("FCM Token:", token);
-					if (token !== userDoc.role) {
-						setUserDoc((prevUserDoc) => ({
-							...prevUserDoc,
-							token: token,
-						}));
-						await updateDoc(doc(db, "users", userAuth.uid), {
-							token: token,
-						});
-					}
-
-					// You can send this token to your backend if needed
-				} catch (error) {
-					console.error("Error getting FCM token:", error);
-				}
-			}
-		};
-		setUserToken();
-	}, [userAuth]);
-	*/
 
 	return (
 		<AuthContext.Provider

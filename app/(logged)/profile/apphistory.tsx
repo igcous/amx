@@ -1,7 +1,7 @@
 import { db } from "../../../config/firebaseConfig";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
-import { Post } from "../../../constants/dataTypes";
+import { PostType } from "../../../constants/dataTypes";
 import styles from "./style";
 import {
 	ActivityIndicator,
@@ -18,7 +18,7 @@ import { arrayRemove, doc, getDoc, updateDoc } from "firebase/firestore";
 
 export default function Page() {
 	const [loading, setLoading] = useState<boolean>(true);
-	const [postList, setPostList] = useState<Post[]>();
+	const [postList, setPostList] = useState<PostType[]>();
 	const { userAuth, userDoc } = useAuth();
 	const router = useRouter();
 
@@ -31,7 +31,7 @@ export default function Page() {
 			}
 
 			if (userDoc.likedPosts) {
-				const posts: Post[] = [];
+				const posts: PostType[] = [];
 
 				for (const postId of userDoc.likedPosts) {
 					try {
@@ -39,13 +39,13 @@ export default function Page() {
 						if (!postSnap.exists()) {
 							continue;
 						}
-						const post: Post = {
+						const post: PostType = {
 							id: postSnap.id,
 							title: postSnap.data().title,
 							text: postSnap.data().text,
 							employer: postSnap.data().employer,
 							postedAt: postSnap.data().postedAt,
-							postSkills: postSnap.data().jobSkills,
+							skills: postSnap.data().jobSkills,
 							applicants: postSnap.data().applicants,
 							seenApplicants: postSnap.data().seenApplicants,
 							likedApplicants: postSnap.data().likedApplicants,
@@ -88,7 +88,7 @@ export default function Page() {
 		}
 	};
 
-	const status = (post: Post) => {
+	const status = (post: PostType) => {
 		if (!userDoc || !userAuth?.uid) {
 			return "Error";
 		} else if (
@@ -106,7 +106,7 @@ export default function Page() {
 		}
 	};
 
-	const renderItem: ListRenderItem<Post> = ({ item }) => {
+	const renderItem: ListRenderItem<PostType> = ({ item }) => {
 		return (
 			<Pressable
 				style={styles.item}

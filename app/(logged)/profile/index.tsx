@@ -40,21 +40,10 @@ import { signOut } from "firebase/auth";
 import styles from "./style";
 
 export default function Page() {
+	const router = useRouter();
 	const [loading, setLoading] = useState<boolean>(false);
 	const [displayPick, setDisplayPick] = useState<boolean>(false);
-	const router = useRouter();
 	const { userAuth, userDoc, setUserDoc } = useAuth();
-
-	/*
-	// useImage Hook does not work for fallback, use this instead
-	const [imageSource, setImageSource] = useState(
-		userDoc?.profilePicURL
-			? { uri: userDoc.profilePicURL }
-			: require("../../../assets/profile_icon.svg")
-	);
-
-	useEffect(() => console.log(imageSource), [imageSource]);
-	*/
 
 	const pickImage = async (useCamera: boolean) => {
 		try {
