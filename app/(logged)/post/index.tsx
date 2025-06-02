@@ -104,7 +104,7 @@ export default function Page() {
 	const renderItem: ListRenderItem<PostType> = ({ item }) => {
 		return (
 			<Pressable
-				style={styles.item}
+				style={[styles.item, { minHeight: 300 }]}
 				onPress={() => {
 					if (displayPick === item.id) {
 						setDisplayPick(null);

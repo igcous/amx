@@ -70,11 +70,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 				doc(db, "users", userAuth.uid),
 				async (docSnap) => {
 					if (docSnap.exists()) {
-						// Check token and set if necessary
+						// Check token and set/update if necessary
 						const token = await getToken(messaging);
 						//console.log("FCM Token:", token);
 						console.log("User doc updated:", docSnap.data());
-						if (!token || token !== docSnap.data().token) {
+						const savedToken = docSnap.data().token;
+						if (!savedToken || token !== savedToken) {
 							setUserDoc((prevUserDoc) => ({
 								...prevUserDoc,
 								token: token,

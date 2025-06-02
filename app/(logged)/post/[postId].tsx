@@ -118,7 +118,7 @@ export default function Page() {
 		if (liked) {
 			await updateDoc(doc(db, "posts", currentPost.id), {
 				seenApplicants: arrayUnion(applicant.id),
-				likedApplcants: arrayUnion(applicant.id),
+				likedApplicants: arrayUnion(applicant.id),
 			});
 			await createChat(userAuth.uid, applicant.id);
 		} else {

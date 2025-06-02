@@ -56,6 +56,7 @@ export default function Page() {
 							seenApplicants: postSnap.data().seenApplicants,
 							likedApplicants: postSnap.data().likedApplicants,
 						};
+						console.log(post);
 						posts.push(post);
 					} catch (e) {
 						console.error("Error while fetching posts", e);
