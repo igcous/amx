@@ -20,6 +20,7 @@ export default function Index() {
 				<Image
 					source={require("../../assets/amx_logo.png")}
 					style={styles.logo}
+					contentFit="contain"
 				/>
 				<View style={styles.middle}>
 					<Text style={styles.middleText}>

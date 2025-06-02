@@ -12,7 +12,7 @@ Description:
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
 	addDoc,
 	arrayUnion,
@@ -47,8 +47,15 @@ export default function Page() {
 
 	const validateForm = (updatedForm: typeof form) => {
 		const { title, description } = updatedForm;
-		return title === "" || description === "" || !skillSelection;
+		return (
+			!title ||
+			title === "" ||
+			!description ||
+			description === "" ||
+			!skillSelection
+		);
 	};
+
 	const [buttonDisabled, setButtonDisabled] = useState<boolean>(
 		validateForm(form)
 	);
