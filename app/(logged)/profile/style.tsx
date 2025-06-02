@@ -1,9 +1,8 @@
 /*
-Title: Style for Profile
+Title: Profile Styling
 
 Description:
-    Defines a common styling for the Profile pages
-
+    Common styling for the Profile pages
 */
 
 import { Dimensions, StyleSheet } from "react-native";

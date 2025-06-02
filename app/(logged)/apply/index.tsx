@@ -2,9 +2,12 @@
 Title: Apply Page
 
 Description:
-    Only for Searcher
-		Swipe on job post suggestions
-
+	Page only shown to users with 'Searcher' role
+	Displays a deck of swipeable cards
+	Each card belongs to a Job Post
+		Fetching Job Posts is done as simple as possible, i.e. a number of Posts is fetched when this page loads
+	Animation is based on react-tinder-card package: https://www.npmjs.com/package/react-tinder-card
+	
 */
 
 import { Text, View, Pressable, ActivityIndicator, Alert } from "react-native";
@@ -30,9 +33,9 @@ import styles from "./style";
 export default function Page() {
 	const { userAuth, userDoc } = useAuth();
 	const [loading, setLoading] = useState<boolean>(true);
+	const router = useRouter();
 	const [deck, setDeck] = useState<PostType[]>();
 	const [currentIndex, setCurrentIndex] = useState<number>(-1);
-	const router = useRouter();
 
 	useEffect(() => {
 		getPosts();

@@ -1,3 +1,10 @@
+/*
+Title: Applications History Page
+
+Description:
+    Shows the history and state of applications done by the Searcher
+*/
+
 import { db } from "../../../config/firebaseConfig";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";

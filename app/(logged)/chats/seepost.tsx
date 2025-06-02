@@ -2,8 +2,8 @@
 Title: Display Post Page
 
 Description:
-	See the full job description
-		Useful when job post does not fit the card and a ScrollView is needed
+	Displays the full Job Post description
+	No need to fetch the Job Post info
 */
 
 import { useLocalSearchParams } from "expo-router";

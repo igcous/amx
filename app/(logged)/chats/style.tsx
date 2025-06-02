@@ -1,9 +1,8 @@
 /*
-Title: Style for Profile
+Title: Chat Styling
 
 Description:
-    Defines a common styling for the Chat pages
-
+    Common styling for the Chat pages
 */
 
 import { Dimensions, StyleSheet } from "react-native";

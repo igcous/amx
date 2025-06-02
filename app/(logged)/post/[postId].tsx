@@ -1,3 +1,11 @@
+/*
+Title: Post List Page
+
+Description:
+	Page only shown to users with 'Recruiter' role
+	Displays a deck of swipeable cards that belong to Searchers that applied for the selected Job Post
+*/
+
 import { ActivityIndicator, Alert, Pressable, Text, View } from "react-native";
 import { useState, useEffect, useMemo } from "react";
 import * as WebBrowser from "expo-web-browser";

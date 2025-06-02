@@ -2,7 +2,7 @@
 Title: Profile Page
 
 Description:
-	This is the landing page when the user logs in
+	Landing page when the user logs in
 	Features
 		For every user:
 			Show profile picture
@@ -14,31 +14,25 @@ Description:
 			Edit skills
 			Add CV file
 			Download CV file
-				Tried a couple things but the easiest solution is to let Web Browser handle it
 
 		For Recruiter:
 			Add socials link (TODO)
-		*/
+*/
 
-// React - React Native
 import { useEffect, useState } from "react";
 import { Text, View, Pressable, ActivityIndicator } from "react-native";
-// Expo utilities
 import { useRouter } from "expo-router";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as WebBrowser from "expo-web-browser";
-// Firebase
 import { doc, updateDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
-// Defined by me
 import { useAuth } from "../../../context/AuthContext";
 import { auth, db, storage } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
 import { signOut } from "firebase/auth";
 import styles from "./style";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Page() {
 	const { userAuth, userDoc, setUserDoc } = useAuth();

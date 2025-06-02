@@ -1,13 +1,11 @@
 /*
-Title: Root app layout
+Title: Root App Layout
 
 Description:
 	This layout file is used to expose the AuthProvider (defined in /context/AuthContext.tsx to all)
 	Following the structure in https://docs.expo.dev/router/advanced/authentication/
 	Its also a mix between that and the React Docs on how to use Context
 
-TODO:
-	Define Colors in a Context instead of /constants and then use this context for light and dark color themes
 */
 
 import { Stack, useRouter } from "expo-router";

@@ -1,14 +1,18 @@
 /*
-Title: 
+Title: New Post Page
 
 Description:
-    
+    Form to create a new Job Post
+	A Job Post must include:
+		Title
+		Description
+		Skills
 */
 
 import { View, Text, TextInput, Pressable } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Colors } from "../../../constants/colorPalette";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
 	addDoc,
 	arrayUnion,

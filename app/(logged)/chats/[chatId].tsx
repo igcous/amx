@@ -1,5 +1,15 @@
+/*
+Title: Chat Room Page
+
+Description:
+	Page to display a specific chat (chatId)
+	Based on GiftedChat basic usage tutorial
+	Name + Company (if Recruiter) and Job Post position is displayed on top
+	Recruiters can download the CV from the other user, a Searcher
+*/
+
 import { Text, View, Pressable } from "react-native";
-import { useState, useLayoutEffect, useCallback, useEffect } from "react";
+import { useState, useLayoutEffect, useCallback } from "react";
 import { GiftedChat, IMessage } from "react-native-gifted-chat";
 import { db } from "../../../config/firebaseConfig";
 import { Colors } from "../../../constants/colorPalette";
@@ -19,12 +29,13 @@ import * as WebBrowser from "expo-web-browser";
 import styles from "./style";
 
 export default function Page() {
-	const [loading, setLoading] = useState<boolean>(true);
-	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { userAuth, userDoc, chatList } = useAuth();
+	const [loading, setLoading] = useState<boolean>(true);
+	const router = useRouter();
+	const [messages, setMessages] = useState<IMessage[]>([]);
 	const { chatId } = useLocalSearchParams<{ chatId: string }>();
 	const currentChat = chatList?.find((chat) => chat.id === chatId);
-	const router = useRouter();
+
 	const [imageSource, setImageSource] = useState(
 		currentChat?.user.picURL
 			? {

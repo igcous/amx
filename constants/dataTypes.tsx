@@ -2,9 +2,7 @@
 Title: Data Types
 
 Description:
-	These types are defined to make the handling of Firebase docs easier
-	Note: Firebase has a all-or-nothing document retrieval policy (in other words, no SQL select statement)
-
+	Types defined to make the handling of Firebase docs easier
 */
 
 import { Timestamp } from "firebase/firestore";

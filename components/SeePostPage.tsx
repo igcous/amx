@@ -3,7 +3,6 @@ Title: See Post Page
 
 Description:
 	Component that displays a Post, as defined in dataTypes
-	Repeatable
 	Recommened use inside its own file (for Expo Router)
 	Can fetch or use post data from context, depending if chatId is specified
 */

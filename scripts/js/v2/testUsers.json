@@ -9,7 +9,7 @@
             "Python"
         ],
         "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
-        "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
+        "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV1.pdf?alt=media&token=05cd1f09-eb16-4419-99d6-74f6947b777f"
     },
     {
         "email": "test1@mail.com",
@@ -21,8 +21,8 @@
             "React",
             "Back-end"
         ],
-        "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic1.jpeg?alt=media&token=a2e5b612-e08e-4ffb-acfc-96d3db4dd73e",
-        "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV.pdf?alt=media&token=ac39d6e6-ff88-4e77-bf82-61c640387f05"
+        "profilePicURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userPic2.jpeg?alt=media&token=6eb830d0-c261-419b-9492-c3d8132333cc",
+        "resumeURL": "https://firebasestorage.googleapis.com/v0/b/auth1-5688a.firebasestorage.app/o/userCV2.pdf?alt=media&token=10f6fa34-9450-462f-8012-2f6f8ccf04c9"
     },
     {
         "email": "test2@mail.com",

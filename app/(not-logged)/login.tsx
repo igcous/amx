@@ -1,5 +1,5 @@
 /*
-Title: Login page
+Title: Login Page
 
 Description:
 	Email and password input
@@ -13,9 +13,9 @@ import { Colors } from "../../constants/colorPalette";
 import styles from "./style";
 
 export default function Page() {
+	const [loading, setLoading] = useState<boolean>(true);
 	const [email, setEmail] = useState<string>("test0@mail.com");
 	const [password, setPassword] = useState<string>("123456");
-	const [loading, setLoading] = useState<boolean>(true);
 
 	const login = async () => {
 		try {

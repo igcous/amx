@@ -1,9 +1,8 @@
 /*
-Title: Style for Signup
+Title: Signup Styling
 
 Description:
-	Defines a common styling for the Signup pages
-
+	Common styling for the Signup pages
 */
 
 import { StyleSheet } from "react-native";

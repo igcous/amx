@@ -3,7 +3,6 @@ Title: First page of the Signup flow
 
 Description:
 	User chooses a role, Searcher or Recruiter
-
 */
 
 import { View, Text, Pressable } from "react-native";

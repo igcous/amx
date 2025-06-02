@@ -1,9 +1,8 @@
 /*
-Title: Style for Signup
+Title: Post Styling
 
 Description:
-	Defines a common styling for the Post pages
-
+	Common styling for the Post pages
 */
 
 import { Dimensions, StyleSheet } from "react-native";

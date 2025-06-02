@@ -1,3 +1,10 @@
+/*
+Title: Post History Page
+
+Description:
+    Shows the history and state of Job Posts created by the Recruiter
+*/
+
 import { db } from "../../../config/firebaseConfig";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";

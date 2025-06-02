@@ -1,9 +1,8 @@
 /*
-Title: Style for Signup
+Title: Apply Styling
 
 Description:
-	Defines a common styling for the Apply pages
-
+	Common styling for the Apply pages
 */
 
 import { Dimensions, StyleSheet } from "react-native";

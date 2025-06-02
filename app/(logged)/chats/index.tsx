@@ -1,3 +1,11 @@
+/*
+Title: Chat List Page
+
+Description:
+	Displays the list of available chats for the User
+	A chat can also be deleted
+*/
+
 import {
 	Text,
 	View,

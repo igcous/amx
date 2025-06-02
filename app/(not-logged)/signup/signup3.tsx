@@ -4,7 +4,6 @@ Title: Third page of the Signup flow
 Description:
 	Skill selection page
 	Only shown to users that chose the Searcher role.
-
 */
 
 import { View, ScrollView, Text, Pressable } from "react-native";

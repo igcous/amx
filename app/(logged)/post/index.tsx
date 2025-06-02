@@ -1,11 +1,9 @@
 /*
-Title: Post Start Page
+Title: Post List Page
 
 Description:
-    Only for Recruiter
-		Make "New Post" option
-		List of the posts that the Recruiter has already made
-		Delete any of this posts
+	Page only shown to users with 'Recruiter' role
+	Displays the list of posts published by the Recruiter and provides a list of options to interact with them
 */
 
 import {
