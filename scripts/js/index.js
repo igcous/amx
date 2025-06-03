@@ -9,8 +9,10 @@ console.log("Starting signUsers...");
 await signUsers();
 console.log("Finished signUsers.");
 
+/*
 console.log("Starting createPosts...");
 await createPosts();
 console.log("Finished createPosts.");
+*/
 
 console.log("Success!");

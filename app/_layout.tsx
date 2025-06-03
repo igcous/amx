@@ -49,8 +49,7 @@ export default function RootLayout() {
 	}, []);
 
 	useEffect(() => {
-		// Handle when app is opened from quit state (cold start)
-		// Works but its erratic
+		// Handle when app is opened from killed state (cold start)
 		getInitialNotification(messaging).then(async (remoteMessage) => {
 			const chatId = remoteMessage?.data?.chatId as string;
 			console.log("Opened app from killed state, with arg: ", chatId);

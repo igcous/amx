@@ -129,7 +129,7 @@ export default function Page() {
 				alert("CV uploaded successfully!");
 			} else {
 				//console.log("Document picker canceled");
-				alert("CV not uploadead!");
+				alert("CV not uploaded!");
 			}
 		} catch (error) {
 			console.error("Error picking or uploading document:", error);

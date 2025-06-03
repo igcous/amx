@@ -34,7 +34,7 @@ export const signUsers = async () => {
 
 // Create posts and assign randomly
 export const createPosts = async () => {
-	const rPostsNumber = () => Math.floor(Math.random() * 5);
+	const rPostsNumber = () => Math.floor(Math.random() * 3);
 	const rBool = () => Math.floor(Math.random() < 0.5);
 	const rPost = () => Math.floor(Math.random() * jobposts.length);
 

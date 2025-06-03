@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/amx_logo.png",
+      "image": "./assets/amx_splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -9,6 +9,7 @@ Description:
 		If Recruiter, tabs are Post, Profile, Chats
 */
 
+import { Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import { useAuth } from "../../context/AuthContext";
 import { ActivityIndicator, Alert } from "react-native";
@@ -105,16 +106,35 @@ export default function LoggedLayout() {
 				options={{
 					title: userDoc?.role === "searcher" ? "Apply" : "Post",
 					headerShown: false,
+					tabBarIcon: ({ color, size }) => (
+						<Ionicons name={"add-circle-outline"} size={size} color={color} />
+					),
 				}}></Tabs.Screen>
 			<Tabs.Screen
 				name={userDoc.role === "searcher" ? "post" : "apply"}
 				options={{ href: null }}></Tabs.Screen>
 			<Tabs.Screen
 				name="profile"
-				options={{ title: "Profile", headerShown: false }}></Tabs.Screen>
+				options={{
+					title: "Profile",
+					headerShown: false,
+					tabBarIcon: ({ color, size }) => (
+						<Ionicons name="person-outline" size={size} color={color} />
+					),
+				}}></Tabs.Screen>
 			<Tabs.Screen
 				name="chats"
-				options={{ title: "Chats", headerShown: false }}></Tabs.Screen>
+				options={{
+					title: "Chats",
+					headerShown: false,
+					tabBarIcon: ({ color, size }) => (
+						<Ionicons
+							name="chatbubble-ellipses-outline"
+							size={size}
+							color={color}
+						/>
+					),
+				}}></Tabs.Screen>
 		</Tabs>
 	);
 }
